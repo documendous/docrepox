@@ -9,7 +9,7 @@ STATIC_ROOT = "/tmp/staticfiles"
 
 STATICFILES_DIRS = [
     BASE_DIR / "staticfiles",
-    BASE_DIR / "extensions" / "staticfiles",
+    # BASE_DIR / "extensions" / "staticfiles",  # Uncomment if you plan to use extensions
 ]
 
 MEDIA_URL = "media/"

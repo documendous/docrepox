@@ -23,8 +23,8 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 1. **Clone the Repository**:
    ```
-   git clone <repository_url>
-   cd <repository_directory>
+   git clone git@github.com:documendous/docrepox.git
+   cd docrepox
    ```
    Alternatively, download and extract the repository’s zip file.
 
@@ -58,7 +58,31 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
    ```
 
 7. **Verify Logs**:
-   Check the logs for any errors. If all goes well, your system should be up and running.
+   Check the logs for any errors. If all goes well, your system should be up and running. See the troubleshooting section below if you have any issues.
+
+### Troubleshooting
+
+#### "/mediafiles": not found
+
+You may encounter this error the first time you run `docker compose up --build`:
+
+```
+=> CACHED [web 15/20] COPY apps ./apps                                                              0.0s
+ => CACHED [web 16/20] COPY config ./config                                                          0.0s
+ => ERROR [web 17/20] COPY mediafiles ./mediafiles                                                   0.0s
+------
+[+] Running 0/1COPY mediafiles ./mediafiles:
+ ⠧ Service web  Building                                                                             0.7s 
+failed to solve: failed to compute cache key: failed to calculate checksum of ref d69779c3-e474-4919-97ec-64ea6039f742::fkc6ck6sib0h6wj2wbdnqq50m: "/mediafiles": not found
+```
+
+Just create a folder called `mediafiles` in the docrepo folder:
+
+```
+mkdir docrepo/mediafiles
+```
+
+and then run `docker compose up --build` again.
 
 ---
 
