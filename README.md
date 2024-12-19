@@ -62,28 +62,36 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 ### Troubleshooting
 
-#### "/mediafiles": not found
+**"/mediafiles": Not Found Error**
 
-You may encounter this error the first time you run `docker compose up --build`:
+If you encounter the following error during your first run of `docker compose up --build`:
 
 <pre>
-=> CACHED [web 15/20] COPY apps ./apps                                                              0.0s
-=> CACHED [web 16/20] COPY config ./config                                                          0.0s
-=> ERROR [web 17/20] COPY mediafiles ./mediafiles                                                   0.0s
+=> CACHED [web 15/20] COPY apps ./apps                                                             0.0s
+=> CACHED [web 16/20] COPY config ./config                                                         0.0s
+=> ERROR [web 17/20] COPY mediafiles ./mediafiles                                                  0.0s
 ------
 [+] Running 0/1COPY mediafiles ./mediafiles:
-⠧ Service web  Building                                                                             0.7s 
+⠧ Service web  Building                                                                            0.7s 
 failed to solve: failed to compute cache key: failed to calculate checksum of ref 
 d69779c3-e474-4919-97ec-64ea6039f742::fkc6ck6sib0h6wj2wbdnqq50m: "/mediafiles": not found
 </pre>
 
-Just create a folder called `mediafiles` in the docrepo folder:
+Solution:  
 
-```
+Simply create a folder named `mediafiles` within the `docrepo` directory:
+
+```bash
 mkdir docrepo/mediafiles
 ```
 
-and then run `docker compose up --build` again.
+After that, run the following command again:
+
+```bash
+docker compose up --build
+```
+
+This should resolve the issue and allow the build process to complete successfully.
 
 ### Logging in & Using DocrepoX
 
@@ -94,6 +102,19 @@ By default in the dev environment there are a number of test users and test proj
 The admin user should have access at the Django admin console: http://localhost:8000/admin/
 
 There is documentation on how to use the system: http://localhost:8000/ddocs/
+
+### Using in Production
+
+For a production-ready deployment, uses the `docker-compose.prod.yml` configuration, which includes Nginx. 
+
+Instead of the standard Docker command, execute the following:
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
+**Important Note:**  
+This project is still in its early stages. Exercise caution and sound judgment when evaluating its suitability for production use, particularly regarding stability, security, and overall reliability.
 
 ---
 
