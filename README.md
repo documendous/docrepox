@@ -62,7 +62,7 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 ### Troubleshooting
 
-**"/mediafiles": Not Found Error**
+#### "/mediafiles": Not Found Error
 
 If you encounter the following error during your first run of `docker compose up --build`:
 
