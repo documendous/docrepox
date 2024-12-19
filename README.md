@@ -66,7 +66,7 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 You may encounter this error the first time you run `docker compose up --build`:
 
-```
+```text
 => CACHED [web 15/20] COPY apps ./apps                                                              0.0s
  => CACHED [web 16/20] COPY config ./config                                                          0.0s
  => ERROR [web 17/20] COPY mediafiles ./mediafiles                                                   0.0s
