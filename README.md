@@ -85,5 +85,15 @@ mkdir docrepo/mediafiles
 
 and then run `docker compose up --build` again.
 
+### Logging in & Using DocrepoX
+
+After DocrepoX successfully starts up, log in at http://localhost:8000 and use admin/admin (username/password).
+
+By default in the dev environment there are a number of test users and test projects. 
+
+The admin user should have access at the Django admin console: http://localhost:8000/admin/
+
+There is documentation on how to use the system: http://localhost:8000/ddocs/
+
 ---
 
