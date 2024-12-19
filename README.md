@@ -77,7 +77,7 @@ failed to solve: failed to compute cache key: failed to calculate checksum of re
 d69779c3-e474-4919-97ec-64ea6039f742::fkc6ck6sib0h6wj2wbdnqq50m: "/mediafiles": not found
 </pre>
 
-Solution:  
+**Solution:**  
 
 Simply create a folder named `mediafiles` within the `docrepo` directory:
 
