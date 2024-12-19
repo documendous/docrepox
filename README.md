@@ -113,7 +113,8 @@ Instead of the standard Docker command, execute the following:
 docker compose -f docker-compose.prod.yml up --build
 ```
 
-**Important Note:**  
+**Important Note:**
+
 This project is still in its early stages. Exercise caution and sound judgment when evaluating its suitability for production use, particularly regarding stability, security, and overall reliability.
 
 ---
