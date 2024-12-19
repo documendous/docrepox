@@ -1,0 +1,60 @@
+{% load repo_tags %}
+
+{% is_admin_user request as user_is_admin  %}
+
+<nav class="right-nav">
+  <span
+    class="
+      text-xs font-semibold
+      {% if user_is_admin %}
+        text-red-500
+      {% else %}
+        text-gray-500 
+      {% endif %}
+    "
+  >
+    {{ request.user.username|upper }}
+  </span>
+  {% if user_is_admin %}
+    <a href="{% url 'admin:index' %}" class="tooltip" title="Admin Console">
+      <span class="material-icons-outlined nav-link">admin_panel_settings</span>
+    </a>
+  {% endif %}
+  <a
+    href="{% url 'repo:bookmarks:bookmark_list' %}"
+    class="tooltip"
+    title="Bookmarks"
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    <span class="material-icons-outlined nav-link">bookmark</span>
+  </a>
+  <a
+    href="{% url 'repo:update_profile' %}"
+    class="tooltip"
+    title="Welcome {{ user.username }}!"
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    <span class="material-icons-outlined nav-link">
+      account_circle
+    </span>
+  </a>
+  <a
+    href="{% url "repo:folder" request.user.profile.recycle_folder.pk %}"
+    class="tooltip"
+    title="Recyle Bin"
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    <span class="material-icons-outlined nav-link">delete</span>
+  </a>
+  <form
+    action="{% if keycloak_is_available %}{% url 'oidc_logout' %}{% else %}{% url 'logout' %}{% endif %}"
+    method="post"
+    class="inline"
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    {% csrf_token %}
+    <button type="submit" class="tooltip" title="Sign Out">
+      <span class="material-icons-outlined nav-link">logout</span>
+    </button>
+  </form>
+</nav>

@@ -1,0 +1,14 @@
+<form
+  action="{% url 'repo:restore_element' child.type child.pk %}"
+  method="POST"
+>
+  {% csrf_token %}
+  <button
+    type="submit"
+    title='Restore {{ element.type }} "{{ child.name }}" to original parent folder'
+  >
+    <span class="material-icons-outlined">
+      restore_from_trash
+    </span>
+  </button>
+</form>

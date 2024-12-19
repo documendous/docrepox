@@ -1,0 +1,46 @@
+<form
+  action="{% url "repo:projects:add_requester_to_project_group" project.pk req.msg_from.pk "readers" %}" 
+  method="post"
+>
+  {% csrf_token %}
+  <button
+    type="submit"
+    title="Add user as a project reader"
+  >
+    <span class="material-symbols-outlined">
+      local_library
+    </span>
+  </button>
+</form>
+<form
+  action="{% url "repo:projects:add_requester_to_project_group" project.pk req.msg_from.pk "editors" %}" 
+  method="post">
+  {% csrf_token %}
+  <button type="submit" title="Add user as a project editor">
+    <span class="material-symbols-outlined">
+      contract_edit
+    </span>
+  </button>
+</form>
+<form
+  action="{% url "repo:projects:add_requester_to_project_group" project.pk req.msg_from.pk "managers" %}" 
+  method="post"
+>
+  {% csrf_token %}
+  <button type="submit" title="Add user as a project manager">
+    <span class="material-symbols-outlined">
+      manage_accounts
+    </span>
+  </button>
+</form>
+<form 
+  action="{% url "repo:projects:reject_join_request" req.pk %}" 
+  method="post"
+>
+  {% csrf_token %}
+  <button type="submit" title="Reject join request">
+    <span class="material-symbols-outlined">
+      swipe_left
+    </span>
+  </button>
+</form>

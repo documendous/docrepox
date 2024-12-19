@@ -1,0 +1,22 @@
+{% load static %}
+
+<link href="{% static 'quill/quill.snow.css' %}" rel="stylesheet" />
+
+<style>
+  .ql-container {
+    font-size: {{ editor_font_size }};
+  }
+</style>
+
+<div
+  class="mb-4" id="editor"
+  style="
+    height: 300px; width: 100%; border: 1px solid #d1d5db; padding: 10px;
+    margin-bottom: 20px; resize: vertical; overflow: auto;
+  "
+></div>
+
+<input type="hidden" name="content" id="content">
+
+<script src="{% static 'quill/quill-2.0.2.js' %}"></script>
+<script src="{% static 'js/repo/quill/quill-create-document.js' %}"></script>

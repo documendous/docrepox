@@ -1,0 +1,72 @@
+{% load static %}
+{% load project_tags %}
+
+{% if not folder.is_in_recycle_path %}
+  <div class="flex items-end mx-2 py-2 space-x-4">
+    {% can_create_folder_children request folder as can_create_folder_children %}
+    {% if can_create_folder_children %}
+      <a href="#"
+        class="hover:text-blue-700 relative group mr-2"
+        onclick="showModal('addDocumentModal')"
+        title="Upload a new document in this space">
+        <span class="material-icons-outlined">note_add</span>
+      </a>
+      <a href="#"
+        class="hover:text-blue-700 relative group mr-2"
+        onclick="showModal('addMultiDocumentModal')"
+        title="Upload multiple documents in this space">
+        <span class="material-icons-outlined">upload_file</span>
+      </a>
+      <a class="hover:text-blue-700 relative group mr-2"
+        {% if create_doc_use_modal %}
+          href="#"
+          onclick="showModal('createDocumentModal')"
+        {% else %}
+          href="{% url 'repo:create_document' folder.pk %}"
+        {% endif %}
+        title="Create a new document in this space">
+        <span class="material-symbols-outlined">
+          add_notes
+        </span>
+      </a>
+      <a href="#"
+        class="hover:text-blue-700 relative group mr-2"
+        onclick="showModal('addFolderModal')"
+        title="Create a new folder in this space">
+        <span class="material-icons-outlined">create_new_folder</span>
+      </a>
+      <a href="#"
+        class="hover:text-blue-700 relative group mr-2"
+        onclick="showModal('pasteElementModal')"
+        title="Clipboard for items to be Moved/Copied">
+        <span class="material-icons-outlined">content_paste</span>
+      </a>
+      <!-- add the following block -->
+      <a href="#"
+        class="hover:text-blue-700 relative group mr-2"
+        onclick="showModal('displayHelloWorld')"
+        title="Displays a hello world message">
+        <span class="material-icons-outlined">chat_bubble</span>
+      </a>
+    {% endif %}
+  </div>
+{% else %}
+  {% if folder.has_children %}
+    <div class="flex items-end mx-1 py-2 space-x-4">
+      {% include "repo/partials/actions/_empty_trashcan.html" %}
+    </div>
+  {% endif %}
+{% endif %}
+
+{% if can_create %}
+  {% include "repo/partials/_add_document_modal.html" %}
+  {% include "repo/partials/_add_multi_document_modal.html" %}
+  {% include "repo/partials/_create_document_modal.html" %}
+  {% include "repo/partials/_add_folder_modal.html" %}
+  {% include "repo/partials/_hello_modal.html" %}
+  {% include "clipboard/partials/_paste_element_modal.html" %}
+
+  <script src="{% static 'js/repo/utils/setFileNameOnUpload.js' %}"></script>
+  <script src="{% static 'js/repo/utils/modals.js' %}"></script>
+  <script src="{% static 'js/clipboard/utils/modals.js' %}"></script>
+{% endif %}

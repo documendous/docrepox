@@ -1,0 +1,35 @@
+<tbody class="bg-white divide-y divide-gray-200">
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+    <td class="px-6 py-4 whitespace-nowrap flex items-center">
+      <span class="mr-2">
+        {{ project.name }}
+      </span>
+    </td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ project.owner.username }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visibility</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ project.visibility|title }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ project.id }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Full Path</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ project.folder.get_full_path }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ project.title|default:'--' }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ project.description|default:'--' }}</td>
+  </tr>
+  {% include "repo/partials/_tags_display_row.html" with element=project %}
+</tbody>

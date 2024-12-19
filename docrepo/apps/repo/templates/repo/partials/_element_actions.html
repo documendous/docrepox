@@ -1,0 +1,38 @@
+{% load project_tags %}
+
+{% is_a_project_folder child as is_a_project_folder %}
+{% is_membership_pending request child.folder as is_membership_pending %}
+{% has_project_membership request child.folder as has_project_membership %}
+{% can_move_element request child as can_move_element %}
+{% can_view_element_details request child as can_view_element_details %}
+{% can_recycle_element request child as can_recycle_element %}
+{% can_restore_element request child as can_restore_element %}
+{% can_delete_element request child as can_delete_element %}
+
+{% if can_move_element %}
+  {% include "clipboard/partials/actions/_move_element.html" %}
+{% endif %}
+
+{% if can_view_element_details %}
+  {% include "repo/partials/actions/_element_details.html" %}
+{% endif %}
+
+{% if is_a_project_folder and not has_project_membership and not is_membership_pending %}
+  {% include "projects/partials/actions/_project_join.html" with child=project %}
+{% endif %}
+
+{% if is_a_project_folder and not has_project_membership and is_membership_pending %}
+  {% include "projects/partials/actions/_project_membership_pending.html" with child=project %}
+{% endif %}
+
+{% if can_recycle_element %}
+  {% include "repo/partials/actions/_recycle_element.html" %}
+{% endif %}
+
+{% if can_restore_element %}
+  {% include "repo/partials/actions/_restore_element.html" %}
+{% endif %}
+
+{% if can_delete_element %}
+  {% include "repo/partials/actions/_delete_element.html" %}
+{% endif %}

@@ -1,0 +1,12 @@
+{% load project_tags %}
+
+{% get_role_display request folder.parent_project as role %}
+<div
+  class="
+    p-1 {% if role == 'manager' %}text-red-500{% else %}text-blue-500{% endif %}
+  "
+>
+  <span class="font-semibold" title="Project role">
+    Project {{ role|title }}
+  </span>
+</div>

@@ -1,0 +1,28 @@
+{% extends "ui/base/_base.html" %}
+{% load ui_tags %}
+
+{% block main %}
+{% ui_setting request "show_welcome" as show_welcome %}
+{% ui_setting request "show_getting_started" as show_getting_started %}
+
+<main>  
+  {% if show_welcome %}
+    {% include "ui/partials/_enhanced_description.html" %}
+  {% endif %}
+  {% if use_motd %}
+    <div class="py-2">
+      {% include "motd/message.html" %}
+    </div>
+  {% endif %}
+  <div class="py-8">
+    {% if show_getting_started %}
+      {% include "ui/partials/_getting_started.html" %}
+    {% endif %}
+    <div class="w-full flex py-8 gap-2">
+      {% include "ui/partials/_my_project_list.html" %}
+      {% include "ui/partials/_project_list.html" %}
+      {% include "ui/partials/_latest_documents.html" %}
+    </div>
+  </div>
+</main>
+{% endblock main %}

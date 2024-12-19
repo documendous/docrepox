@@ -1,0 +1,24 @@
+{% load project_tags %}
+
+{% has_project_membership request project.folder as has_project_membership %}
+{% is_membership_pending request project.folder as is_membership_pending %}
+
+{% if has_project_membership %}
+  <li>
+    <a href="{% url "repo:folder" project.folder.pk %}" class="hover:text-blue-700">
+      {{ project.name }}
+    </a>
+  </li>
+{% elif is_membership_pending %}
+    <li class="text-gray-500">
+      {{ project.name }} (Membership Pending)
+    </li>
+{% else %}
+  <li>
+    <span>
+      <a href="{% url 'repo:projects:index' %}">
+        {{ project.name }} (Not a member)
+      </a>
+    </span>
+  </li>
+{% endif %}

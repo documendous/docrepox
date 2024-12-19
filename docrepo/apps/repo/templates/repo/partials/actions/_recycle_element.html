@@ -1,0 +1,20 @@
+{% if not child.is_recycle_folder %}
+  {% comment %} No Recycle folder should be recycled or deleted {% endcomment %}
+  <form
+    action="{% url 'repo:recycle_element' child.type child.pk %}"
+    method="POST"
+    onsubmit="recycleSubmit.disabled=true; return true;"
+  >
+    {% csrf_token %}
+    <button
+      id="recycleSubmit"
+      type="submit"
+      title='Delete {{ element.type }} "{{ child.name }}" (Will be placed in recycling folder)'
+    >
+      <span class="material-icons-outlined">
+        delete
+      </span>
+    </button>
+  </form>
+{% endif %}
+

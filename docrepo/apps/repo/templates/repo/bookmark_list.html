@@ -1,0 +1,42 @@
+{% extends "ui/base/_base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block main %}
+<main>
+  <div class="mt-8">
+    <table class="min-w-full divide-y divide-gray-200 border shadow">
+      <caption class="text-left p-2 relative mx-4">
+        <div class="flex py-2">
+          <span class="mr-2 font-bold">
+            Bookmarks for {{ request.user.username }}
+          </span>
+        </div>
+      </caption>
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Name
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Path to Parent
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Owner
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Created
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Modified
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      {% include "repo/partials/_folder_children_table_data.html" with scope="full" %}
+    </table>
+  </div>
+</main>
+{% endblock main %}

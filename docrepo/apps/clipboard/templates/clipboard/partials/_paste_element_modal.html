@@ -1,0 +1,72 @@
+{% load widget_tweaks %}
+
+<div x-data="handleClipboardModal({hasClipboardErrors: {{ 0 }}})">
+  <div
+    id="pasteElementModal"
+    x-ref="pasteElementModal"
+    class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    x-bind:class="{hidden: !hasClipboardErrors}"
+  >
+    <div class="relative top-20 mx-auto p-5 border w-[450px] shadow-lg rounded-md bg-gray-900 text-white">
+      <div class="material-icons-outlined mb-4">
+        content_paste
+      </div>
+      <h3 class="text-lg font-bold leading-6 text-gray-100 mb-4">
+        Paste These Elements into Current Folder: {{ folder.get_full_path }}
+      </h3>
+      <form
+        x-ref="pasteForm"
+        action="{% url 'repo:clipboard:paste_move_elements' folder.id %}"
+        method="post"
+      >
+        {% csrf_token %}
+        <div
+          x-data="{ clipboardDocuments: {{ clipboard_documents|length }}, clipboardFolders: {{ clipboard_folders|length }} }"
+          x-init="
+            document.addEventListener('htmx:afterRequest', function() {
+              clipboardDocuments = document.querySelectorAll('li[id^=cbd-]').length;
+              clipboardFolders = document.querySelectorAll('li[id^=cbf-]').length;
+            });
+          "
+        >
+          <div class="mt-6">
+            <ul>
+              {% include "clipboard/partials/_document_list.html" %}
+              {% include "clipboard/partials/_folder_list.html" %}
+            </ul>
+
+            <hr class="mt-10">
+          </div>
+          <div class="flex justify-center mt-[72px] space-x-2">
+            <button 
+              class="font-semibold py-2 px-4 rounded"
+              :class="{
+                'bg-blue-500 text-white cursor-pointer': clipboardDocuments > 0 || clipboardFolders > 0, 
+                'bg-gray-400 text-gray-200 cursor-not-allowed': clipboardDocuments === 0 && clipboardFolders === 0
+              }"
+              type="submit"
+              x-bind:disabled="clipboardDocuments === 0 && clipboardFolders === 0"
+              @click.prevent="$refs.pasteForm.action='{% url 'repo:clipboard:paste_move_elements' folder.id %}'; $refs.pasteForm.submit()"
+            >Move Here</button>
+            <button 
+              class="font-semibold py-2 px-4 rounded"
+              :class="{
+                'bg-blue-500 text-white cursor-pointer': clipboardDocuments > 0 || clipboardFolders > 0, 
+                'bg-gray-400 text-gray-200 cursor-not-allowed': clipboardDocuments === 0 && clipboardFolders === 0
+              }"
+              type="submit"
+              x-bind:disabled="clipboardDocuments === 0 && clipboardFolders === 0"
+              @click.prevent="$refs.pasteForm.action='{% url 'repo:clipboard:paste_copy_elements' folder.id %}'; $refs.pasteForm.submit()"
+            >Copy Here</button>
+            <button
+              class="bg-gray-500 text-white font-semibold py-2 px-4 rounded"
+              type="button"
+              hx-disabled-elt="this"
+              onclick="hideModal('pasteElementModal')"
+            >Close</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

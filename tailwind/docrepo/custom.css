@@ -1,0 +1,33 @@
+@import "../../../django-unfold/src/unfold/styles.css";
+
+.header {
+  @apply flex justify-between items-center py-4 mx-6;
+}
+
+.header-left-wrapper {
+  @apply flex items-center space-x-4
+}
+
+.branding {
+  @apply text-xl font-bold pb-1;
+}
+
+.left-nav {
+  @apply flex-1 flex justify-start space-x-4 items-center;
+}
+
+.right-nav {
+  @apply flex space-x-4 items-center;
+}
+
+.nav-link {
+  @apply w-6 h-6;
+}
+
+.fl-th {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.pg-item {
+  @apply flex items-center px-2 py-1.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300;
+}

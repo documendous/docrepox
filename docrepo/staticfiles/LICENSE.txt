@@ -1,0 +1,121 @@
+DocrepoX License Based on LGPL Version 3
+
+Copyright © 2024 Documendous LLC. All rights reserved.
+
+This license governs the use, modification, and distribution of DocrepoX. It incorporates the terms of the GNU Lesser General Public License Version 3 (LGPL-3.0) as published by the Free Software Foundation, with specific modifications outlined below.
+
+Preamble
+
+DocrepoX is free software designed to support open-source collaboration and commercial consulting services. While the core of DocrepoX is open-source, this license ensures that contributions remain accessible while allowing commercial applications.
+
+License Terms
+
+1. Applicability
+
+This license applies to the DocrepoX software ("The Library"), excluding plugins, themes, or external modules that integrate with DocrepoX but are developed independently.
+
+2. Permissions and Conditions
+
+Use and Distribution: You may use, modify, and distribute DocrepoX under the terms of LGPL-3.0.
+
+Modifications: If you modify DocrepoX, you must:
+
+Provide clear documentation of changes.
+
+Indicate changes made to the original software.
+
+Network Use Clause Exemption: DocrepoX may be run as a hosted service without triggering source code disclosure obligations.
+
+3. Linking and Combined Works
+
+Integration: Applications using DocrepoX through defined APIs are considered separate works and are not subject to copyleft provisions.
+
+Combined Works: If DocrepoX is combined with proprietary software, you must:
+
+Include a notice specifying DocrepoX's use and linking under this license.
+
+Ensure DocrepoX remains modifiable and accessible as governed by LGPL-3.0.
+
+4. Disclaimer and Liability
+
+No Warranty: DocrepoX is provided "as is," without warranties of any kind.
+
+Liability Limitation: Documendous LLC and contributors are not liable for any claims, damages, or legal liabilities arising from use or misuse of DocrepoX.
+
+5. Support and Services
+
+Commercial Support: Documendous LLC reserves the right to offer paid consulting, support services, and custom implementations for DocrepoX.
+
+6. Contributions
+
+Submission of Changes: Contributors grant Documendous LLC a perpetual, worldwide, royalty-free license to distribute, modify, and sublicense contributions under LGPL-3.0.
+
+License Acceptance
+
+By using, modifying, or distributing DocrepoX, you agree to the terms of this license. If you do not accept these terms, you are not permitted to use DocrepoX.
+
+For the full text of the GNU Lesser General Public License Version 3, see: https://www.gnu.org/licenses/lgpl-3.0.html
+
+Signed,
+
+DocrepoX LLC (documendous@gmail.com)
+
+DocrepoX License FAQ
+
+1. What is the DocrepoX License?
+
+The DocrepoX License is based on the GNU Lesser General Public License Version 3 (LGPL-3.0). It governs the use, modification, and distribution of the DocrepoX software while enabling commercial consulting services and open-source collaboration.
+
+2. Is DocrepoX Free to Use?
+
+Yes, DocrepoX is free and open-source. You can use, modify, and distribute it as long as you comply with the terms of the license.
+
+3. Can I Use DocrepoX in My Commercial Application?
+
+Yes, you can use DocrepoX in commercial applications. If your application interacts with DocrepoX through defined APIs, it is considered a separate work. However, modifications to DocrepoX itself must be open-sourced.
+
+4. Do I Have to Share My Source Code?
+
+If you modify DocrepoX and distribute it, you must share your changes under the same LGPL-3.0 license.
+
+If you use DocrepoX in a hosted service, you are not required to disclose your source code.
+
+5. What Is the Network Use Clause Exemption?
+
+The license includes a network use clause exemption, meaning running DocrepoX as a hosted service does not trigger source code disclosure.
+
+6. Can I Combine DocrepoX with Proprietary Software?
+
+Yes, but you must:
+
+Provide a notice specifying DocrepoX's use and linking under this license.
+
+Ensure that modifications to DocrepoX remain accessible under LGPL-3.0 terms.
+
+7. What If I Modify DocrepoX?
+
+You must:
+
+Document changes clearly.
+
+Indicate that changes were made.
+
+Release modifications under the same LGPL-3.0 license.
+
+8. What Are the Liability and Warranty Terms?
+
+DocrepoX is provided "as is," without any warranties. Documendous LLC and contributors are not liable for any damages or claims resulting from using or misusing the software.
+
+9. Can I Get Commercial Support?
+
+Yes. Documendous LLC offers consulting, support subscriptions, and custom implementations for DocrepoX.
+
+10. How Are Contributions Managed?
+
+Contributors grant Documendous LLC a perpetual, worldwide, royalty-free license to distribute, modify, and sublicense contributions under LGPL-3.0.
+
+11. How Do I Accept the License?
+
+By using, modifying, or distributing DocrepoX, you accept the license terms. If you do not agree to these terms, you are not authorized to use the software.
+
+For further details, refer to the full LGPL-3.0 license text at: https://www.gnu.org/licenses/lgpl-3.0.html.

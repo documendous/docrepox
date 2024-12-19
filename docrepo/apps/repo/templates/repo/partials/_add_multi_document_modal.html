@@ -1,0 +1,43 @@
+{% load widget_tweaks %}
+
+<div x-data="handleModal({hasErrors: {{has_multi_document_errors}}})">
+  <div
+    id="addMultiDocumentModal"
+    x-ref="addMultiDocumentModal"
+    class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    x-bind:class="{hidden: !hasErrors}"
+  >
+    <div class="relative top-20 mx-auto border border-gray-700 w-96 shadow-lg rounded bg-white">
+      <h3 class="text-lg font-medium leading-6 rounded-t text-white bg-blue-500 px-5 py-3">
+        Upload Multiple Documents
+      </h3>
+      <div class="p-5">
+        <form action='{% url "repo:add_multi_documents" folder.id %}' method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mt-2">
+            <label for="content_file" class="block text-sm font-medium text-gray-700">Upload File: <span class="text-red-500">*</span></label>
+            <div class="text-red-500 text-sm mt-1">{{ add_version_form.content_file.errors }}</div>
+            <input type="file" name="content_file" id="id_content_file" required multiple
+              class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2"
+            >
+          </div>
+          <p class="italic text-sm my-4">
+            Document names will be generated for each file uploaded based on file name. You can edit name, title and description for each document after upload.
+          </p>
+          <div class="flex justify-end mt-4 space-x-2">
+            <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded" type="submit">
+              Save
+            </button>
+            <button
+              class="bg-gray-500 text-white font-semibold py-2 px-4 rounded"
+              type="button"
+              onclick="hideModal('addMultiDocumentModal')"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

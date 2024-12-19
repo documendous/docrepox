@@ -1,0 +1,54 @@
+<nav class="left-nav gap-0.5">
+  <a
+    href="{% url 'repo:index' %}"
+    class="tooltip"
+    title="Dashboard"
+    hx-boost="{{ use_hx_boost_int }}"
+  >
+    <span class="material-icons-outlined nav-link" style="font-size: 24px !important;">
+      home
+    </span>
+  </a>
+  <a
+    href="{% url 'repo:folder' home_folder_id %}"
+    class="tooltip"
+    title="Home Folder"
+    hx-boost="{{ use_hx_boost_int }}"
+  >
+    <span class="material-icons-outlined nav-link" style="font-size: 24px !important;">
+      folder
+    </span>
+  </a>
+  <a
+    href="{% url 'repo:projects:index' %}"
+    class="tooltip"
+    title="Projects"
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    <span class="material-symbols-outlined nav-link" style="font-size: 20px !important;">
+      full_coverage
+    </span>
+  </a>
+  {% if user.username == 'admin' %}
+    <a
+      href="{% url 'repo:folder' root_folder_id %}"
+      class="tooltip"
+      title="Repository Root"
+      hx-boost="{{ use_hx_boost_int }}"
+    >
+      <span class="material-icons-outlined nav-link" style="font-size: 22px !important;">
+        storage
+      </span>
+    </a>
+  {% endif %}
+  <a
+    href="{% url 'ddocs:index' %}"
+    class="tooltip"
+    title="Documentation"
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    <span class="material-icons-outlined nav-link" style="font-size: 20px !important;">
+      book_4
+    </span>
+  </a>
+</nav>

@@ -1,0 +1,13 @@
+<form
+  action="{% url 'repo:projects:remove_user_from_project_group' project.pk user.pk group.pk %}"
+  method="POST"
+  onsubmit="return confirm('Are you sure you want to remove the user from this project group?');"
+>
+  {% csrf_token %}
+  <button
+    type="submit"
+    title='Remove this user from this project group'
+  >
+    <span class="material-icons-outlined">cancel</span>
+  </button>
+</form>

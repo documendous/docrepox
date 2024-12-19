@@ -1,0 +1,7 @@
+{% load static %}
+
+{% include "ui/base/_default_head.html" %}
+<body class="container mx-auto bg-gray-100">
+  {% if messages %}
+    {% include "ui/widgets/_notification.html" %}
+  {% endif %}

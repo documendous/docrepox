@@ -1,0 +1,43 @@
+{% load static %}
+{% load format_tags %}
+
+<tbody class="bg-white divide-y divide-gray-200">
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+    <td class="px-6 py-4 whitespace-nowrap flex items-center">
+      <span class="mr-2">
+        {{ element.name }}
+      </span>
+      {% if element.type == 'document' %}
+        {% include "repo/partials/document/_document_actions.html" %}
+      {% endif %}
+    </td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ element.id }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Full Path</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ element.get_full_path }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ element.title|default:'--' }}</td>
+  </tr>
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ element.description|default:'--' }}</td>
+  </tr>
+  {% include "repo/partials/_tags_display_row.html" with element=element %}
+  <tr>
+    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
+    <td class="px-6 py-4 whitespace-nowrap">{{ element.owner.username }}</td>
+  </tr>
+  {% if element.type == 'document' %}
+    {% include "repo/partials/document/_document_details.html" %}
+  {% endif %}
+  {% if element.type == 'folder' %}
+    {% include "repo/partials/folder/_folder_details.html" %}
+  {% endif %}
+</tbody>

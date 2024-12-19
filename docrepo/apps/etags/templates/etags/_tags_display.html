@@ -1,0 +1,7 @@
+{% if element.tags.exists %}
+  {% for tag in element.tags.all %}
+    #{{ tag.name }}{% if not forloop.last %}, {% endif %}
+  {% endfor %}
+{% else %}
+  --
+{% endif %}

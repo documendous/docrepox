@@ -1,0 +1,113 @@
+{% load clipboard_tags %}
+{% load format_tags %}
+{% load static %}
+
+<tbody class="bg-white divide-y divide-gray-200" id="folder-children-table-data" >
+  {% for child in children %}
+    <tr>
+      {% if scope == 'full' or scope == 'summary' %}
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          {% if child.type == 'folder' %}
+          <a class="text-gray-600 hover:text-blue-700 flex items-center"
+            {% if child.type == 'folder' %}
+              href="{% url 'repo:folder' child.pk %}"
+            {% elif child.type == 'document' %}
+              href=""
+            {% endif %}
+            hx-boost="{{ use_hx_boost_ext }}"
+            >
+            <span class="material-icons-outlined mr-2">folder</span>
+            {% include "repo/partials/_folder_children_name.html" %}
+            {% element_in_clipboard request child as in_clipboard %}
+            {% if in_clipboard %}
+              <span
+                id="in_clipboard_icon_{{ child.pk }}"
+                class="material-icons-outlined text-blue-400 h-[20px] ml-2"
+              >content_paste</span>
+            {% endif %}
+          </a>
+          {% else %}
+            <a class="text-gray-600 hover:text-blue-700 flex items-center"
+              href="{% url 'repo:element_details' child.type child.pk %}"
+              hx-boost="{{ use_hx_boost_ext }}"
+            >
+              <span class="material-icons-outlined mr-2">description</span>
+              {% include "repo/partials/_folder_children_name.html" %}
+              {% element_in_clipboard request child as in_clipboard %}
+              {% if in_clipboard %}
+                <span
+                  id="in_clipboard_icon_{{ child.pk }}"
+                  class="material-icons-outlined text-blue-400 h-[20px] ml-2"
+                >content_paste</span>
+              {% endif %}
+            </a>
+          {% endif %}
+        </td>
+      {% endif %}
+      
+      {% if is_bookmark_list_view %}
+        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+          <a
+            href="{% url 'repo:folder' child.parent.pk %}"
+            class="text-gray-600 hover:text-blue-700 flex items-center"
+            hx-boost="{{ use_hx_boost_int }}"
+          >
+            {{ child.parent.get_full_path }}
+          </a>
+        </td>
+      {% else %}
+        {% if scope == 'full' %}
+          <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+            {{ child.title|default:'--' }}
+          </td>
+        {% endif %}
+      {% endif %}
+      {% if scope == 'summary' %}
+        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+          {% if child.current_version.size  %}
+            {{ child.current_version.size|human_readable_size|default:'--' }}
+          {% else %}
+            <span class="text-red-500">
+              0.0 B or possibly missing content file
+            </span>
+          {% endif %}
+        </td>
+      {% endif %}
+      {% if scope == 'full' or scope == 'summary' %}
+        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+          {{ child.owner }}
+        </td>
+      {% endif %}
+      
+      {% if scope == 'full' %}
+        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+          {{ child.created }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+          {{ child.modified }}
+        </td>
+      {% endif %}
+      
+      {% if scope == 'full' or scope == 'summary' %}
+        <td
+          class="
+            px-6 py-4 whitespace-nowrap text-gray-600 text-sm
+            flex justify-start items-center gap-3
+          "
+        >
+          {% include "repo/partials/_element_actions.html" %}
+        </td>
+      {% endif %}
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+        No records found
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+
+{% if not pagination_enabled %}
+  <script src="{% static 'js/repo/utils/hide-pagination.js' %}"></script>
+{% endif %}

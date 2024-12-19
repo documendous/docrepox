@@ -1,0 +1,12 @@
+<a class="hover:text-blue-700 relative group mr-1"
+  {% if create_doc_use_modal %}
+    href="#"
+    onclick="showModal('createDocumentModal')"
+  {% else %}
+    href="{% url 'repo:create_document' folder.pk %}"
+  {% endif %}
+  title="Create a new document in this space">
+  <span class="material-symbols-outlined" style="font-size: 24px !important;">
+    add_notes
+  </span>
+</a>

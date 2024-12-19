@@ -1,0 +1,12 @@
+<form
+  action="{% url 'repo:empty_recycle_folder' folder.pk %}"
+  method="POST"
+  onsubmit="return confirm('Are you sure you want to empty the trashcan? This action is unrecoverable.');"
+>
+  {% csrf_token %}
+  <button type="submit" title="Empty Trashcan">
+    <span class="material-icons-outlined">
+      delete_forever
+    </span>
+  </button>
+</form>

@@ -1,0 +1,12 @@
+<div x-data="{ messages: [ {% for message in messages %}'{{ message|escapejs }}',{% endfor %} ] }">
+  <template x-for="(message, index) in messages" :key="index">
+    <div
+      x-show="true"
+      x-transition
+      x-init="setTimeout(() => { $el.style.display = 'block'; setTimeout(() => $el.remove(), 2000); }, index * 500)"
+      :style="{ display: 'none', top: `${index * 60 + 10}px` }"
+      class="fixed left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-8 py-4 rounded text-center shadow-lg z-50"
+      x-html="message"
+    ></div>
+  </template>
+</div>

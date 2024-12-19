@@ -1,0 +1,7 @@
+{% load bookmark_tags %}
+
+{% if element|is_bookmarked:request.user %}
+  {% include 'bookmarks/partials/actions/_show_bookmarked.html' %}
+{% else %}
+  {% include 'bookmarks/partials/actions/_show_unbookmarked.html' %}
+{% endif %}

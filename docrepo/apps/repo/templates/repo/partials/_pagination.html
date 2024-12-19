@@ -1,0 +1,92 @@
+{% if children.has_other_pages %}
+  <div id="pagination" class="flex items-center justify-between mt-6">
+    <!-- Total count or info (optional) -->
+    <div class="text-gray-600 text-sm ml-4">
+      Total: {{ children.paginator.count }}
+    </div>
+
+    <!-- Pagination Container -->
+    <div class="overflow-hidden max-w-full sm:max-w-4xl mx-auto">
+      <div class="flex items-center justify-center space-x-2 overflow-x-auto whitespace-nowrap">
+        {% with request.GET.order_by as order_by %}
+          <!-- Previous Button -->
+          {% if children.has_previous %}
+            <a href="?page={{ children.previous_page_number }}{% if order_by %}&order_by={{ order_by }}{% endif %}"
+              class="
+                px-4 py-2 border border-gray-300 rounded-md bg-white
+                text-gray-600 hover:bg-gray-100 transition
+              "
+              hx-boost="{{ use_hx_boost_int }}"
+            >
+              &laquo; Previous
+            </a>
+          {% else %}
+            <span
+              class="
+                px-4 py-2 border border-gray-300 rounded-md bg-gray-100
+                text-gray-400 cursor-not-allowed
+              "
+            >
+              &laquo; Previous
+            </span>
+          {% endif %}
+
+          <!-- Page Numbers -->
+          {% for num in children.paginator.page_range %}
+            {% if children.number == num %}
+              <span class="px-4 py-2 border border-blue-500 bg-blue-100 text-blue-600 font-medium rounded-md">
+                {{ num }}
+              </span>
+            {% elif num > children.number|add:'-5' and num < children.number|add:'5' %}
+              <a href="?page={{ num }}{% if order_by %}&order_by={{ order_by }}{% endif %}"
+                 class="
+                  px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-600
+                  hover:bg-gray-100 transition
+                "
+                 hx-boost="{{ use_hx_boost_int }}"
+                >
+                {{ num }}
+              </a>
+            {% elif num == 1 or num == children.paginator.num_pages %}
+              <a
+                href="?page={{ num }}{% if order_by %}&order_by={{ order_by }}{% endif %}"
+                class="
+                  px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-600
+                  hover:bg-gray-100 transition
+                "
+                hx-boost="{{ use_hx_boost_int }}"
+              >
+                {{ num }}
+              </a>
+            {% elif forloop.last %}
+              <span class="px-2 text-gray-400">...</span>
+            {% endif %}
+          {% endfor %}
+
+          <!-- Next Button -->
+          {% if children.has_next %}
+            <a 
+              href="?page={{ children.next_page_number }}{% if order_by %}&order_by={{ order_by }}{% endif %}"
+              class="
+                px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-600
+                hover:bg-gray-100 transition
+              "
+              hx-boost="{{ use_hx_boost_int }}"
+            >
+              Next &raquo;
+            </a>
+          {% else %}
+            <span
+              class="
+                px-4 py-2 border border-gray-300 rounded-md bg-gray-100
+                text-gray-400 cursor-not-allowed
+              "
+            >
+              Next &raquo;
+            </span>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+{% endif %}

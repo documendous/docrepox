@@ -1,0 +1,50 @@
+{% extends "ui/base/_base.html" %}
+{% load project_tags %}
+{% load widget_tweaks %}
+
+{% block main %}
+<main>
+  <div class="mt-8">
+    <table class="min-w-full divide-y divide-gray-200 border shadow">
+      <caption class="text-left p-2 relative mx-4">
+        <div class="flex py-2">
+          <span class="mr-2 font-bold">
+            {{ path_with_links|safe }}
+          </span>
+        </div>
+        <div class="flex items-center">
+          <h2 class="text-xl font-bold mr-4 py-2">
+            {{ project.name }} Details
+          </h2>
+          {% can_update_project request project as can_update_project %}
+          {% if can_update_project %}
+            <a
+              href="{% url 'repo:update_element' 'project' project.pk %}"
+              class="text-blue-500 hover:text-blue-700"
+            >
+              <span class="material-icons-outlined" title="Update project '{{ project.name }}' details">
+                edit
+              </span>
+            </a>
+          {% endif %}
+        </div>
+      </caption>
+      {% include "projects/partials/_project_table_data.html" %}
+    </table>
+  </div>
+
+  {% can_view_project_members request project as can_view_project_members %}
+  {% if can_view_project_members %}
+    {% include "projects/partials/_project_members.html" %}
+  {% endif %}
+
+  {% if project_comments_enabled %}
+    {% include 'comments/comment_field.html' with element=project.folder %}
+  {% endif %}
+
+  {% has_danger_privs_in_project request project.folder as can_perform_danger_privs %}
+  {% if can_perform_danger_privs %}
+    {% include 'projects/partials/_dangerous_tasks.html' %}
+  {% endif %}
+</main>
+{% endblock main %}

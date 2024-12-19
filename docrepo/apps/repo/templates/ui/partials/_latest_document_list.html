@@ -1,0 +1,8 @@
+<li>
+  <a
+    href="{% url 'repo:element_details' document.type document.pk %}"
+    class="hover:text-blue-700"
+  > 
+    <u>"{{ document.name }}"</u>
+  </a> created by {{ document.owner.username }}
+</li>

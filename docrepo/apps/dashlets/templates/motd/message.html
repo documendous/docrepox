@@ -1,0 +1,20 @@
+<section class="
+  w-full md:w-3/4 p-4 mx-6 bg-white rounded-lg shadow-md outline
+  outline-offset-1 outline-1 outline-gray-200"
+>
+  <h3 class="text-xl font-semibold mb-2">
+    Message of the Day: '{{ motd.title|default:"MOTD Title" }}'
+  </h3>
+
+  <p class="mb-4 italic text-sm text-gray-500">
+    {% if motd.modified %}
+    {{ motd.modified|date:"N j, Y" }}
+    {% else %}
+    {% now "N j, Y" %}
+    {% endif %}
+  </p>
+  <p class="mb-4 leading-relaxed text-gray-700">
+    {{ motd.content|default:"MOTD Content goes here." }}
+  </p>
+
+</section>

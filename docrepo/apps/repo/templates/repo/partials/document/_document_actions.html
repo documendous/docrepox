@@ -1,0 +1,23 @@
+<span class="flex items-center px-4">
+  {% if element.current_version.size %}
+    <a href="{% url 'repo:retrieve_document' element.id %}?action=attachment"
+      class="text-blue-500 hover:text-blue-700 mr-2">
+      <span class="material-icons-outlined" title='Download "{{ element.name }}" file'>
+        cloud_download
+      </span>
+    </a>
+    <a
+      href="{% url 'repo:retrieve_document' element.id %}"
+      class="text-blue-500 hover:text-blue-700 mr-2"
+      target="_blank"
+    >
+      <span class="material-icons-outlined" title='Preview "{{ element.name }}" document'>
+        preview
+      </span>
+    </a>
+  {% else %}
+    <span class="italic text-sm">
+      *No preview or download available
+    </span>
+  {% endif %}
+</span>

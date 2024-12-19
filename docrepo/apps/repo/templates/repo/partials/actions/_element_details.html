@@ -1,0 +1,23 @@
+{% if child.type == 'project' %}
+  <a
+    href="{% url 'repo:projects:project_details' child.id %}"
+    class="text-gray-500 hover:text-blue-700"
+    title='{{ child.type|title }} "{{ child.name }}" details'
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    <span class="material-symbols-outlined">
+      settings
+    </span>
+  </a>
+{% else %}
+  <a
+    href="{% url 'repo:element_details' child.type child.id %}"
+    class="text-gray-500 hover:text-blue-700"
+    title='{{ child.type|title }} "{{ child.name }}" details'
+    hx-boost="{{ use_hx_boost_ext }}"
+  >
+    <span class="material-symbols-outlined">
+      quick_reference
+    </span>
+  </a>
+{% endif %}

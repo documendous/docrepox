@@ -1,0 +1,11 @@
+<header class="header flex justify-between">
+  <div class="header-left-wrapper flex items-center">
+    {% include "ui/base/_branding.html" %}
+    {% include "ddocs/_left_nav.html" %}
+  </div>
+  <div class="ml-auto">
+    {% if request.user.is_authenticated %}
+      {% include "ui/base/_right_nav.html" %}
+    {% endif %}
+  </div>
+</header>

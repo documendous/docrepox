@@ -1,0 +1,80 @@
+{% load project_tags %}
+{% load static %}
+
+{% has_project_membership request element as has_project_membership %}
+
+{% if not public_comments_enabled and element.parent_project and not has_project_membership  %}
+<div class="bg-white mt-8 p-6 rounded-lg shadow-md">
+  Public commenting not allowed.
+  {% include 'comments/partials/_comment_list.html' %}
+</div>
+{% else %}
+<div class="bg-white mt-8 p-6 rounded-lg shadow-md"
+  x-data="{
+    content: '',
+    errorMessage: '',
+    init() {
+      document.addEventListener('htmx:afterRequest', () => {
+        this.clearContent();
+      });
+    },
+    clearContent() {
+      this.content = '';
+      this.errorMessage = '';
+    },
+    validateAndSubmit() {
+      if (this.content.trim() === '') {
+        this.errorMessage = 'Please enter a comment.';
+      } else {
+        this.errorMessage = '';
+        this.$refs.form.requestSubmit(); // Use requestSubmit for htmx compatibility
+      }
+    }
+  }"
+>
+  <a name="comments"></a>
+  <h3 class="text-lg font-semibold text-gray-700 mb-4">
+    Add a Comment
+  </h3>
+  <form
+    x-ref="form"
+    hx-post="{% url 'repo:comments:add_comment' element.type element.id %}"
+    method="POST"
+    class="space-y-4"
+    hx-target="#comment-list"
+    hx-swap="outerHTML"
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+  >
+    {% csrf_token %}
+    <div class="w-1/2">
+      <label for="comment" class="block text-sm font-medium text-gray-600 mb-4">
+        Comment
+      </label>
+      <textarea
+        x-ref="commentInput"
+        x-model="content"
+        name="content"
+        id="content"
+        rows="4"
+        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" placeholder="Write your comment..."></textarea>
+      <p
+        class="text-red-500 text-sm mt-2"
+        x-show="errorMessage"
+        x-text="errorMessage"
+      ></p>
+    </div>
+    <div class="flex items-center justify-end w-1/2">
+      <button
+        class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+        type="button"
+        @click="validateAndSubmit"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+  {% include 'comments/partials/_comment_list.html' %}
+</div>
+{% endif %}
+
+<script src="{% static 'js/repo/utils/locale-dt.js' %}"></script>

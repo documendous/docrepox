@@ -1,0 +1,60 @@
+{% extends "ui/base/_base.html" %}
+{% load widget_tweaks %}
+
+{% block main %}
+<main>
+  <section class="py-8">
+    <div class="flex justify-center my-16">
+      <form action="" method="post" class="w-full max-w-lg bg-white p-8 shadow rounded-lg">
+        {% csrf_token %}
+        <legend>
+          <h2 class="text-xl font-semibold text-center mb-4">
+            Update User Profile: {{ profile.user.username }}
+          </h2>
+        </legend>
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email:
+          </label>
+          {{ update_user_form.email.errors }}
+          {% render_field update_user_form.email class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+        </div>
+        <div class="mb-4">
+          <label for="bio" class="block text-sm font-medium text-gray-700">
+            Bio: 
+          </label>
+          {{ update_profile_form.bio.errors }}
+          {% render_field update_profile_form.bio class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+        </div>
+        <div class="mb-4">
+          <label for="location" class="block text-sm font-medium text-gray-700">
+            Location: 
+          </label>
+          {{ update_profile_form.location.errors }}
+          {% render_field update_profile_form.location class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+        </div>
+        <div class="mb-4">
+          <label for="birth_date" class="block text-sm font-medium text-gray-700">
+            Birth Date: 
+          </label>
+          {{ update_profile_form.birth_date.errors }}
+          {% render_field update_profile_form.birth_date class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+        </div>
+        <div class="flex justify-start mt-4 space-x-2">
+          <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded" type="submit">
+            Save
+          </button>
+          <button
+            class="bg-gray-500 text-white font-semibold py-2 px-4 rounded"
+            type="button"
+            onclick="window.history.back()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+{% endblock main %}
+ 

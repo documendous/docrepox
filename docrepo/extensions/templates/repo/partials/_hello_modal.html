@@ -1,0 +1,23 @@
+<div x-data="handleClipboardModal({hasErrors: {{ 0 }}})">
+  <div id="displayHelloWorld"
+    x-ref="displayHelloWorld"
+    class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+  >
+    <div class="relative top-20 mx-auto p-5 border w-[450px] shadow-lg rounded-md bg-gray-900 text-white">
+      <div class="material-icons-outlined mb-4">chat_bubble</div>
+      <h3 class="text-lg font-bold leading-6 text-gray-100 mb-4">
+        Say Hi!
+      </h3>
+      <div>
+        <p>Hello World!</p>
+      </div>
+      <div class="flex justify-center mt-[72px] space-x-2">
+        <button class="bg-gray-500 text-white font-semibold py-2 px-4 rounded" type="button"
+          onclick="hideModal('displayHelloWorld')"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

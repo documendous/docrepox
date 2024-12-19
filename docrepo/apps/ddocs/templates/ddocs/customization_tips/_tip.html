@@ -1,0 +1,11 @@
+{% if customization_tips_enabled %}
+  <a href="{% url 'ddocs:index' %}#{{ anchor_name }}" target="_blank">
+    <span
+      class="material-symbols-outlined text-black"
+      title="Customization docs for this item"
+      style="font-size: 18px !important;"
+    >
+      not_listed_location
+    </span>
+  </a>
+{% endif %}

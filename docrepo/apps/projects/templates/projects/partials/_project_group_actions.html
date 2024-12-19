@@ -1,0 +1,10 @@
+{% load project_tags %}
+
+{% can_remove_user_from_project_group request project.folder as can_remove_user_from_group %}
+
+{% if can_remove_user_from_group %}
+  {% include "projects/partials/actions/_remove_user_from_project_group.html" %}
+{% else %}
+  <span>--</span>
+{% endif %}
+  

@@ -1,0 +1,20 @@
+{% if not child.is_recycle_folder %}
+<span>
+  <form
+    action="{% url 'repo:clipboard:add_element_to_clipboard' child.type child.pk %}{% if children.number %}?page={{ children.number }}{% endif %}"
+    method="POST"
+  >
+    {% csrf_token %}
+    <button
+      type="submit"
+      class="text-gray-500 hover:text-blue-700"
+      title='Place {{ element.type }} "{{ child.name }}" into clipboard for copy/move'
+    >
+      <span class="material-symbols-outlined">
+        move_group
+      </span>
+    </button>
+  </form>
+</span>
+{% endif %}
+

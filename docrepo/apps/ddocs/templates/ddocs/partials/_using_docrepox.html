@@ -1,0 +1,685 @@
+
+<style>
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+    font-weight: bold;
+  }
+  h1 {
+    font-size: 26px;
+  }
+  h2 {
+    font-size: 24px;
+  }
+  h3 {
+    font-size: 20px;
+  }
+  h4 {
+    font-size: 18px;
+  }
+  h5 {
+    font-size: 16px;
+  }
+  h6 {
+    font-size: 14px;
+  }
+  p {
+    margin-bottom: 1rem;
+  }
+  pre {
+    font-size: smaller;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  ul {
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    list-style-type: initial;
+  }
+  ol {
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    list-style-type: decimal;
+  }
+</style>
+<h2>Using DocrepoX</h2>
+<h3>Licensing</h3>
+<p>DocrepoX LGPLv3</p>
+<p>For commercial licensing inquiries, contact documendous@gmail.com.</p>
+<p>To view the license in its entirety see LICENSE.txt in this repository.</p>
+<h3>Support</h3>
+<h4>Supported Features</h4>
+<p>All features listed in the "Using DocrepoX" and "Customizing DocrepoX" sections are fully supported and should function as described. If you experience any issues, please report them by creating an issue.</p>
+<h4>Unsupported Features Requiring Consulting</h4>
+<p>Any features not covered in the "Using DocrepoX" section, including those related to development documentation, are not supported and will require consulting services.</p>
+<h3>Startup</h3>
+<p>When the application starts, a default admin user is created with the following credentials:</p>
+<ul>
+<li><strong>Username:</strong> admin  </li>
+<li><strong>Password:</strong> admin  </li>
+<li><strong>Email:</strong> admin@localhost  </li>
+</ul>
+<p>To customize these credentials, update the following variables in your .env file to values appropriate for your environment:  </p>
+<ul>
+<li>ADMIN_USERNAME  </li>
+<li>ADMIN_EMAIL  </li>
+<li>ADMIN_PASSWORD  </li>
+</ul>
+<p>After the initial startup, ensure you update the admin user's password if you haven't already done so.</p>
+<h3>Locale and Timezones</h3>
+<h4>Local Browser Timezone</h4>
+<p>By default, DocrepoX uses tz_detect to manage local browser timezones. This behavior is controlled in apps/repo/settings.py with the following setting:</p>
+<pre><code>USE_LOCAL_TZ = True
+</code></pre>
+<p>To disable this feature, set USE_LOCAL_TZ to False and re-login, as the timezone preference is stored in the user's session.</p>
+<h3>Keycloak Integration with DocrepoX</h3>
+<p>To set up Keycloak with DocrepoX, follow these steps:</p>
+<h4>Setting Up Keycloak in Docker</h4>
+<p>If you want to include Keycloak and its database in your Docker setup, update docker-compose.yml as follows:</p>
+<pre><code>### Uncomment the following lines to enable Keycloak and its database services
+# kcdb:
+#   image: postgres
+#   volumes:
+#     - dev_postgres_data_kc:/var/lib/postgresql/data
+#   environment:
+#     POSTGRES_DB: keycloak
+#     POSTGRES_USER: keycloak
+#     POSTGRES_PASSWORD: password
+#     POSTGRES_PORT: 5432
+#   ports:
+#     - &quot;8764:5432&quot;
+
+# keycloak:
+#   image: quay.io/keycloak/keycloak:23.0.5  # Specify version or use 'latest'
+#   environment:
+#     DB_VENDOR: POSTGRES
+#     DB_ADDR: kcdb
+#     DB_DATABASE: keycloak
+#     DB_USER: keycloak
+#     DB_PASSWORD: password
+#     KEYCLOAK_USER: admin
+#     KEYCLOAK_PASSWORD: admin
+#     KEYCLOAK_FRONTEND_URL: http://keycloak:8080/auth
+#   command: 
+#     - start-dev  # Use for the latest version
+#   ports:
+#     - 8080:8080
+#   depends_on:
+#     - kcdb
+
+volumes:
+  ...
+  ### Uncomment for Keycloak:
+  # dev_postgres_data_kc:
+</code></pre>
+<h4>Using Mozilla Django OIDC</h4>
+<p>DocrepoX uses the Mozilla Django OIDC library to support Keycloak's OpenID Connect protocol. Ensure the following is configured:</p>
+<p>The library is already installed in pyproject.toml:</p>
+<pre><code>mozilla-django-oidc = &quot;^4.0.1&quot;
+</code></pre>
+<p>In config/settings/security.py, enable Keycloak:</p>
+<pre><code>USE_KEYCLOAK = True
+</code></pre>
+<p>Add OIDC URLs in config/urls.py:</p>
+<pre><code>urlpatterns = [
+    ...
+    # path(&quot;auth/oidc/&quot;, include(&quot;mozilla_django_oidc.urls&quot;)),  # Uncomment for Keycloak
+    path(&quot;&quot;, include(&quot;apps.repo.urls&quot;)),
+]
+</code></pre>
+<p>Configure Keycloak settings in config/settings/oidc.py:</p>
+<pre><code>from .utils import env
+
+KC_HOST = env(&quot;KC_HOST&quot;)
+REALM = env(&quot;KC_REALM&quot;)
+OIDC_RP_CLIENT_ID = env(&quot;KC_CLIENT&quot;)
+OIDC_RP_CLIENT_SECRET = env(&quot;KC_CLIENT_SECRET&quot;)
+
+OIDC_RP_SIGN_ALGO = &quot;RS256&quot;
+
+OIDC_OP_AUTHORIZATION_ENDPOINT = f&quot;{KC_HOST}/realms/{REALM}/protocol/openid-connect/auth&quot;
+OIDC_OP_TOKEN_ENDPOINT = f&quot;{KC_HOST}/realms/{REALM}/protocol/openid-connect/token&quot;
+OIDC_OP_USER_ENDPOINT = f&quot;{KC_HOST}/realms/{REALM}/protocol/openid-connect/userinfo&quot;
+OIDC_OP_JWKS_ENDPOINT = f&quot;{KC_HOST}/realms/{REALM}/protocol/openid-connect/certs&quot;
+
+OIDC_STORE_ACCESS_TOKEN = True
+OIDC_STORE_ID_TOKEN = True
+
+OIDC_OP_LOGOUT_ENDPOINT = f&quot;{KC_HOST}/realms/{REALM}/protocol/openid-connect/logout&quot;
+OIDC_OP_LOGOUT_URL_METHOD = &quot;apps.authentication.backends.provider_logout&quot;
+</code></pre>
+<p>To ensure session validity, add this middleware:</p>
+<pre><code>MIDDLEWARE.append(&quot;mozilla_django_oidc.middleware.SessionRefresh&quot;)
+</code></pre>
+<h4>Environment Variables</h4>
+<p>Set the following variables in your .env file:</p>
+<pre><code>KC_HOST=http://keycloak:8080  # Default for Linux Docker environments
+KC_REALM=documendous  # Your Keycloak realm
+KC_CLIENT=documendous  # Your Keycloak client
+KC_CLIENT_SECRET=my-secret  # Found in the client credentials tab in Keycloak
+</code></pre>
+<h4>Starting the Integration</h4>
+<p>Run the application using dev-up.sh. On the login page, you should see a link to the Keycloak login provider. Ensure a user is created in the DocrepoX client within the Documendous realm.</p>
+<h4>Additional Recommendations</h4>
+<p>If you're new to Keycloak, review the Keycloak documentation. See https://www.keycloak.org/documentation. </p>
+<p>For easier setup, import the provided documendous-realm.json file when creating your Keycloak realm. Note that this file must be imported at the time of realm creation, not from the admin interface. Update the client URLs in Keycloak if your hostname or port is different.</p>
+<h3>Minio</h3>
+<p>Some things to consider:</p>
+<ul>
+<li>This is a serious architecture decision. Treat it as such. You either use Minio or the Django default storage.</li>
+<li>This should be decided upon from the beginning. If you start off with default and switch to Minio, you will not be able to access your default stored file for your document. If you use Minio and switch to default storage, you will not be able to access your Minio stored file for your document.</li>
+<li>Switch Minio with AWS S3 and this means pretty much the same.</li>
+<li>If you do not understand Minio or AWS S3, we recommend using default storage. If you do understand Minio or AWS S3 very well, then use that.</li>
+</ul>
+<p>It is possible to switch midstream but this would require consulting hours from Documendous Software to assist with that and be supported.</p>
+<h4>Initial Setup</h4>
+<p>Ensure the following settings are in config/settings/storage.py:</p>
+<pre><code>DEFAULT_FILE_STORAGE = &quot;minio_storage.storage.MinioMediaStorage&quot;
+
+MINIO_STORAGE_ENDPOINT = &quot;minio:9000&quot;
+
+MINIO_STORAGE_ACCESS_KEY = env(&quot;STORAGE_ACCESS_KEY&quot;)
+
+MINIO_STORAGE_SECRET_KEY = env(&quot;STORAGE_SECRET_KEY&quot;)
+
+MINIO_STORAGE_USE_HTTPS = False
+
+MINIO_STORAGE_MEDIA_OBJECT_METADATA = {&quot;Cache-Control&quot;: &quot;max-age=1000&quot;}
+
+MINIO_STORAGE_MEDIA_BUCKET_NAME = env(&quot;STORAGE_MEDIA_BUCKET_NAME&quot;)
+
+MINIO_STORAGE_MEDIA_BACKUP_BUCKET = &quot;Recycle Bin&quot;
+
+MINIO_STORAGE_MEDIA_BACKUP_FORMAT = &quot;%c/&quot;
+
+MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
+
+# STATICFILES_STORAGE = &quot;minio_storage.storage.MinioStaticStorage&quot;
+
+# MINIO_STORAGE_STATIC_BUCKET_NAME = &quot;docrepo&quot;
+
+# MINIO_STORAGE_AUTO_CREATE_STATIC_BUCKET = True
+</code></pre>
+<ul>
+<li>In config/settings/<strong>init</strong>.py, uncomment the following:</li>
+</ul>
+<pre><code>### Uncomment the following import to use Minio:
+# from .minio import (
+#     INSTALLED_APPS,
+#     DEFAULT_FILE_STORAGE,
+#     MINIO_STORAGE_ENDPOINT,
+#     MINIO_STORAGE_ACCESS_KEY,
+#     MINIO_STORAGE_SECRET_KEY,
+#     MINIO_STORAGE_USE_HTTPS,
+#     MINIO_STORAGE_MEDIA_BUCKET_NAME,
+#     MINIO_STORAGE_MEDIA_BACKUP_BUCKET,
+#     MINIO_STORAGE_MEDIA_BACKUP_FORMAT,
+#     MINIO_STORAGE_MEDIA_OBJECT_METADATA,
+#     MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET,
+# )
+</code></pre>
+<p>Note that static storage is commented out. We don't recommend using Minio for static (docrepo's css/js/img files that are part of the product) but you can use this if you like.</p>
+<ul>
+<li>Also, uncomment the appropriate area in your docker-compose.yml. For example:</li>
+</ul>
+<pre><code>services:
+  ...
+### Uncomment the following to use Minio
+  # minio:
+  #   # See https://hub.docker.com/r/minio/minio/tags
+  #   image: quay.io/minio/minio:RELEASE.2024-07-16T23-46-41Z.fips
+  #   environment:
+  #     - MINIO_ROOT_USER=admin
+  #     - MINIO_ROOT_PASSWORD=adminpass
+  #   entrypoint: /bin/bash
+  #   command: -c 'minio server /data --console-address &quot;:9001&quot;'
+  #   volumes:
+  #     - miniodata:/data
+  #   ports:
+  #     - &quot;9000:9000&quot;
+  #     - &quot;9001:9001&quot;
+
+volumes:
+  ...
+  ### Uncomment the following to use Minio
+  # miniodata:
+  #   driver: local
+</code></pre>
+<ul>
+<li>
+<p>Log into Minio at http://localhost:9000 with admin:adminpass (Ensure you secure your installation of course)</p>
+</li>
+<li>
+<p>Create a bucket called docrepo or whatever you want to name it.</p>
+</li>
+</ul>
+<p>Enter the bucket name into your .env file:</p>
+<pre><code>MINIO_STORAGE_MEDIA_BUCKET_NAME=docrepo
+</code></pre>
+<ul>
+<li>
+<p>Create a user called docrepo.</p>
+</li>
+<li>
+<p>For the docrepo user, create the secret key and access key.</p>
+</li>
+<li>
+<p>Give this user readwrite access.</p>
+</li>
+<li>
+<p>Collect the access key and secret key.</p>
+</li>
+</ul>
+<p>Enter them into your .env file:</p>
+<pre><code>MINIO_STORAGE_ACCESS_KEY=&lt;your access key&gt;
+MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
+</code></pre>
+<p>Restart your docker containers. If you delete your volumes however, you'll have to repeat the process.</p>
+<h3>Elastic Search</h3>
+<p>Note that elastic search is not implemented yet.</p>
+<p>Here are directions however for adding Elastic Search to this project. </p>
+<ul>
+<li>In docker-compose.yml uncomment this block:</li>
+</ul>
+<pre><code># Elastic Search
+  # elasticsearch:
+  #   image: elasticsearch:8.15.1
+  #   volumes:
+  #     - es_data:/usr/share/elasticsearch/data
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+</code></pre>
+<p>and ...</p>
+<pre><code>volumes:
+  ...
+  ### Uncomment to use Elastic
+  # es_data:
+</code></pre>
+<p>Do the same in docker-compose.prod.yml as well if you wish to use that environment.</p>
+<ul>
+<li>In docrepo/config/settings/<strong>init</strong>.py:</li>
+</ul>
+<pre><code># ## Uncomment to use elastic
+# from .elastic import ELASTICSEARCH_DSL
+</code></pre>
+<ul>
+<li>In docrepo/config/settings/apps.py:</li>
+</ul>
+<pre><code># &quot;django_elasticsearch_dsl&quot;, ## Uncomment to use elastic search
+</code></pre>
+<ul>
+<li>If you're using test.sh script for testing, be sure to include these parts:</li>
+</ul>
+<pre><code># Uncomment to test with Elastic
+# docker compose up elasticsearch &amp;
+# sleep 10
+
+...
+# Uncomment to test with Elastic
+# docker compose down elasticsearch
+</code></pre>
+<ul>
+<li>To use search indexing in your docker containers, enable the following in entrypoint.sh and entrypoint.prod.sh:</li>
+</ul>
+<pre><code># Uncomment to use Elastic search indexing
+# python manage.py search_index --rebuild -f
+</code></pre>
+<h3>Troubleshooting</h3>
+<h4>Download Size is Limited</h4>
+<p>To restrict or increase the size of file downloads, update the client_max_body_size property in nginx.conf as shown below:</p>
+<pre><code>server {
+
+    listen 80;
+
+    client_max_body_size 1g;
+    ...
+}
+</code></pre>
+<p><strong>Note:</strong> Restart the server for the changes to take effect.</p>
+<h4><em>No preview or download available</em></h4>
+<p>This warning appears on a document detail page when either:</p>
+<ul>
+<li>The document has no data (its content file is empty).</li>
+<li>The content file for the latest document version is missing.</li>
+</ul>
+<p>Content files are stored in a date-time structured folder system within the mediafiles/ directory. If a content file is deleted, previews and downloads will not be available.</p>
+<h4>Docker</h4>
+<h5>Error response from daemon: network [long hash] not found</h5>
+<p>You may need to run something like this:</p>
+<pre><code># docker compose -f docker-compose.prod.yml up --build --force-recreate
+</code></pre>
+<h4>Settings</h4>
+<p>In a containerized environment, you can find information about your settings using:</p>
+<pre><code>python manage.py diffsettings
+</code></pre>
+<p>For example, if you're using the production containerized setup, in entrypoint.prod.sh uncomment the diffsettings command:</p>
+<pre><code>python manage.py migrate
+python manage.py collectstatic --no-input
+python manage.py diffsettings
+</code></pre>
+<p>Warning: the diffsettings will display the values passwords and secret keys. This should be turned on while your install is exposed to the public.</p>
+<h3>Get Support</h3>
+<p>To receive assistance, click the <strong>Support</strong> link in the footer to open an issue.  </p>
+<h4>Types of Requests</h4>
+<ol>
+<li>Enhancement Request</li>
+</ol>
+<p>Describe how something can be improved. Be specific about what changes you’d like to see.  </p>
+<ol>
+<li>Feature Request</li>
+</ol>
+<p>Suggest a new feature that doesn’t currently exist. Explain why it would be valuable or necessary.  </p>
+<ol>
+<li>Bug Fix</li>
+</ol>
+<p>Report an issue by explaining what isn’t working correctly. Include relevant details for troubleshooting.</p>
+<h3>UI</h3>
+<h4>Dashboard</h4>
+<p>This guide will help you understand the various sections and features available on the main dashboard.</p>
+<p>The DocrepoX dashboard provides an easy-to-use interface for managing and organizing your digital assets and documents. Below is a breakdown of the different sections and their functionalities.</p>
+<h5>Navigation</h5>
+<p>The header includes several icons for quick navigation:</p>
+<ul>
+<li><strong>Documendous Logo</strong>: Click to return to the main dashboard.</li>
+<li><strong>Home Icon</strong>: Navigate back to the home screen.</li>
+<li><strong>Documents Icon</strong>: Access the document management section to view and manage your documents.</li>
+<li><strong>Projects Icon</strong>: View and manage your projects.</li>
+<li><strong>Bookmark Icon</strong>: List of user's bookmarks.</li>
+<li><strong>Admin Console</strong>: An admin console for use by the system admin user.</li>
+<li><strong>User Profile Icon</strong>: Access your user settings and profile information.</li>
+<li><strong>Notifications Icon</strong>: View any notifications and alerts.</li>
+</ul>
+<h5>Welcome Section</h5>
+<p>This section provides a brief introduction to DocrepoX and its features. It highlights the following points:</p>
+<ul>
+<li><strong>ECM and DAM</strong>: DocrepoX helps you manage digital assets and documents efficiently.</li>
+<li><strong>Scalability</strong>: Suitable for businesses of all sizes.</li>
+<li><strong>Integration</strong>: Works seamlessly with your current systems and third-party applications.</li>
+<li><strong>Security</strong>: Ensures your data is protected with advanced permissions and encryption.</li>
+<li><strong>Innovation</strong>: A tool designed to enhance your document management processes and drive innovation.</li>
+</ul>
+<p>You can remove the welcome section and the documentation links section by clicking the close button to the right of these areas. If needed, the admin user can reset these settings: 'show_welcome' and 'show_getting_started' in the admin console under UI Settings per user by changing the value to 'true'.</p>
+<p>For example if the admin user wants to reset 'show_welcome' to 'true', look for UI Setting: "admin | show_welcome: false", go to its change page and change the string, 'false' to 'true'.</p>
+<h4>Dashlets</h4>
+<p>DocrepoX makes use of dashlets as a way of providing simple components that can be added to the dashboard or other areas in the application.</p>
+<ul>
+<li><strong>Message of the Day (MOTD) Dashlet</strong></li>
+</ul>
+<p>A message of the day can be created to be displayed on the dashboard.</p>
+<p>Steps to include an MOTD:</p>
+<ol>
+<li>Set USE_MOTD = True in config/settings/dashlets.py.</li>
+<li>Create a new MOTD in the admin console.</li>
+<li>Set the new MOTD is_published to True.</li>
+</ol>
+<p>Of course, to disable the MOTD dashlet, set USE_MOTD=False in config/settings/dashlets.py</p>
+<h4>Getting Started</h4>
+<p>The <strong>Getting Started</strong> section provides introductory information to help you begin using DocrepoX. Currently, it displays a placeholder message "Docs to come ...", indicating that detailed documentation will be available soon.</p>
+<h4>Latest Content</h4>
+<p>The <strong>Latest Content</strong> section shows the most recent documents added to your system. It currently displays a placeholder message "List of documents in your home folder or projects ...", indicating where your recent documents will be listed.</p>
+<p>By default, the number of content items for projects and documents shown on the dashboard in each section is set to 5. This can be changed in ui/settings.py: MAX_CONTENT_ITEM_SIZE.</p>
+<h3>Projects</h3>
+<p>The <strong>Projects</strong> section lists all your active projects. It currently displays a placeholder message "List of projects ...", indicating where your projects will appear.</p>
+<h4>Searching for Projects</h4>
+<p>Public Projects
+- All public projects are automatically visible in your project list
+- No special access or search required</p>
+<p>Finding Additional Projects
+- Use the search function to discover more projects
+- Type any part of the project name in the search box
+- Search results will include:
+  - Public projects
+  - Managed projects
+  - Private projects (if you have permissions)</p>
+<h4>Requesting Access and Joining a Project</h4>
+<h5>Join Process</h5>
+<ol>
+<li>Look for the join request icon next to projects you're not a member of</li>
+<li>Click the icon to send a membership request</li>
+<li>Project managers will receive your request</li>
+<li>Once requested:</li>
+<li>The join request icon will disappear (a pending icon will show)</li>
+<li>You'll see a confirmation message</li>
+<li>Your request remains pending until managers approve or decline</li>
+</ol>
+<h6>After Requesting</h6>
+<ul>
+<li>The join request icon remains hidden while your request is pending (a pending icon will show)</li>
+<li>Managers must either:</li>
+<li>Approve your request and add you to the project</li>
+<li>Decline your request</li>
+<li>Remove the pending request message</li>
+</ul>
+<h4>Project Access Levels</h4>
+<p>Once approved, you may be added as:</p>
+<ul>
+<li>A reader (view-only access)</li>
+<li>An editor (can add documents and folders and make changes)</li>
+<li>A manager (full project control)</li>
+</ul>
+<p><em>Note: Your specific access level will be determined by the project managers.</em></p>
+<p>As a member of a project, you will be able to see your role and access level below the navigation links in the project's folder view.</p>
+<h4>Project Details</h4>
+<p>For each project that you own or manage, you can view the project's details by clicking on the gear symbol to the right of it either in the actions to the right of the project in the folder list view or on the gear symbol while in the project (near the breadcrumb or in a project folder or document's detail page).</p>
+<p>In the project details page, you will see these fields:</p>
+<ul>
+<li>Name</li>
+<li>Title</li>
+<li>Description</li>
+<li>Visibility</li>
+</ul>
+<p>From this page, if you are a project editor or manager, you can update its details.</p>
+<p>Visibility means the intended audience. By default there are 3 options:</p>
+<ul>
+<li>Public: any user can find this project and join as a reader.</li>
+<li>Managed: any user can find this project but must be approved by the project manager to join.</li>
+<li>Private: a user will not find this project in a search and must be invited to this project to join.</li>
+</ul>
+<p>Below the project details are a list of the project's Managers, Editors and Readers. Each of these groups have a specific role.</p>
+<ul>
+<li>Manager: Denotes project ownership. A project manager can add, edit and delete documents.</li>
+<li>Editor: A project editor can add and edit documents.</li>
+<li>Reader: A project reader can only consume the content.</li>
+</ul>
+<p>A member of any project will be able to access all folders in the project. All users regardless of membership will be able to access all folders in a project whose visiblity is set to 'Public'.</p>
+<p>The project details page includes a section at the bottom where users can add comments. This feature can be enabled or disabled by setting ENABLE_PROJECT_COMMENTS = True or False in repo/settings.py.</p>
+<p>The comment author can delete their own comments.</p>
+<p>Project managers can delete any comments on project details, documents or folders.</p>
+<p>Public projects can enable comments by anyone including non-members if ENABLE_PUBLIC_COMMENTS is set to True.</p>
+<h3>Deactivating a Project</h3>
+<p>Only project owners can deactivate projects, preventing them from appearing in searches or project lists, regardless of visibility settings.</p>
+<p>To deactivate a project, the owner should navigate to the project detail page, scroll to the bottom, and select the option to deactivate the project. Reactivating the project requires the system admin user to access the admin console, locate the project, and set is_active=True by checking the <strong>is_active</strong> checkbox.</p>
+<h3>Folder View</h3>
+<h4>Folder Actions (shown above the element list)</h4>
+<ul>
+<li>
+<p>Add Documents: This will open an add document modal where the user can add a document to the current folder.</p>
+</li>
+<li>
+<p>Create Documents: By default, a new page opens to create a text file in the current folder. To use a modal instead, set CREATE_DOC_USE_MODAL=True in repo/settings.py (rich text not supported). If CREATE_DOC_USE_MODAL=False, enable rich text with CREATE_DOC_AS_RTF=True, which uses the Quill editor. Note: Quill generates and saves HTML content as "text/html" regardless of file extension.</p>
+</li>
+<li>
+<p>Upload Multiple Documents: This will allow the user to upload many documents at once. However, this process will automatically create the document names based on the file name. You will be able to make changes to name, title, description, etc. on the document details page.</p>
+</li>
+<li>
+<p>Add Folders: This will open an add folder modal where the user can create a subfolder in the current folder. Be aware that 'Recycle' is a reserved system name for folders and cannot be used when creating a folder.</p>
+</li>
+<li>
+<p>Clipboard: The clipboard temporarily stores documents and folders for moving to another folder. Items can be removed before pasting. A blue clipboard icon appears next to items in the folder list and disappears after pasting. By default, the clipboard is cleared on logout, but setting DELETE_CLIPBOARD_ON_LOGOUT=False saves items between sessions.</p>
+</li>
+</ul>
+<h4>Element List View</h4>
+<p>In the folder view are a list of subfolders and documents (child elements) in the parent folder view.</p>
+<p>Each child element should show:</p>
+<ul>
+<li>Name (along with bookmark status if bookmarked)</li>
+<li>Title</li>
+<li>Owner</li>
+<li>Created and Last Modified dates</li>
+<li>List of Actions available for each element</li>
+</ul>
+<p>By default, items in the folder view will paginate by 10. This can be changed in repo/settings.py by changing:</p>
+<pre><code>FOLDER_VIEW_PAGINATE_BY = 10
+</code></pre>
+<p>By default, the following columns are sortable:</p>
+<ul>
+<li>Name</li>
+<li>Title</li>
+<li>Created</li>
+<li>Modified</li>
+</ul>
+<p>There is a sort icon to the right of the column header. The sort icon toggles between ascending and descending. Clicking on the column head will set the table order back to its default.</p>
+<p>For info on customizing table columns see "Customizing Sortable Table Columns for Folder View" in Customizing DocrepoX.</p>
+<h4>Actions</h4>
+<ul>
+<li>
+<p>You can move documents and folders by clicking on the move icon. This will place elements in the user's clipboard (see Clipboard in Folder Actions section).</p>
+</li>
+<li>
+<p>You can recycle documents and folders (and their contents) by clicking on the trashcan icon. This will place the document/folder into your Recycle folder. Note that once documents and folders are moved to your recycle folder, you can only move them by restoring them to their original parent folder.</p>
+</li>
+<li>
+<p>In the Recycle folder you can then either permanently delete them or restore them to their former parent folder.</p>
+</li>
+<li>
+<p>There is also the option of clicking on the trashcan icon to empty all items in the Recycle folder. This will permanently delete all items.</p>
+</li>
+<li>
+<p>On the detail page, you can view details about a folder or document. From here you can download a document (or preview if your browser supports the mimetype or if a previewable PDF file is generated for it) and bookmark either a document or folder.</p>
+</li>
+<li>
+<p>Note that bookmarks are removed when a document has been recycled or deleted.</p>
+</li>
+<li>
+<p>If you own a folder or document, you can update its details from the details page.</p>
+</li>
+<li>
+<p>If you need to find the content file path (on the file system) for a document, you can see this in the document details page if you are the admin user. Note that the admin user can also find this information in the admin console.</p>
+</li>
+</ul>
+<h4>Updating Document/Folder/Project Details</h4>
+<p>Only the owner (or project editor and manager if in a project) can update the details of the document or folder.</p>
+<p>You can update the following:</p>
+<ul>
+<li>Name</li>
+<li>Title</li>
+<li>Tags</li>
+<li>Description</li>
+</ul>
+<p>As a project member, you can bookmark documents and folders within the project. In the standard repository, however, you can only bookmark items that you own.</p>
+<h5>Tags</h5>
+<ul>
+<li>Tags must be comma delimited.</li>
+<li>By default MAX_TAG_COUNT is set to 5 but this can be changed in apps/etags/settings.py file.</li>
+</ul>
+<h3>Special Elements</h3>
+<ul>
+<li>User's recycle folder - this folder will not show by default for DocrepoX users though it can be accessed via the recycle folder icon. The recycle folder details cannot be updated.</li>
+</ul>
+<h3>Comments</h3>
+<p>At the bottom of folder and document detail pages, users can add comments. To enable or disable this feature, update repo/settings.py as follows:</p>
+<ul>
+<li>For folders: ENABLE_FOLDER_COMMENTS = True or False</li>
+<li>For documents: ENABLE_DOCUMENT_COMMENTS = True or False</li>
+<li>For projects: ENABLE_DOCUMENT_COMMENTS = True or False</li>
+</ul>
+<p>Any comment author can delete his/her own comments.</p>
+<h3>Transformations</h3>
+<h4>Generating Previews and PDFs with Transformations</h4>
+<p>DocrepoX provides features for handling document transformations, including generating previews and PDFs. This guide explains how these features work and how they integrate into the platform.</p>
+<hr>
+<h4><strong>Generating Previews</strong></h4>
+<p>Note: In order to be able to view previews, you must have LibreOffice (or OpenOffice) installed on your system. The path to its binary must be set in apps/transformations/settings.py: </p>
+<pre><code>SOFFICE_EXE = (
+    &quot;/usr/bin/soffice&quot;  # Path to open/libre/star office executable for transformations
+)
+</code></pre>
+<p>If you are using the docker containers, then LibreOffice should be installed.</p>
+<p>Previews allow you to quickly view document content without downloading the full file. Supported file types include .doc, .docx, .jpg, .png, .pdf, and more.</p>
+<h5><strong>How Previews Are Generated</strong></h5>
+<ol>
+<li>When a document is uploaded, the system checks:</li>
+<li>File size (must be under 10MB).</li>
+<li>File type (must be one of the supported preview types).</li>
+<li>If the file meets the criteria, a preview file is generated automatically using LibreOffice (for transformable types) or directly from the content (for supported image and PDF files).</li>
+</ol>
+<h5><strong>Preview Actions</strong></h5>
+<p>View previews directly from the document details page.</p>
+<h5><strong>Troubleshooting</strong></h5>
+<ul>
+<li>If a preview is unavailable, ensure the document meets the size and type requirements.</li>
+<li>Admins can check the system logs for errors, such as missing LibreOffice executables or unsupported file extensions.</li>
+</ul>
+<h4><strong>PDF Generation</strong></h4>
+<p>For transformable file types (e.g., .docx, .pptx, .xls), DocrepoX uses LibreOffice to convert files into PDF format. This ensures compatibility and easier preview generation.</p>
+<h5><strong>When PDFs Are Generated</strong></h5>
+<ul>
+<li>If a document is not already in PDF format, a transformation process is triggered.</li>
+<li>PDF files are stored temporarily for processing before preview files are created.</li>
+</ul>
+<h5><strong>Key Requirements</strong></h5>
+<ul>
+<li>The LibreOffice executable (/usr/bin/soffice) must be installed and configured in the system settings.</li>
+<li>Supported file types for transformation include .doc, .docx, .ppt, .pptx, .xls, .xlsx, .txt, and .md.</li>
+</ul>
+<h4><strong>Configuration Settings</strong></h4>
+<p>The following settings ensure proper functionality for transformations:
+- <strong>SOFFICE_EXE</strong>: Path to the LibreOffice executable.
+- <strong>SOFFICE_TEMP_DIR</strong>: Temporary storage for transformation processes.
+- <strong>ALLOWED_PREVIEW_TYPES</strong>: List of file extensions allowed for previews.
+- <strong>MAX_PREVIEW_SIZE</strong>: Maximum file size for preview transformation (10MB).</p>
+<h4><strong>Auto-Deleting Previews</strong></h4>
+<p>When a preview file is deleted, the system automatically removes its associated content file from storage, freeing up space. This can be set in repo/settings.py with AUTO_DELETE_CONTENT_FILES=True (or False for retaining all document version files).</p>
+<h4><strong>Using the Features</strong></h4>
+<ol>
+<li><strong>Preview Files</strong></li>
+<li>Navigate to the document details page to view a preview if available.</li>
+<li>
+<p>If no preview is displayed, the document may have exceeded size limits or uses an unsupported type. There can also be an issue where the document version content file is accidentally deleted.</p>
+</li>
+<li>
+<p><strong>Download Options</strong></p>
+</li>
+<li>Users can download original files or their previews (if supported by the browser or as a previewable PDF).</li>
+</ol>
+<h4><strong>Best Practices</strong></h4>
+<ul>
+<li>For performance consideration with large files, consider compressing them or breaking them into smaller parts.</li>
+<li>Always ensure your files are in supported formats to take full advantage of previews and transformations.</li>
+</ul>
+<h2>Administering DocrepoX</h2>
+<h3>Maintenance Tasks</h3>
+<h4>Removing Orphan Content</h4>
+<h5>Managing Orphaned Content Files</h5>
+<p>Orphaned content files are files that no longer have a linked document version or rendition, such as thumbnails or previews.</p>
+<p>This typically happens when <code>AUTO_DELETE_CONTENT_FILES</code> is set to <code>False</code>. In this setting, content files are not fully deleted even when the parent documents or renditions (e.g., thumbnails or previews) are removed.</p>
+<p>Here is the document lifecycle in the system:</p>
+<ul>
+<li>A file is uploaded, creating a document. A new version of the document is also created automatically.</li>
+<li>While the document exists in the system, additional versions can be added.</li>
+<li>The document is recycled (soft deleted and moved to the user's recycle folder).</li>
+<li>The document is permanently deleted (hard deleted) from the recycle folder.</li>
+<li>If <code>AUTO_DELETE_CONTENT_FILES</code> is set to <code>True</code>, the associated content files for each document version are deleted from the system when the document is hard deleted.</li>
+<li>If <code>AUTO_DELETE_CONTENT_FILES</code> is set to <code>False</code>, the associated content files remain in the file system. In such cases, it is recommended to periodically run the <code>manage.py remove_orphan_content</code> command to clean up orphaned content files.</li>
+</ul>
+<p>To maintain a clean and organized system, orphaned content files should be removed regularly. This can be done manually using the Django management command:</p>
+<pre><code># python manage.py remove_orphan_content
+</code></pre>
+<p>When this command runs, any orphaned files detected will be moved to a designated folder specified in <code>repo/settings.py</code>:</p>
+<pre><code>DELETED_ORPHAN_FOLDER = BASE_DIR / &quot;deleted&quot;  # &quot;deleted&quot; is the default folder name
+</code></pre>
+<p>Regularly clearing orphaned content helps free up storage and improve system performance. Adjust the folder path in <code>settings.py</code> if a different location is preferred.</p>
+<h5>Automating Orphaned Content Cleanup</h5>
+<p>To automate this process, schedule the command to run periodically using supported task schedulers:</p>
+<h4><strong>1. Using Cron (Linux/Unix):</strong></h4>
+<ol>
+<li>Open the crontab editor:
+   <code>crontab -e</code></li>
+<li>Add a cron job to run the command at the desired frequency (e.g., daily at midnight):
+   <code>0 0 * * * /path/to/your/project/.venv/bin/python /path/to/your/project/manage.py remove_orphan_content</code></li>
+</ol>
+<p>Automating this process ensures your system stays clean without manual intervention, improving storage efficiency and system performance.</p>

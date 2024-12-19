@@ -1,0 +1,393 @@
+
+<style>
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+    font-weight: bold;
+  }
+  h1 {
+    font-size: 26px;
+  }
+  h2 {
+    font-size: 24px;
+  }
+  h3 {
+    font-size: 20px;
+  }
+  h4 {
+    font-size: 18px;
+  }
+  h5 {
+    font-size: 16px;
+  }
+  h6 {
+    font-size: 14px;
+  }
+  p {
+    margin-bottom: 1rem;
+  }
+  pre {
+    font-size: smaller;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  ul {
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    list-style-type: initial;
+  }
+  ol {
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    list-style-type: decimal;
+  }
+</style>
+<h2>Customizing DocrepoX</h2>
+<p>For definition purposes, all Documendous software has three levels of customization:</p>
+<ol>
+<li>
+<p><strong>Configuration</strong>: This level involves adjusting configuration variables, usually without the need to write any code. Most configuration options are listed in the “Using DocrepoX section. These adjustments are straightforward and effective for minor tweaks.</p>
+</li>
+<li>
+<p><strong>Extending</strong>: This deeper level of customization requires modifying templates and modules. The system provides structured ways to override or subclass components, which is the main focus of this “Customizing DocrepoX" section.</p>
+</li>
+<li>
+<p><strong>Deep Customizations</strong>: This involves changing applications and modules within the apps directory. Deep customizations are strongly discouraged, as they make your server instance unsupported until restored to a supported configuration. For guidance on this level, refer to the “Contributing to Documendous” section.</p>
+</li>
+</ol>
+<h3>Extending DocrepoX</h3>
+<p>For extension customizations, use the extensions subdirectory. The basic structure is as follows:</p>
+<pre><code>extensions/
+├── apps
+│   ├── __init__.py
+│   └── repo
+│       ├── forms.py
+│       ├── __init__.py
+│       ├── models.py
+│       └── views.py
+├── __init__.py
+├── settings.py
+├── staticfiles
+└── templates
+    └── registration
+        └── login.html
+</code></pre>
+<p>If ENABLE_EXTENSIONS is set to True, the extensions file system becomes active, and the system will use any modules and templates placed there. Be aware that if a module in this directory contains errors, it can disrupt the operation of the system.</p>
+<p>Here’s how customization with the extensions directory works:</p>
+<ul>
+<li>
+<p><strong>Customizing Views:</strong> Add a custom IndexView to extensions/apps/repo/views.py. The system will automatically use this version instead of the default at startup.</p>
+</li>
+<li>
+<p><strong>Overriding Templates:</strong> Place a custom login.html file at extensions/templates/registration/login.html. The system will load your custom template in place of the default.</p>
+</li>
+</ul>
+<p><a id="customize-login-page"></a></p>
+<h4>Login Page Customization</h4>
+<p>For a different login page, you will need to override the apps/repo/templates/registration/login.html file. Copy this file to extensions/templates/registration/login.html. Make your changes to the template and ensure ENABLE_EXTENSIONS is set to True. Restart the server and your changes should be apparent at login.</p>
+<p>Note:</p>
+<p>DocrepoX at this time only uses Django's internal authentication and Keycloak OpenID. To make deep changes to Django's internal authentication requires code changes for the django.contrib.auth package and is not supported. In other words, you would have to likely use your own custom Django module.</p>
+<p>To make changes to the Keycloak OpenID backend, you'll need to add your own KeycloakOIDCAuthenticationBackend class to extensions/apps/repo/backends.py</p>
+<p>Here is the code for the full KeycloakOIDCAuthenticationBackend class:</p>
+<pre><code>
+from urllib.parse import urlencode
+from django.conf import settings
+
+# Classes to override default OIDCAuthenticationBackend (Keycloak authentication)
+from mozilla_django_oidc.auth import OIDCAuthenticationBackend
+
+
+class KeycloakOIDCAuthenticationBackend(OIDCAuthenticationBackend):
+
+    def _get_username(self, claims):
+        username = claims.get(&quot;preferred_username&quot;)
+        return username
+
+    def create_user(self, claims):
+        &quot;&quot;&quot;Overrides Authentication Backend so that Django users are
+        created with the keycloak preferred_username.
+        If nothing found matching the email, then try the username.
+        &quot;&quot;&quot;
+        user = super(KeycloakOIDCAuthenticationBackend, self).create_user(claims)
+        user.first_name = claims.get(&quot;given_name&quot;, &quot;&quot;)
+        user.last_name = claims.get(&quot;family_name&quot;, &quot;&quot;)
+        user.email = claims.get(&quot;email&quot;)
+        user.username = self._get_username(claims)
+        user.save()
+        return user
+
+    def filter_users_by_claims(self, claims):
+        &quot;&quot;&quot;Return all users matching the specified email.
+        If nothing found matching the email, then try the username
+        &quot;&quot;&quot;
+        email = claims.get(&quot;email&quot;)
+        preferred_username = claims.get(&quot;preferred_username&quot;)
+
+        if not email:
+            return self.UserModel.objects.none()
+        users = self.UserModel.objects.filter(email__iexact=email)
+
+        if len(users) &lt; 1:
+            if not preferred_username:
+                return self.UserModel.objects.none()
+            users = self.UserModel.objects.filter(username__iexact=preferred_username)
+        return users
+
+    def update_user(self, user, claims):
+        user.first_name = claims.get(&quot;given_name&quot;, &quot;&quot;)
+        user.last_name = claims.get(&quot;family_name&quot;, &quot;&quot;)
+        user.email = claims.get(&quot;email&quot;)
+        user.username = self._get_username(claims)
+        user.save()
+        return user
+
+</code></pre>
+<p>If, for example, you're only interested in making changes to the create_user method, you could just subclass KeycloakOIDCAuthenticationBackend and create your own create_user method:</p>
+<pre><code>...
+
+class MyKCAuthBackend(KeycloakOIDCAuthenticationBackend):
+
+    ...
+
+    def create_user(self, claims):
+
+        ... Add your code here ...
+
+        return user
+</code></pre>
+<h3>Custom Dashlets</h3>
+<p>You can use dashlets to provide simple modular components that can be added to the dashboard or other areas of the application. It includes a default dashlet (MOTD), and you can also create custom dashlets in the extensions directory.</p>
+<p>Organize dashlet files in this structure:</p>
+<pre><code>extensions/apps/dashlets/
+├── admin.py
+├── forms.py
+├── __init__.py
+├── models.py
+├── templates
+│   └── dashlets
+├── tests.py
+├── utils
+│   ├── __init__.py
+└── views.py
+</code></pre>
+<p>Think of each dashlet as a combination of a model (and potentially supporting models), a view, a form if needed, and a template. Familiarity with Django's MVT (Model-View-Template) paradigm will be helpful, as each component plays a role:</p>
+<ul>
+<li><strong>Model:</strong> Stores structured data.</li>
+<li><strong>View:</strong> Handles logic.</li>
+<li><strong>Template:</strong> Presents the output.</li>
+</ul>
+<h4>Example: Custom Dashlet for Recent Documents</h4>
+<p>To create a custom dashlet displaying recent documents, first create a template file named recent_documents.html:</p>
+<p>Path: extensions/apps/templates/dashlets/recentdocs/recent_documents.html</p>
+<pre><code>&lt;section class=&quot;w-full md:w-3/4 p-4 mx-6 bg-white rounded-lg shadow-md outline outline-offset-1 outline-1 outline-gray-200 mt-4&quot;&gt;
+  &lt;h3 class=&quot;text-xl font-semibold mb-2&quot;&gt;Recent Documents Dashlet&lt;/h3&gt;
+
+  &lt;table class=&quot;min-w-full divide-y divide-gray-200 border shadow&quot;&gt;
+    &lt;tr&gt;
+      &lt;th class=&quot;fl-th&quot;&gt;Name&lt;/th&gt;
+      &lt;th class=&quot;fl-th&quot;&gt;Owner&lt;/th&gt;
+      &lt;th class=&quot;fl-th&quot;&gt;Created&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tbody class=&quot;bg-white divide-y divide-gray-200&quot;&gt;
+    &#123;% for document in documents %&#125;
+        &lt;tr&gt;
+            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
+              &#123;&#123; document.name &#125;&#125;
+            &lt;/td&gt;
+            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
+              &#123;&#123; document.owner.username &#125;&#125;
+            &lt;/td&gt;
+            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
+              &#123;&#123; document.created &#125;&#125;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &#123;% endfor %&#125;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/section&gt;
+</code></pre>
+<p>Then, include this dashlet on the main dashboard by copying app/repo/templates/ui/index.html to extensions/templates/ui/index.html and editing it as follows:</p>
+<pre><code>&#123;% extends &quot;ui/base/_base.html&quot; %&#125;
+
+&#123;% block main %&#125;
+&lt;main&gt;
+  &#123;% include &quot;ui/partials/_enhanced_description.html&quot; %&#125;
+  &#123;% if use_motd %&#125;
+    &lt;div class=&quot;py-2&quot;&gt;
+      &#123;% include &quot;motd/message.html&quot; %&#125;
+    &lt;/div&gt;
+  &#123;% endif %&#125;
+
+  &#123;% include &quot;dashlets/recentdocs/recent_documents.html&quot; %&#125; &lt;!-- Include this line --&gt;
+
+  &lt;div class=&quot;py-8&quot;&gt;
+    &#123;% include &quot;ui/partials/_getting_started.html&quot; %&#125;
+    &lt;div class=&quot;flex py-8&quot;&gt;
+      &#123;% include &quot;ui/partials/_project_list.html&quot; %&#125;
+      &#123;% include &quot;ui/partials/_latest_documents.html&quot; %&#125;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/main&gt;
+&#123;% endblock main %&#125;
+</code></pre>
+<h4>Updating the Dashboard View</h4>
+<p>In extensions/apps/repo/views.py, subclass the IndexView to add recent documents to the dashboard template:</p>
+<pre><code>from django.shortcuts import render
+from apps.repo.models.element.document import Document
+from apps.repo.views.index import IndexView
+
+
+class IndexView(IndexView):
+    def get(self, request):
+        super().get(request)
+
+        # Fetch recent documents
+        recent_documents = Document.objects.all().order_by(&quot;-created&quot;)[:10]
+
+        # Update the context with the recent documents
+        self.context.update({&quot;documents&quot;: recent_documents})
+
+        # Render the updated context in the response
+        return render(request, self.template_name, context=self.context)
+</code></pre>
+<p>After restarting your server, navigate to the home page to see the recent documents listed in the new dashlet.</p>
+<h3>Custom Action Modal</h3>
+<p>By default, DocrepoX has a few folder actions that make use of action modals:</p>
+<ul>
+<li>Upload a document</li>
+<li>Upload several documents</li>
+<li>Create a folder</li>
+<li>Clipboard modal</li>
+</ul>
+<p>In this tutorial, you'll create a very simple modal that will display as an action icon and then when clicked will show a "Hello World".</p>
+<p>Before starting, ensure that ENABLE_EXTENSIONS is set to True.</p>
+<p>Copy the _folder_actions.html template from apps/repo/templates/repo/partials/actions/_folder_actions.html to extensions/templates/repo/partials/actions/_folder_actions.html.</p>
+<p>Make the following change at this location in _folder_actions.html:</p>
+<pre><code>...
+      &lt;a href=&quot;#&quot;
+        class=&quot;hover:text-blue-700 relative group mr-2&quot;
+        onclick=&quot;showModal('addFolderModal')&quot;
+        title=&quot;Create a new folder in this space&quot;&gt;
+        &lt;span class=&quot;material-icons-outlined&quot;&gt;create_new_folder&lt;/span&gt;
+      &lt;/a&gt;
+      &lt;a href=&quot;#&quot;
+        class=&quot;hover:text-blue-700 relative group mr-2&quot;
+        onclick=&quot;showModal('pasteElementModal')&quot;
+        title=&quot;Clipboard for items to be Moved/Copied&quot;&gt;
+        &lt;span class=&quot;material-icons-outlined&quot;&gt;content_paste&lt;/span&gt;
+      &lt;/a&gt;
+
+      &lt;!-- add the following block --&gt;
+      &lt;a href=&quot;#&quot;
+        class=&quot;hover:text-blue-700 relative group mr-2&quot;
+        onclick=&quot;showModal('displayHelloWorld')&quot;
+        title=&quot;Displays a hello world message&quot;&gt;
+        &lt;span class=&quot;material-icons-outlined&quot;&gt;chat_bubble&lt;/span&gt;
+      &lt;/a&gt;
+
+    &#123;% endif %&#125;
+  &lt;/div&gt;
+...
+</code></pre>
+<p>And further down, in the same file, you'll need to import the modal that you'll create.</p>
+<pre><code>...
+&#123;% if can_create %&#125;
+  &#123;% include &quot;repo/partials/_add_document_modal.html&quot; %&#125;
+  &#123;% include &quot;repo/partials/_add_multi_document_modal.html&quot; %&#125;
+  &#123;% include &quot;repo/partials/_create_document_modal.html&quot; %&#125;
+  &#123;% include &quot;repo/partials/_add_folder_modal.html&quot; %&#125;
+  &#123;% include &quot;repo/partials/_hello_modal.html&quot; %&#125; &lt;!-- add an include here --&gt;
+  &#123;% include &quot;clipboard/partials/_paste_element_modal.html&quot; %&#125;
+...
+</code></pre>
+<p>Create a file at extensions/templates/repo/partials/ called _hello_modal.html. Add the following contents:</p>
+<pre><code>&lt;div x-data=&quot;handleClipboardModal({hasErrors: &#123;&#123; 0 &#125;&#125;})&quot;&gt;
+  &lt;div id=&quot;displayHelloWorld&quot;
+    x-ref=&quot;displayHelloWorld&quot;
+    class=&quot;hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full&quot;
+  &gt;
+    &lt;div class=&quot;relative top-20 mx-auto p-5 border w-[450px] shadow-lg rounded-md bg-gray-900 text-white&quot;&gt;
+      &lt;div class=&quot;material-icons-outlined mb-4&quot;&gt;chat_bubble&lt;/div&gt;
+      &lt;h3 class=&quot;text-lg font-bold leading-6 text-gray-100 mb-4&quot;&gt;
+        Say Hi!
+      &lt;/h3&gt;
+      &lt;div&gt;
+        &lt;p&gt;Hello World!&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;flex justify-center mt-[72px] space-x-2&quot;&gt;
+        &lt;button class=&quot;bg-gray-500 text-white font-semibold py-2 px-4 rounded&quot; type=&quot;button&quot;
+          onclick=&quot;hideModal('displayHelloWorld')&quot;
+        &gt;
+          Close
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>And that's very much it. After a restart, you should see a tooltip icon on the folder list page next to the Create Folder icon. Clicking on it should render a message.</p>
+<p><a id="customize-table-sorting"></a></p>
+<h3>Customizing Sortable Table Columns for Folder View</h3>
+<p>The template you will need to overwrite is at apps/repo/templates/repo/element_list.html</p>
+<p>Place a copy of this template in the extensions/templates/repo folder.</p>
+<pre><code>&lt;thead class=&quot;bg-gray-50&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;fl-th&quot;&gt;
+      &#123;% include &quot;repo/partials/_sortable_th.html&quot; with column_name=&quot;name&quot; %&#125;
+    &lt;/th&gt;
+    &lt;th class=&quot;fl-th&quot;&gt;
+      &#123;% include &quot;repo/partials/_sortable_th.html&quot; with column_name=&quot;title&quot; %&#125;
+    &lt;/th&gt;
+    &lt;th class=&quot;fl-th&quot;&gt;Owner&lt;/th&gt;
+    &lt;th class=&quot;fl-th&quot;&gt;
+      &#123;% include &quot;repo/partials/_sortable_th.html&quot; with column_name=&quot;created&quot; %&#125;
+    &lt;/th&gt;
+    &lt;th class=&quot;fl-th&quot;&gt;
+      &#123;% include &quot;repo/partials/_sortable_th.html&quot; with column_name=&quot;modified&quot; %&#125;
+    &lt;/th&gt;
+    &lt;th class=&quot;fl-th&quot;&gt;Actions&lt;/th&gt;
+  &lt;/tr&gt;
+&lt;/thead&gt;
+</code></pre>
+<p>For example, to make the Owner column sortable, remove 'Owner' from the <th> element and replace it with:</p>
+<pre><code>&#123;% include &quot;repo/partials/_sortable_th.html&quot; with column_name=&quot;owner&quot; %&#125;
+</code></pre>
+<p>The column name must match up with a field for an Element. Here are the available element fields:</p>
+<ul>
+<li>Name</li>
+<li>Title</li>
+<li>Description</li>
+<li>Owner</li>
+<li>Created</li>
+<li>Modified</li>
+<li>Parent</li>
+</ul>
+<p>See the Folder and Document models for details on what can be used here.</p>
+<p>The _sortable_th.html template below could be used for any named column field name that is supported for the views result object.</p>
+<pre><code>&#123;% load static %&#125;
+
+&lt;div class=&quot;flex align-items gap-1&quot;&gt;
+  &lt;a href=&quot;.&quot; hx-boost=&quot;true&quot; class=&quot;hover:text-blue-700&quot;&gt;
+    &#123;&#123; column_name &#125;&#125;
+  &lt;/a&gt;
+  &lt;a href=&quot;#&quot;
+    x-data=&quot;orderByToggle('&#123;&#123; column_name &#125;&#125;')&quot;
+    :href=&quot;`?order_by=${nextOrderBy}`&quot;
+    hx-boost=&quot;true&quot;
+    class=&quot;hover:text-blue-700&quot;
+  &gt;
+    &lt;span class=&quot;material-symbols-outlined&quot; style=&quot;font-size: 15px !important;&quot;&gt;
+      swap_vert
+    &lt;/span&gt;
+  &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;&#123;% static 'js/repo/utils/table-sort.js' %&#125;&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>To customize the _sortable_th.html template, copy it to its appropriate extensions directory: extensions/templates/repo/partials/.</p>
+<p>Note that this template uses Alpine js to handle sort toggling. </p>
+<p>Other items of note:</p>
+<ul>
+<li>hx-boost: can be set to true or false. This is an HTMX directive. See: https://htmx.org/attributes/hx-boost/</li>
+<li>swap_vert: simply a Google icon. If you prefer to customize this to use a different icon, see: https://fonts.google.com/icons</li>
+</ul>

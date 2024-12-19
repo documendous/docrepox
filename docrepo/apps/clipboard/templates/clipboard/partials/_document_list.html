@@ -1,0 +1,23 @@
+<h4 class="block text-sm font-bold text-gray-100 my-2">DOCUMENTS:</h4>
+<hr class="mb-4">
+
+{% for item in clipboard_documents %}
+  <li id="cbd-{{ item.pk }}" class="mb-4">
+    <div class="flex items-center gap-2">
+      - {{ item.document.name }}
+      <span
+        class="material-symbols-outlined cursor-pointer"
+        hx-post="{% url 'repo:clipboard:remove_item' 'document' item.pk %}"
+        hx-trigger="click"
+        hx-target="#cbd-{{ item.pk }}"
+        hx-swap="outerHTML"
+        title="Remove document from list"
+        onclick="removeClipboardIcon('{{ item.document.pk }}');" {# staticfiles/js/clipboard/utils/modals.js #}
+      >remove_selection</span>
+    </div>
+  </li>
+{% endfor %}
+
+<template x-if="clipboardDocuments === 0">
+  <li>N/A</li>
+</template>

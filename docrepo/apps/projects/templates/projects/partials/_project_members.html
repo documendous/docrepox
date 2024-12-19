@@ -1,0 +1,20 @@
+{% load project_tags %}
+
+<section>
+  <div>
+    <h2 class="text-xl font-bold mr-4 px-8 pt-6 pb-4">
+      {{ project.name }} Project Members
+    </h2>
+  
+    <div class="flex gap-4">
+      {% include "projects/partials/_project_members_table.html" with table_name='Managers' group=managers_group form=managers_select_form %}
+      {% include "projects/partials/_project_members_table.html" with table_name='Editors' group=editors_group form=editors_select_form%}
+      {% include "projects/partials/_project_members_table.html" with table_name='Readers' group=readers_group form=readers_select_form %}
+    </div>
+  </div>
+  
+  {% can_add_user_to_project_group request project.folder as can_add_users_to_group %}
+  {% if can_add_users_to_group %}
+    {% include "projects/partials/_project_join_requests.html" %}
+  {% endif %}
+</section>

@@ -1,0 +1,13 @@
+{% load bookmark_tags %}
+
+<span class="mt-1 flex items-center">
+  {{ child.name }}
+  {% if child|is_bookmarked:request.user %}
+    <span
+      class="material-icons-outlined nav-link ml-2 pt-0.5"
+      style="font-size: 18px !important;"
+    >
+      star
+    </span>
+  {% endif %}
+</span>

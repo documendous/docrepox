@@ -1,0 +1,53 @@
+{% load static %}
+{% load project_tags %}
+
+{% can_add_user_to_project_group request project.folder as can_add_users_to_group %}
+
+<div class="bg-white border shadow rounded p-4 flex-1">
+  {% if can_add_users_to_group %}
+    <a
+      href="#"
+      class="hover:text-blue-700 relative group ml-4"
+      onclick="showProjectGroupModal(
+        'addUserToProjectModal_{{ group }}',
+        '{{ group.name }}',
+        '{% url "repo:projects:add_user_to_project" project_id=project.pk group_id=group.pk %}'
+      )"
+      title="Add a user to this project">
+    <span class="material-icons-outlined">person_add</span>
+    </a>
+  {% endif %}
+
+  <table class="min-w-full rounded-sm">
+    <legend class="py-2 px-4 font-bold text-lg">{{ table_name }}</legend>
+    <thead>
+      <tr>
+        <th class="py-2 px-4 text-left">Full Name</th>
+        <th class="py-2 px-4 text-left">Username</th>
+        <th class="py-2 px-4 text-left">Email</th>
+        <th class="py-2 px-4 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="border">
+      {% for user in group.user_set.all %}
+        <tr>
+          <td class="py-2 px-4 text-left border">
+            {% if user.first_name and user.last_name %}
+              {{ user.first_name }} {{ user.last_name }}
+            {% else %}
+              --
+            {% endif %}
+          </td>
+          <td class="py-2 px-4 text-left border">{{ user.username }}</td>
+          <td class="py-2 px-4 text-left border">{{ user.email }}</td>
+          <td class="py-2 px-4 text-center border">
+            {% include 'projects/partials/_project_group_actions.html' %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% include "projects/partials/_add_user_to_project_modal.html" with form=form %}
+<script src="{% static 'js/repo/utils/modals.js' %}"></script>

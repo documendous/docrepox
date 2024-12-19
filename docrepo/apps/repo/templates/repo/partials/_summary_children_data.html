@@ -1,0 +1,36 @@
+{% block summary_children_data %}
+  {% if element.type == 'folder' and not element.is_recycle_folder %}
+    <div class="mt-8">
+      <table class="min-w-full divide-y divide-gray-200 border shadow">
+        <caption class="text-left p-2 relative mx-4">
+          <div class="flex items-center">
+            <h2 class="text-xl font-bold mr-4 py-2">
+              Subfolders & Documents
+            </h2>
+          </div>
+        </caption>
+        <thead>
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Name
+            </th>
+            {% if scope == 'summary' %}
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Current Version Size
+              </th>
+            {% endif %}
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Owner
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        {% include "repo/partials/_folder_children_table_data.html" with scope="summary" children=element.get_children %}
+      </table>
+    </div>
+  {% elif element.type == 'folder' and element.name == 'Recycle' %}
+    <div class="mt-8 text-center text-sm text-gray-500">
+      To view folders and documents in this space, return to the Recycle folder view.
+    </div>
+  {% endif %}
+{% endblock %}
