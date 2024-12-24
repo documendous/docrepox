@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from apps.repo.models import Folder
+from apps.repo.models.profile import Profile
 
 
 User = get_user_model()
@@ -46,3 +47,10 @@ def get_user_recycle_folder(user):
     return Folder.objects.get(
         name="Recycle", owner=user, parent=user.profile.home_folder
     )
+
+
+def get_user_home_folders():
+    """
+    Returns all user home folder
+    """
+    return Profile.objects.values_list("home_folder", flat=True)

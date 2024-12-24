@@ -12,6 +12,7 @@ from apps.repo.utils.system.object import (
     get_system_projects_folder,
     get_system_root_folder,
     get_system_sys_folder,
+    get_user_home_folders,
 )
 
 
@@ -55,6 +56,12 @@ def is_undeletable_folder(request, element):
         return True
     else:
         return False
+
+
+def is_a_home_folder(folder):
+    if folder in get_user_home_folders():
+        return True
+    return False
 
 
 def is_editor(request, project):
@@ -245,6 +252,12 @@ def can_recycle_element(request, element, from_tag=False):
         ):
             accessible = True
 
+    if is_undeletable_folder(request, element):
+        accessible = False
+
+    if is_a_home_folder(element):
+        accessible = False
+
     if element.type == "project":
         accessible = False
 
@@ -275,6 +288,9 @@ def can_delete_element(request, element, from_tag=False):
         accessible = False
 
     if not element.is_in_recycle_path():
+        accessible = False
+
+    if is_a_home_folder(element):
         accessible = False
 
     if element.type == "project":

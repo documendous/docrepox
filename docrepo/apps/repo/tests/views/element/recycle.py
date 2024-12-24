@@ -4,7 +4,6 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from apps.bookmarks.models import Bookmark
 from apps.repo.models.element.folder import Folder
-from apps.repo.utils.system.object import get_system_home_folder
 from apps.repo.tests.utils import (
     TEST_USER,
     get_test_document,
@@ -263,9 +262,10 @@ class RemoveBookmarkFromRecycledElementTest(TestCase):
         self.test_user = User.objects.create(username="testuser")
         self.test_user.set_password("testpass")
         self.test_user.save()
-        home_folder = get_system_home_folder()
         self.folder = Folder.objects.create(
-            name="Test Folder", parent=home_folder, owner=self.test_user
+            name="Test Folder",
+            parent=self.test_user.profile.home_folder,
+            owner=self.test_user,
         )
 
     def test_post(self):
