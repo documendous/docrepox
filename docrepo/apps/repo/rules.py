@@ -6,13 +6,13 @@ from django.http import Http404, HttpRequest
 from apps.comments.models import Comment
 from apps.comms.models import Communication
 from apps.projects.utils.project import is_a_project_folder
+from apps.repo.models.profile import Profile
 from apps.repo.utils.static.lookup import get_model
 from apps.repo.utils.system.object import (
     get_system_home_folder,
     get_system_projects_folder,
     get_system_root_folder,
     get_system_sys_folder,
-    get_user_home_folders,
 )
 
 
@@ -59,9 +59,10 @@ def is_undeletable_folder(request, element):
 
 
 def is_a_home_folder(folder):
-    if folder in get_user_home_folders():
-        return True
-    return False
+    """
+    Checks if a given folder is a user's home folder efficiently.
+    """
+    return Profile.objects.filter(home_folder=folder).exists()
 
 
 def is_editor(request, project):
@@ -255,8 +256,9 @@ def can_recycle_element(request, element, from_tag=False):
     if is_undeletable_folder(request, element):
         accessible = False
 
-    if is_a_home_folder(element):
-        accessible = False
+    if element.type == "folder":
+        if is_a_home_folder(element):
+            accessible = False
 
     if element.type == "project":
         accessible = False
@@ -290,8 +292,9 @@ def can_delete_element(request, element, from_tag=False):
     if not element.is_in_recycle_path():
         accessible = False
 
-    if is_a_home_folder(element):
-        accessible = False
+    if element.type == "folder":
+        if is_a_home_folder(element):
+            accessible = False
 
     if element.type == "project":
         accessible = False
