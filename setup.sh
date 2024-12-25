@@ -55,11 +55,6 @@ cp env.prod.db.example .env.prod.db
 cp .env.prod docrepo/.env.prod
 log_message "Dependencies installed successfully"
 
-log_message "Applying database migrations"
-python manage.py makemigrations
-python manage.py migrate
-log_message "Database migrated successfully"
-
 log_message "Collecting static files"
 python manage.py collectstatic --noinput
 log_message "Static files collected successfully"
