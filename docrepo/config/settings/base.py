@@ -1,13 +1,12 @@
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 from config.settings.utils import BASE_DIR
+from .utils import env
 
 
 VERSION = "v0.0.2"
 
-ALLOWED_HOSTS = [
-    "localhost",
-]
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost"])
 
 ROOT_URLCONF = "config.urls"
 

@@ -23,7 +23,7 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 1. **Clone the Repository**:
    ```
-   git clone git@github.com:documendous/docrepox.git
+   git clone https://github.com/documendous/docrepox.git
    cd docrepox
    ```
    Alternatively, download and extract the repository’s zip file.
@@ -61,6 +61,25 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
    Check the logs for any errors. If all goes well, your system should be up and running. See the troubleshooting section below if you have any issues.
 
 ### Troubleshooting
+
+#### DisallowedHost at /
+
+You may see an error like this at startup:
+
+<pre>
+DisallowedHost at /
+Invalid HTTP_HOST header: '169.215.42.20:8000'. You may need to add '169.215.42.20' to ALLOWED_HOSTS.
+</pre>
+
+You will need to add the hostname (or ip address) to your .env file:
+
+```
+...
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],myhostname
+...
+```
+
+and then restart.
 
 #### "/mediafiles": Not Found Error
 
