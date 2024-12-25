@@ -19,7 +19,25 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 - You are using Linux or macOS. Windows is probably ok to use but these instructions assume you will be using Docker which runs a bit differently on Windows. You will have to consult https://docs.docker.com/desktop/setup/install/windows-install/ to see if this will be possible for you.
 - Docker is installed and operational on your system, and you are familiar with its basics, including images, containers, volumes, and networks.
 
-### Setup Instructions
+### Simple Install
+
+This will install and give you a running DocrepoX system:
+
+Just run from the directory where you would like to install DocrepoX:
+
+```
+curl -s https://raw.githubusercontent.com/documendous/docrepox/main/setup.sh | sh
+```
+
+After running, you can click control-c.
+
+To run again from here on out while persisting your data, you can continue to run:
+
+```
+docker compose -f docker-compose.prod.yml up
+```
+
+### Setup Instructions For Development Purposes
 
 1. **Clone the Repository**:
    ```
