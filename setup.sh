@@ -19,14 +19,6 @@ else
     exit 1
 fi
 
-log_message "Navigating to DocrepoX directory"
-if cd docrepox; then
-    log_message "Successfully navigated to DocrepoX directory"
-else
-    echo "Error: Failed to enter docrepox directory. Exiting."
-    exit 1
-fi
-
 log_message "Processing hostname for DJANGO_ALLOWED_HOSTS"
 if grep -q "DJANGO_ALLOWED_HOSTS" env.prod.example; then
     if ! grep -q "DJANGO_ALLOWED_HOSTS=.*$hostname" env.prod.example; then
