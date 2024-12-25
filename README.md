@@ -51,8 +51,13 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
    cp env.dev.example .env.dev
    cp .env.dev docrepo/.env
    ```
-
    If you're interested in trying out a production-ready setup, have a look at the "Using in production" section below.
+
+6. Create the mediafiles folder in docrepo:
+
+   ```
+   mkdir docrepo/mediafiles
+   ```
 
 6. **Run Docker Compose**:
    ```
@@ -70,14 +75,14 @@ You may see an error like this at startup:
 
 <pre>
 DisallowedHost at /
-Invalid HTTP_HOST header: '169.215.42.20:8000'. You may need to add '169.215.42.20' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: '172.215.42.20:8000'. You may need to add '172.215.42.20' to ALLOWED_HOSTS.
 </pre>
 
 You will need to add the hostname (or ip address) to your .env file:
 
 ```
 ...
-DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],myhostname
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],172.215.42.20
 ...
 ```
 
@@ -152,7 +157,7 @@ Typically this is what .env.prod looks like as a default (it should be enough to
 ```
 DEBUG=0
 SECRET_KEY=a_much_better_secret_this_time_change_this
-DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],168.235.82.30
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1]
 SQL_ENGINE=django.db.backends.postgresql
 SQL_DATABASE=docrepo
 SQL_USER=admin
