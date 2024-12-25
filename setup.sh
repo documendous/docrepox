@@ -55,9 +55,5 @@ cp env.prod.db.example .env.prod.db
 cp .env.prod docrepo/.env.prod
 log_message "Dependencies installed successfully"
 
-log_message "Collecting static files"
-python manage.py collectstatic --noinput
-log_message "Static files collected successfully"
-
 log_message "Starting DocrepoX with Docker"
 docker compose -f docker-compose.prod.yml up --build
