@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Set default hostname if not run interactively
+hostname=${1:-localhost}
+
 echo "===Cloning DocrepoX repository==="
 git clone https://github.com/documendous/docrepox.git &&
 echo "===Done.==="
@@ -7,11 +10,7 @@ echo "===Done.==="
 echo "===Navigating to DocrepoX directory==="
 cd docrepox || { echo "Failed to enter docrepox directory. Exiting."; exit 1; }
 
-# Prompt user for hostname with a default value of 'localhost'
-read -p "Enter a hostname to add to DJANGO_ALLOWED_HOSTS (default: localhost): " hostname
-hostname=${hostname:-localhost}
-
-# Check if 'DJANGO_ALLOWED_HOSTS' exists and if the hostname is already included
+# Add hostname to DJANGO_ALLOWED_HOSTS
 if grep -q "DJANGO_ALLOWED_HOSTS" env.prod.example; then
     if ! grep -q "DJANGO_ALLOWED_HOSTS=.*$hostname" env.prod.example; then
         sed -i "s/^DJANGO_ALLOWED_HOSTS=.*/&,$hostname/" env.prod.example

@@ -23,10 +23,10 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 This will install and give you a running DocrepoX system:
 
-Just run from the directory where you would like to install DocrepoX:
+Just run from the directory where you would like to install DocrepoX (if needed, change localhost to your hostname of choice):
 
 ```
-curl -s https://raw.githubusercontent.com/documendous/docrepox/main/setup.sh | sh
+curl -s https://raw.githubusercontent.com/documendous/docrepox/main/setup.sh | bash -s -- localhost
 ```
 
 After running, you can click control-c.
