@@ -41,5 +41,14 @@ cp env.prod.db.example .env.prod.db &&
 cp .env.prod docrepo/.env.prod &&
 echo "===Done==="
 
+echo "===Migrating Database==="
+python manage.py makemigrations &&
+python manage.py migrate &&
+echo "===Done==="
+
+echo "===Collecting Static Files==="
+python manage.py collectstatic --noinput &&
+echo "===Done==="
+
 echo "===Running DocrepoX with Docker==="
 docker compose -f docker-compose.prod.yml up --build
