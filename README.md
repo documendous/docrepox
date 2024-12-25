@@ -16,7 +16,7 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 ### Assumptions
 
-- You are using Linux or macOS.
+- You are using Linux or macOS. Windows is probably ok to use but these instructions assume you will be using Docker which runs a bit differently on Windows. You will have to consult https://docs.docker.com/desktop/setup/install/windows-install/ to see if this will be possible for you.
 - Docker is installed and operational on your system, and you are familiar with its basics, including images, containers, volumes, and networks.
 
 ### Setup Instructions
@@ -48,9 +48,11 @@ DocrepoX is an open-source (LGPL-v3) Enterprise Content Management (ECM) and Dig
 
 5. **Configure Environment Variables**:
    ```
-   cp env.example .env.dev
-   cp env.example docrepo/.env
+   cp env.dev.example .env.dev
+   cp .env.dev docrepo/.env
    ```
+
+   If you're interested in trying out a production-ready setup, have a look at the "Using in production" section below.
 
 6. **Run Docker Compose**:
    ```
@@ -80,6 +82,16 @@ DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],myhostname
 ```
 
 and then restart.
+
+#### Docker: "network not found" on docker compose up --build
+
+This can happen if you run `docker system prune -af`.
+
+Consult docker docs on this but generally you can rebuild with this command:
+
+```
+docker compose up --remove-orphans --build --force-recreate
+```
 
 #### "/mediafiles": Not Found Error
 
@@ -124,7 +136,48 @@ There is documentation on how to use the system: http://localhost:8000/ddocs/
 
 ### Using in Production
 
-For a production-ready deployment, uses the `docker-compose.prod.yml` configuration, which includes Nginx. 
+For a production-ready deployment, uses the `docker-compose.prod.yml` configuration, which includes Nginx.
+
+You will need to build the expected .env.prod and .env.prod.db files:
+
+```
+cp env.prod.example .env.prod
+cp env.prod.db.example .env.prod.db
+```
+
+Edit both files to ensure the settings are correct (you will need to remove the dev settings and ensure db server settings are in .env.prod.db only).
+
+Typically this is what .env.prod looks like as a default (it should be enough to get you up and running):
+
+```
+DEBUG=0
+SECRET_KEY=a_much_better_secret_this_time_change_this
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],168.235.82.30
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=docrepo
+SQL_USER=admin
+SQL_PASSWORD=admin
+SQL_HOST=db
+SQL_PORT=5432
+DATABASE=postgres
+ROOT_LOG_LEVEL=INFO
+```
+
+and env.prod.db:
+
+```
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=admin
+POSTGRES_DB=docrepo
+```
+
+Obviously--it should go without saying, change any password and secret keys.
+
+After this:
+
+```
+cp .env.prod docrepo/.env.prod
+```
 
 Instead of the standard Docker command, execute the following:
 
