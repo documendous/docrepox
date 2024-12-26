@@ -4,7 +4,7 @@ from config.settings.utils import BASE_DIR
 from .utils import env
 
 
-VERSION = "v0.0.2"
+VERSION = "24.4.0"
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost"])
 
