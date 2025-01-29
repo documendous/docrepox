@@ -8,10 +8,10 @@ __pycache__
 tmp/
 venv/
 .venv/
-.vscode/
 node_modules/
 requirements.txt
 reset_db.py
 db.sqlite3
 deleted/
-
+global_settings.py
+extensions/

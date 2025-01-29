@@ -44,6 +44,12 @@
             {% include 'projects/partials/_project_group_actions.html' %}
           </td>
         </tr>
+      {% empty %}
+        <tr>
+          <td class="py-2 px-4 text-center border" colspan=4>
+            --
+          </td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>

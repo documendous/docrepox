@@ -1,7 +1,7 @@
 from django import template
+
 from apps.core.utils.core import str_to_bool
 from apps.ui.models import Setting
-
 
 register = template.Library()
 

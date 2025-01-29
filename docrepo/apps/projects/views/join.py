@@ -1,14 +1,14 @@
 from django.contrib import messages
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+
 from apps.comms.models import Communication
 from apps.comms.utils import send_comm
 from apps.core.views import View
 from apps.projects.models import Project
-
 
 User = get_user_model()
 

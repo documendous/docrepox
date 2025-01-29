@@ -1,7 +1,7 @@
 {% load bookmark_tags %}
 
 <span class="mt-1 flex items-center">
-  {{ child.name }}
+  {{ child.name|truncatechars:30 }}
   {% if child|is_bookmarked:request.user %}
     <span
       class="material-icons-outlined nav-link ml-2 pt-0.5"

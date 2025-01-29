@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.shortcuts import render
+
 from apps.core.views import View
 from apps.repo import rules
+from apps.repo.forms.element import UpdateVersionForm
 from apps.repo.utils.static.lookup import get_model
 from apps.repo.utils.system.object import get_system_root_folder
-from apps.repo.forms.element import UpdateVersionForm
 
 
 class ElementDetailsView(View):

@@ -1,6 +1,8 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+
 from apps.core.views import View
+
 from .models import Setting
 
 

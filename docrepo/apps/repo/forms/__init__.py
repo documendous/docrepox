@@ -1,5 +1,7 @@
 import logging
+
 from django.conf import settings
+
 from .element import AddDocumentForm, AddFolderForm, AddVersionForm, UpdateElementForm
 from .user import UpdateProfileForm, UpdateUserForm
 

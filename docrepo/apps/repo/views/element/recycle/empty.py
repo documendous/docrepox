@@ -1,7 +1,9 @@
 import logging
+
 from django.contrib import messages
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
+
 from apps.core.views import View
 from apps.repo import rules
 from apps.repo.models.element.folder import Folder
@@ -30,7 +32,7 @@ class EmptyRecycleFolderView(View):
                         )
                 messages.info(
                     request,
-                    "Items permanently deleted.",
+                    "Item(s) permanently deleted.",
                 )
             else:
                 messages.info(request, "Trashcan empty.")  # pragma: no coverage

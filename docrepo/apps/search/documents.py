@@ -1,8 +1,9 @@
 from django_elasticsearch_dsl import Document
 from django_elasticsearch_dsl.registries import registry
+
+from apps.projects.models import Project as RepoProject
 from apps.repo.models.element.document import Document as RepoDocument
 from apps.repo.models.element.folder import Folder as RepoFolder
-from apps.projects.models import Project as RepoProject
 
 
 @registry.register_document

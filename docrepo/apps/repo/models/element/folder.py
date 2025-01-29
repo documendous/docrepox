@@ -1,15 +1,20 @@
-from itertools import chain
 import logging
+from itertools import chain
 from typing import List
+
 from django.conf import settings
 from django.db import models
 from django.forms import ValidationError
+from django.template.defaultfilters import truncatechars
 from django.urls import reverse
+
 from apps.comments.models import Commentable
 from apps.core.models import Element, HasFolderParent, IsRecyclable
-from apps.repo.models.element.version import Version
-from apps.repo.utils.access import has_public_access
-from apps.repo.utils.model import order_children_by_filter, user_can_navigate_path
+
+from ...models.element.version import Version
+from ...utils.access import has_public_access
+from ...utils.model import order_children_by_filter, user_can_navigate_path
+from ...utils.static.lookup import is_a_user_home_folder
 from .document import Document
 
 
@@ -43,7 +48,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
             if not self.parent
             else f"{self.parent.get_full_path()}/{self.name}"
         )
-        return path
+        return truncatechars(path, 60)
 
     def get_path_with_links(self, user) -> str:
         """
@@ -58,7 +63,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
                     self.id,
                 ],
             )
-            return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{self.name}</a>'
+            return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(self.name, 30)}</a>'
         else:
             if user_can_navigate_path(self, user):
                 parent_path = self.parent.get_path_with_links(user)
@@ -68,7 +73,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
                         self.id,
                     ],
                 )
-                return f'{parent_path} / <a href="{url}" class="{link_class}"  title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{self.name}</a>'
+                return f'{parent_path} / <a href="{url}" class="{link_class}"  title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(self.name, 30)}</a>'
             else:
                 if has_public_access(self):
                     url = reverse(
@@ -77,7 +82,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
                             self.id,
                         ],
                     )
-                    return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{self.name}</a>'
+                    return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(self.name, 30)}</a>'
                 else:
                     return ""
 
@@ -179,14 +184,18 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
 
         return total_size
 
-    def clean(self) -> None:
+    def clean(self) -> None:  # pragma: no coverage
         """
         Validation of form creation
         """
         if self.name == "ROOT" and not self.parent:
-            return  # pragma: no cover
+            return
         if not self.parent and Folder.has_root_folder():
             raise ValidationError("All folders must have a parent.")
+        if self.parent == self:
+            raise ValidationError("A folder cannot assign itself as its own parent.")
+        if is_a_user_home_folder(folder=self):
+            raise ValidationError("User home folder's name cannot be changed.")
 
     def save(self, *args, **kwargs) -> None:  # pragma: no coverage
         """

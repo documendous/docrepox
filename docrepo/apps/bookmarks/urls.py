@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import BookmarkListView, AddBookmarkView, RemoveBookmarkView
 
+from .views import AddBookmarkView, BookmarkListView, RemoveBookmarkView
 
 app_name = "bookmarks"
 

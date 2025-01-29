@@ -2,6 +2,8 @@ from config.settings.utils import BASE_DIR, env
 
 # Admin settings
 
+ADMIN_ALLOW_ALL = False  # If set to True, admin user can do everything in system. Use this for maintenance or emergency only.
+
 ADMIN_USERNAME = env(
     "ADMIN_USERNAME", default="admin"
 )  # DocrepoX admin username (def: "admin")
@@ -25,6 +27,8 @@ CREATE_DOC_USE_MODAL = (
 CREATE_DOC_AS_RTF = True  # When using the create document form (not modal) show the Quill rich text editor Quill docs: https://quilljs.com/docs/quickstart
 
 CREATE_DOC_DEFAULT_MT = "text/plain"  # Default mimetype of hand created documents. The other viable option could be "text/rtf".
+
+DATA_UPLOAD_MAX_NUMBER_FILES = 256  # Max upload of files using multi document upload. Set to None to disable this check.
 
 DEFAULT_DOCUMENT_VERSION = "1.0"  # Default version tag when a new document is created
 

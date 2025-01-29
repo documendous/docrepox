@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from apps.etags.widgets import TagsInputWidget
 
 # from apps.repo.models.project import Project
-from ..models import Folder, Document, Version
+from ..models import Document, Folder, Version
 
 
 class AddFolderForm(forms.ModelForm):

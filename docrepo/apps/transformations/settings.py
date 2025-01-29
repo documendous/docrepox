@@ -8,19 +8,20 @@ SOFFICE_EXE = (
 SOFFICE_TEMP_DIR = settings.BASE_DIR / "mediafiles/content/tmp"  # Temp dir for soffice
 
 ALLOWED_PREVIEW_TYPES = (
+    ".conf",
     ".doc",
     ".docx",
     ".gif",
     ".jpg",
     ".jpeg",
     ".md",
+    ".pdf",
     ".png",
     ".ppt",
     ".pptx",
     ".txt",
     ".xls",
     ".xlsx",
-    ".conf",
     ".xml",
 )  # Allowed previewable types
 

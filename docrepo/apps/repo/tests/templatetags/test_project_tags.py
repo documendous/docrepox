@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from apps.projects.models import Project
 from apps.projects.templatetags.project_tags import is_a_project_folder
 from apps.repo.tests.utils import get_test_document, get_test_folder, get_test_user

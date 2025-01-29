@@ -36,6 +36,7 @@ COPY apps ./apps
 COPY config ./config
 COPY mediafiles ./mediafiles
 COPY staticfiles ./staticfiles
+COPY extensions ./extensions
 COPY .env ./.env
 COPY manage.py ./manage.py
 

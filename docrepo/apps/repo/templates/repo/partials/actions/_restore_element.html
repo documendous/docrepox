@@ -5,9 +5,9 @@
   {% csrf_token %}
   <button
     type="submit"
-    title='Restore {{ element.type }} "{{ child.name }}" to original parent folder'
+    title='Restore {{ element.type }} "{{ child.name|truncatechars:30 }}" to original parent folder'
   >
-    <span class="material-icons-outlined">
+    <span class="material-icons-outlined text-gray-700 hover:text-blue-700">
       restore_from_trash
     </span>
   </button>

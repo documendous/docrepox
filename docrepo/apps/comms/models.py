@@ -1,11 +1,10 @@
-from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.contrib.contenttypes.fields import GenericForeignKey
 
 from apps.core.models import TimestampedModel
-
 
 User = get_user_model()
 

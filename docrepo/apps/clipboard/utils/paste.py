@@ -1,6 +1,11 @@
+import logging
+
 from django.contrib import messages
 from django.db import IntegrityError
+from django.forms import ValidationError
 from django.http import HttpRequest
+from django.template.defaultfilters import truncatechars
+
 from apps.clipboard.models import Clipboard
 from apps.repo import rules
 from apps.repo.models.element.document import Document
@@ -45,6 +50,12 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
         p_folder.folder.parent = parent
         try:
             p_folder.folder.save()
+        except ValidationError:
+            messages.error(
+                request,
+                f"Invalid move for folder '{truncatechars(p_folder.folder.name, 30)}'",
+            )
+            return
         except IntegrityError:  # pragma: no coverage
             create_with_new_name(
                 "folder",
@@ -54,6 +65,8 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
                 set_pk_none=True,
             )
         p_folder.delete()
+
+    messages.info(request, "Item(s) moved to new parent folder")
 
 
 def copy_documents(request: HttpRequest, clipboard: Clipboard, parent: Folder) -> None:
@@ -74,7 +87,7 @@ def copy_folders(request: HttpRequest, clipboard: Clipboard, parent: Folder) -> 
     for pasted_folder in clipboard.folders.all():
         rules.can_move_element(request, pasted_folder.folder)
         folder = pasted_folder.folder
-        _copy_folder(folder, parent)
+        _copy_folder(request, folder, parent)
         pasted_folder.delete()
 
 
@@ -89,7 +102,7 @@ def add_to_folders(
         clipboard.folders.add(pasted_element)
         messages.info(
             request,
-            f'Folder "{pasted_element.folder.name}" was added to your clipboard.',
+            f'Folder "{truncatechars(pasted_element.folder.name, 30)}" was added to your clipboard.',
         )
     else:
         messages.warning(
@@ -109,7 +122,7 @@ def add_to_documents(
         clipboard.documents.add(pasted_element)
         messages.info(
             request,
-            f'Document "{pasted_element.document.name}" was added to your clipboard.',
+            f'Document "{truncatechars(pasted_element.document.name, 30)}" was added to your clipboard.',
         )
     else:
         messages.warning(
@@ -146,15 +159,24 @@ def _copy_document(document: Document, parent: Folder) -> None:
         copy_content_file(version, new_version)
 
 
-def _copy_folder(folder: Folder, parent: Folder) -> None:
+def _copy_folder(request, folder: Folder, parent: Folder) -> None:
     """
     Copy of a single folder
     """
+    log = logging.getLogger(__name__)
+
+    if folder == parent:
+        error_msg = "Cannot copy a folder to same folder"
+        messages.error(request, error_msg)
+        log.error(error_msg)
+        raise Exception(error_msg)
+
     child_documents = folder.get_child_documents()
     child_folders = folder.get_child_folders()
     new_folder = folder
     new_folder.pk = None
     new_folder.parent = parent
+
     try:
         new_folder.save()
     except IntegrityError:  # pragma: no coverage
@@ -170,4 +192,4 @@ def _copy_folder(folder: Folder, parent: Folder) -> None:
         _copy_document(child_document, new_folder)
 
     for child_folder in child_folders:
-        _copy_folder(child_folder, new_folder)
+        _copy_folder(request, child_folder, new_folder)

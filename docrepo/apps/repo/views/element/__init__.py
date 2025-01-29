@@ -1,8 +1,8 @@
 from .details import ElementDetailsView
 from .recycle import (
     DeleteElementView,
+    EmptyRecycleFolderView,
     RecycleElementView,
     RestoreElementView,
-    EmptyRecycleFolderView,
 )
 from .update import UpdateElementDetailsView

@@ -4,7 +4,6 @@ from django.db import models
 
 from apps.core.models import Generic
 
-
 User = get_user_model()
 
 

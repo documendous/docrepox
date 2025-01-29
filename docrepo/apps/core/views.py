@@ -1,5 +1,6 @@
 import logging
 from typing import Any
+
 from django.contrib import messages
 from django.views import View as DjangoView
 

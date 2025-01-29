@@ -1,8 +1,12 @@
+from typing import List, Tuple
+
+from django.conf import settings
 from django.contrib import messages
 from django.db.utils import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+
 from apps.repo import rules
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
@@ -16,44 +20,68 @@ class AddMultiDocumentsView(BaseCreateDocumentView):  # pragma: no coverage
     View for adding multiple documents upload
     """
 
-    def post(self, request, folder_id):
+    MAX_MESSAGE_SIZE = 10
+
+    def _process_files(
+        self, files: List, parent: Folder, user
+    ) -> Tuple[List[str], List[str]]:
+        info_message_list = []
+        error_message_list = []
+
+        for f in files[: settings.DATA_UPLOAD_MAX_NUMBER_FILES]:
+            try:
+                new_document = Document.objects.create(
+                    name=f.name, parent=parent, owner=user
+                )
+            except IntegrityError:
+                new_document = create_with_new_name("document", f.name, user, parent)
+
+            if new_document:
+                Version.objects.create(parent=new_document, content_file=f)
+                self._set_mimetype(new_document)
+                info_message_list.append(f.name)
+            else:
+                error_message_list.append(f.name)
+
+        return info_message_list, error_message_list
+
+    def post(self, request, folder_id) -> HttpResponseRedirect:
         parent = get_object_or_404(Folder, pk=folder_id)
+
         rules.can_create_document(request, parent)
-        info_message = ""
-        error_message = ""
 
-        if request.FILES:
-            for f in self.request.FILES.getlist("content_file"):
-                try:
-                    new_document = Document.objects.create(
-                        name=f.name, parent=parent, owner=request.user
-                    )
-                except IntegrityError:
-                    new_document = create_with_new_name(
-                        "document", f.name, request.user, parent
-                    )
-                if new_document:
-                    Version.objects.create(parent=new_document, content_file=f)
-                    self._set_mimetype(new_document)
-                    info_message += f"<li>{f.name}</li>"
+        uploaded_files = request.FILES.getlist("content_file")
 
-            if info_message:
-                messages.info(
-                    request,
-                    f"<p>The following documents were succcessfully uploaded:</p><p><ul>{info_message}</ul><p>",
-                )
-
-            if error_message:
-                messages.error(
-                    request,
-                    f"<p>The following documents already exist and cannot be created here:</p><p><ul>{error_message}</ul><p>",
-                )
-
-        return HttpResponseRedirect(
-            reverse(
-                "repo:folder",
-                args=[
-                    parent.pk,
-                ],
-            )
+        info_message_list, error_message_list = self._process_files(
+            uploaded_files, parent, request.user
         )
+
+        if info_message_list:
+            self._add_success_message(request, info_message_list)
+
+        if error_message_list:
+            self._add_error_message(request, error_message_list)
+
+        return HttpResponseRedirect(reverse("repo:folder", args=[parent.pk]))
+
+    def _add_success_message(self, request, file_names: List[str]):
+        extra_message = ""
+
+        if len(file_names) > self.MAX_MESSAGE_SIZE:
+            extra_message = f"... and {len(file_names) - self.MAX_MESSAGE_SIZE} more."
+
+        message_content = (
+            f"The following documents were successfully uploaded:<ul class='text-left mb-2'>"
+            f"{''.join(f'<li class="ml-2">- {name}</li>' for name in file_names[:self.MAX_MESSAGE_SIZE])}"
+            f"</ul>{extra_message}"
+        )
+
+        messages.info(request, message_content)
+
+    def _add_error_message(self, request, file_names: List[str]):
+        message_content = (
+            f"The following documents could not be created:<ul>"
+            f"{''.join(f'<li>{name}</li>' for name in file_names)}"
+            f"</ul>"
+        )
+        messages.error(request, message_content)

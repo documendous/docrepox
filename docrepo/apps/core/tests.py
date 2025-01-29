@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+
 from apps.core.utils.htmx import ALLOWED_HEADERS, htmx_redirect, hx_response
 from apps.repo.tests.utils import get_test_user
 

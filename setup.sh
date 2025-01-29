@@ -50,6 +50,7 @@ pip install poetry
 poetry export --with dev -f requirements.txt --output requirements.txt
 cp requirements.txt docrepo/requirements.txt
 mkdir -p docrepo/mediafiles
+touch docrepo/global_settings.py
 cp env.prod.example .env.prod
 cp env.prod.db.example .env.prod.db
 cp .env.prod docrepo/.env.prod

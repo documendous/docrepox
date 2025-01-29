@@ -1,4 +1,6 @@
-@import "../../../django-unfold/src/unfold/styles.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .header {
   @apply flex justify-between items-center py-4 mx-6;

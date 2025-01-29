@@ -3,6 +3,6 @@
     href="{% url 'repo:element_details' document.type document.pk %}"
     class="hover:text-blue-700"
   > 
-    <u>"{{ document.name }}"</u>
+    <u>"{{ document.name|truncatechars:30 }}"</u>
   </a> created by {{ document.owner.username }}
 </li>

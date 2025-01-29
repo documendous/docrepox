@@ -585,13 +585,13 @@ files = [
 
 [[package]]
 name = "django"
-version = "4.2.17"
+version = "4.2.18"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Django-4.2.17-py3-none-any.whl", hash = "sha256:3a93350214ba25f178d4045c0786c61573e7dbfa3c509b3551374f1e11ba8de0"},
-    {file = "Django-4.2.17.tar.gz", hash = "sha256:6b56d834cc94c8b21a8f4e775064896be3b4a4ca387f2612d4406a5927cd2fdc"},
+    {file = "Django-4.2.18-py3-none-any.whl", hash = "sha256:ba52eff7e228f1c775d5b0db2ba53d8c49d2f8bfe6ca0234df6b7dd12fb25b19"},
+    {file = "Django-4.2.18.tar.gz", hash = "sha256:52ae8eacf635617c0f13b44f749e5ea13dc34262819b2cc8c8636abb08d82c4b"},
 ]
 
 [package.dependencies]
@@ -653,6 +653,20 @@ docs = ["furo (>=2021.8.17b43,<2021.9.dev0)", "sphinx (>=3.5.0)", "sphinx-notfou
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
 
 [[package]]
+name = "django-jazzmin"
+version = "3.0.1"
+description = "Drop-in theme for django admin, that utilises AdminLTE 3 & Bootstrap 4 to make yo' admin look jazzy"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_jazzmin-3.0.1-py3-none-any.whl", hash = "sha256:12a0a4c1d4fd09c2eef22acf6a1f03112b515ba695c59faa8ea80efc81c1f21b"},
+    {file = "django_jazzmin-3.0.1.tar.gz", hash = "sha256:67ae148bade41267a09ca8e4352ddefa6121795ebbac238bb9a6564ff841eb1b"},
+]
+
+[package.dependencies]
+django = ">=4.2"
+
+[[package]]
 name = "django-minio-storage"
 version = "0.5.7"
 description = "Django file storage using the minio python client"
@@ -681,20 +695,6 @@ files = [
 [package.dependencies]
 django = ">=2.2"
 pytz = "*"
-
-[[package]]
-name = "django-unfold"
-version = "0.22.0"
-description = "Modern Django admin theme for seamless interface development"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "django_unfold-0.22.0-py3-none-any.whl", hash = "sha256:2739a256897660aa0dd768cd373dd38d178d653c674091c2dbe441d325522b8b"},
-    {file = "django_unfold-0.22.0.tar.gz", hash = "sha256:622995f6ec222d7e16c4ea5bde1f87508d25942e6bcf925ae7ead9f70b77405b"},
-]
-
-[package.dependencies]
-django = ">=3.2"
 
 [[package]]
 name = "django-widget-tweaks"
@@ -2215,13 +2215,13 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.26.3"
+version = "20.26.6"
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "virtualenv-20.26.3-py3-none-any.whl", hash = "sha256:8cc4a31139e796e9a7de2cd5cf2489de1217193116a8fd42328f1bd65f434589"},
-    {file = "virtualenv-20.26.3.tar.gz", hash = "sha256:4c43a2a236279d9ea36a0d76f98d84bd6ca94ac4e0f4a3b9d46d05e10fea542a"},
+    {file = "virtualenv-20.26.6-py3-none-any.whl", hash = "sha256:7345cc5b25405607a624d8418154577459c3e0277f5466dd79c49d5e492995f2"},
+    {file = "virtualenv-20.26.6.tar.gz", hash = "sha256:280aede09a2a5c317e409a00102e7077c6432c5a38f0ef938e643805a7ad2c48"},
 ]
 
 [package.dependencies]
@@ -2276,4 +2276,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "833a9b4480ade2be7f709a687738830fb1916b73d3d765d6ca2075e87b2a2326"
+content-hash = "051c994889b4527f29052e4befe33255669618b33e08f61680e72826e4502a3f"

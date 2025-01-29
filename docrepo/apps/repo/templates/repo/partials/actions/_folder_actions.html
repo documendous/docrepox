@@ -1,8 +1,8 @@
 {% load static %}
 {% load project_tags %}
+{% load repo_tags %}
 
 {% can_create_folder_children request folder as can_create_folder_children %}
-{% can_view_project_details request folder as can_view_project_details %}
 
 {% if not folder.is_in_recycle_path %}
   <div class="flex items-end mx-1 py-2 space-x-2 gap-3">
@@ -13,16 +13,11 @@
       {% include 'repo/partials/actions/folder_action_items/_create_folder.html' %}
       {% include 'repo/partials/actions/folder_action_items/_paste_element.html' %}
     {% endif %}
-    {% if can_view_project_details %}
-      {% include "projects/partials/_view_project_details.html" with element=folder %}
-    {% endif %}
   </div>
 {% else %}
-  {% if folder.has_children %}
-    <div class="flex items-end mx-1 py-2 space-x-4">
-      {% include "repo/partials/actions/_empty_trashcan.html" %}
-    </div>
-  {% endif %}
+  <div class="flex items-end mx-1 py-2 space-x-4">
+    {% include "repo/partials/actions/_empty_trashcan.html" %}
+  </div>
 {% endif %}
 
 {% if can_create_folder_children %}

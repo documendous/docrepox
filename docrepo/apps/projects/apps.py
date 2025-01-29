@@ -6,4 +6,7 @@ class ProjectsConfig(AppConfig):
     name = "apps.projects"
 
     def ready(self):
-        from .signals import create_or_update_project_folder  # noqa: F401
+        from .signals import (  # noqa: F401
+            create_or_update_project_folder,
+            delete_project_objects,
+        )

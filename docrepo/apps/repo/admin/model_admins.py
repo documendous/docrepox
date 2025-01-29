@@ -1,20 +1,20 @@
 from django.contrib import admin
+from django.contrib.admin import ModelAdmin
 from django.urls import reverse
 from django.utils.html import format_html
-from apps.clipboard.models import Clipboard, PastedDocument, PastedFolder
-from unfold import admin as unfold_admin
-from unfold.admin import ModelAdmin
-from apps.dashlets.models import Motd
-from .models import Document, Folder, Version, Profile, Mimetype
+
+from ..models.element.document import Document
+from ..models.element.folder import Folder
+from ..models.element.version import Version
 
 
-class VersionInline(unfold_admin.TabularInline):
+class VersionInline(admin.TabularInline):
     model = Version
     extra = 0
     readonly_fields = ("pk",)
 
 
-class ElementInline(unfold_admin.TabularInline):  # pragma: no coverage
+class ElementInline(admin.TabularInline):  # pragma: no coverage
     extra = 0
     readonly_fields = ("linked_name",)
     exclude = (
@@ -85,15 +85,3 @@ class VersionAdmin(ModelAdmin):
 
 class ProfileAdmin(ModelAdmin):
     pass
-
-
-# admin.site.register(Project, ModelAdmin)
-admin.site.register(Profile, ProfileAdmin)
-admin.site.register(Document, DocumentAdmin)
-admin.site.register(Folder, FolderAdmin)
-admin.site.register(Version, VersionAdmin)
-admin.site.register(Mimetype, ModelAdmin)
-admin.site.register(Clipboard, ModelAdmin)
-admin.site.register(PastedDocument, ModelAdmin)
-admin.site.register(PastedFolder, ModelAdmin)
-admin.site.register(Motd, ModelAdmin)

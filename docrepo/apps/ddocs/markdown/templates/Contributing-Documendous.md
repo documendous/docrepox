@@ -2,25 +2,27 @@
 
 Below are some topics to be aware of if you would like to contribute to development with this project.
 
+---
+
 ### Code of Conduct
 
-In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in Documendous Software Projects a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
+In the interest of maintaining an open and welcoming environment, we as contributors and maintainers pledge to making participation in Documendous Software Projects a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
-From a technical standpoint, develop in the spirit of the topics on this main subject as best you can.
+---
 
 ### Django Debug Toolbar
 
-In the development environment, the Django Debug Toolbar is enabled by default.
+In the development environment, the Django Debug Toolbar is disabled by default.
 
 To disable it, you have two options:
 
-1. **Modify the .env file:** Set DEBUG to 0 in the .env file used in the development Docker container.
+1. **Modify the .env file:** Set DEBUG to 1 in the .env file used in the development Docker container.
 
 2. **Update settings/debug.py:** Change the show_toolbar function to always return False:
 
 ```
 def show_toolbar(request):
-    return False
+    return True
 
 DEBUG = env("DEBUG")
 
@@ -33,15 +35,19 @@ These changes should take effect without requiring a restart.
 
 ### Form Rendering
 
-Use Django forms to define fields that will be used in your form. On the templating side, use django-widget-tweaks to render them.
+Use Django forms to define fields that will be used in your form. On the templating side, use django-widget-tweaks to render them unless manual rendering is absolutely necessary.
+
+---
 
 ### Javascript
 
-Consider using other libraries like HTMX or Alpine.js to minimize standard Javascript usage where possible.
+Use libraries like HTMX or Alpine.js to minimize standard Javascript usage where possible. Using vanilla Javascript is ok when needed but must be refactored to the appropriate javascript file.
 
 #### HTMX
 
 For use of AJAX type calls and functions especially from UI elements, consider using HTMX.
+
+---
 
 ### Helper scripts
 
@@ -56,13 +62,14 @@ This runs:
 
 * flake8: a commonly used Python linter to enforce PEP8 guidelines
 * mypy: checks for opportunities to add typing where appropriate
+* isort: refactors Python imports where appropriate
 * coverage: generates coverage and coverage report
 * pip-audit: looks for vulnerabilities in the project's dependencies
 * Django and Python tests: we only accept 100%
 
 All tests should complete successfully and touch all parts of code as expected from the coverage script.
 
-Important: this does not mean all functionality one can imagine should be tested! And obviously we don't want to test 3rd party code.
+Important: this does not mean all functionality one can imagine should be tested! And obviously we don't want to test 3rd party (including Django) code.
 
 Currently, coverage settings will look at all code except:
 
@@ -72,7 +79,7 @@ Currently, coverage settings will look at all code except:
 * apps/transformations/core.py
 * \*\*/\_\_init\_\_.py
 * config/settings/\*
-* venv/
+* .venv/
 
 If a function or method is not deemed needed for testing or if the work to do it is unnecessarily daunting, we can ignore it by placing the '# pragma: no coverage' comment at the end of the line where missing coverage is indicated.
 
@@ -141,7 +148,7 @@ TOTAL                   29      0   100%
 
 ```
 
-Note that it will run flake8, mypy, a simple test suite, coverage and pip-audit.
+Note that it will run flake8, mypy, isort, a simple test suite, coverage and pip-audit.
 
 At the end of the pre-commit run, there is also a reminder for contributing to documentation for any changes made. See section below on creating documentation. 
 
@@ -149,11 +156,11 @@ At the end of the pre-commit run, there is also a reminder for contributing to d
 
 Documentation for DocrepoX is handled by the ddocs app. At this time, there are essentially 3 major areas where documentation should be considered for any change:
 
-- Using DocrepoX (Using-DocrepoX.md) - for end users 
+- Using DocrepoX (Using-DocrepoX.md) - for end user documentation
 - Customizing DocrepoX (Customizing-DocrepoX.md) - for end users who wish to customize a feature (generally light customizations)
-- Developing Documendous Software (Developing-Documendous.md) - for developers who would like to either extend or perform main development on Documendous products.
+- Developing Documendous Software (Developing-Documendous.md) - general instructions for developers who would like to either extend or perform main development on Documendous products.
 
-It's possible that a change or feature add will require entries in each of these. Currently, markdown is used for documentation. These files can be found in apps/ddocs/markdown/templates.
+It is possible that a change or feature add will require entries in each of these. Currently, markdown is used for documentation. These files can be found in apps/ddocs/markdown/templates.
 
 Once written, you can manually create the documention html templates for them. Each one of these will have a corresponding template. These are described in apps/ddocs/utils/chart/ddocs.py:
 
@@ -185,6 +192,8 @@ To make use of this chart, you can run at the command line in the apps/ddocs dir
 # python utils/md2html.py
 ```
 
+Be aware that pre-commit will run the md2html script.
+
 This will create the corresponding html template in the ddocs templates directory.
 
 #### CSS
@@ -215,7 +224,7 @@ or
 
 #### UI Template Organization
 
-In an html page, the best practice is to set a page like so:
+In an html page, the best practice is to set a page like this:
 
 ```
 <!DOCTYPE html>
@@ -348,4 +357,18 @@ class IndexViewTest(ViewTest):
     url_name = "repo:index"
 
 ```
+
+#### Refactoring
+
+Views should be thin. Make use of functions and methods.
+
+Ideally, one module (a Python file) or a template should:
+
+- Contain one view for views modules.
+- Be viewable without needing to scroll but if your class or set of functions exceed the page view of your editor, then keep it around 100 lines.
+- Broken into other logical templates once larger than a page view.
+- Contain one model for major models.
+- Or ... group smaller models into one logical module.
+
+Make good use of `__init__.py` files.
 

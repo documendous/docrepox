@@ -2,11 +2,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from apps.comms.models import Communication
 from apps.projects.models import Project
+from apps.repo.models.element.folder import Folder
 from apps.repo.tests.utils import TEST_USER, get_test_project, get_test_user
 from apps.repo.utils.system.object import get_admin_user
-from apps.comms.models import Communication
-
 
 User = get_user_model()
 
@@ -71,6 +72,10 @@ class ProjectDetailsViewTest(TestCase):
         self.test_project = Project.objects.create(
             name="Test project", owner=self.test_user, visibility="public"
         )
+        self.test_private_project = Project.objects.create(
+            name="Test private project 2", owner=self.test_user, visibility="private"
+        )
+        self.non_member = get_test_user(username="nonmember")
 
     def test_get(self):
         self.client.login(
@@ -84,7 +89,7 @@ class ProjectDetailsViewTest(TestCase):
                 ],
             )
         )
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_non_manager(self):
         self.client.login(username="testuser2", password=TEST_USER["password"])
@@ -96,7 +101,20 @@ class ProjectDetailsViewTest(TestCase):
                 ],
             )
         )
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_non_member(self):
+        # This should return a 404 if a user is not a member (Issue #672)
+        self.client.login(username="nonmember", password="testpass")
+        response = self.client.get(
+            reverse(
+                "repo:projects:project_details",
+                args=[
+                    self.test_private_project.pk,
+                ],
+            )
+        )
+        self.assertEqual(response.status_code, 404)
 
 
 class UpdateProjectViewTest(TestCase):
@@ -555,3 +573,19 @@ class DeactivateProjectViewTest(TestCase):
         self.assertEqual(response.status_code, 404)
         project = Project.objects.get(name="Test Project")
         self.assertTrue(project.is_active)
+
+
+class DeleteProjectTest(TestCase):
+    def setUp(self):
+        self.test_project = get_test_project()
+        self.managers_group = self.test_project.managers_group
+        self.editors_group = self.test_project.editors_group
+        self.readers_group = self.test_project.readers_group
+        self.project_folder = self.test_project.folder
+
+    def test_delete_project_folder_and_groups(self):
+        self.test_project.delete()
+        self.assertFalse(Group.objects.filter(name=self.managers_group).exists())
+        self.assertFalse(Group.objects.filter(name=self.editors_group).exists())
+        self.assertFalse(Group.objects.filter(name=self.readers_group).exists())
+        self.assertFalse(Folder.objects.filter(pk=self.project_folder.pk).exists())

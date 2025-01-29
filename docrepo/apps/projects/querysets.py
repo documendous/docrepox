@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest
+
 from .models import Project
 
 

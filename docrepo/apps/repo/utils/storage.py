@@ -1,6 +1,7 @@
 import logging
 import os
 from shutil import copyfile
+
 from django.conf import settings
 
 from apps.core.utils.storage import content_file_name

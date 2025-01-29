@@ -1,16 +1,18 @@
 import logging
-from django.apps import apps
+
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
+
 from apps.bookmarks.models import Bookmark
 from apps.repo import rules
+from apps.repo.utils.static.lookup import get_model
 
 
 def remove_bookmark(request, element_type, element_pk):
-    Element = apps.get_model("repo", element_type.title())
+    Element = get_model(element_type)
     element = get_object_or_404(Element, pk=element_pk)
 
-    rules.has_boomark_access(request, element)
+    rules.can_bookmark(request, element)
 
     content_type = ContentType.objects.get_for_model(element)
     bookmark = Bookmark.objects.get(
@@ -24,10 +26,10 @@ def remove_bookmark(request, element_type, element_pk):
 def add_bookmark(request, element_type, element_pk):
     log = logging.getLogger(__name__)
 
-    Element = apps.get_model("repo", element_type.title())
+    Element = get_model(element_type)
     element = get_object_or_404(Element, pk=element_pk)
 
-    rules.has_boomark_access(request, element)
+    rules.can_bookmark(request, element)
 
     content_type = ContentType.objects.get_for_model(element)
     if not Bookmark.objects.filter(

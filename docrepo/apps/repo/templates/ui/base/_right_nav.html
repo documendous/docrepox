@@ -9,7 +9,7 @@
       {% if user_is_admin %}
         text-red-500
       {% else %}
-        text-gray-500 
+        text-gray-700
       {% endif %}
     "
   >
@@ -17,7 +17,9 @@
   </span>
   {% if user_is_admin %}
     <a href="{% url 'admin:index' %}" class="tooltip" title="Admin Console">
-      <span class="material-icons-outlined nav-link">admin_panel_settings</span>
+      <span class="material-icons-outlined nav-link text-red-500 hover:text-red-700">
+        admin_panel_settings
+      </span>
     </a>
   {% endif %}
   <a
@@ -26,7 +28,9 @@
     title="Bookmarks"
     hx-boost="{{ use_hx_boost_ext }}"
   >
-    <span class="material-icons-outlined nav-link">bookmark</span>
+    <span
+      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700"
+    >bookmark</span>
   </a>
   <a
     href="{% url 'repo:update_profile' %}"
@@ -34,7 +38,7 @@
     title="Welcome {{ user.username }}!"
     hx-boost="{{ use_hx_boost_ext }}"
   >
-    <span class="material-icons-outlined nav-link">
+    <span class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700">
       account_circle
     </span>
   </a>
@@ -44,7 +48,9 @@
     title="Recyle Bin"
     hx-boost="{{ use_hx_boost_ext }}"
   >
-    <span class="material-icons-outlined nav-link">delete</span>
+    <span
+      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700"
+    >delete</span>
   </a>
   <form
     action="{% if keycloak_is_available %}{% url 'oidc_logout' %}{% else %}{% url 'logout' %}{% endif %}"
@@ -54,7 +60,9 @@
   >
     {% csrf_token %}
     <button type="submit" class="tooltip" title="Sign Out">
-      <span class="material-icons-outlined nav-link">logout</span>
+      <span class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700">
+        logout
+      </span>
     </button>
   </form>
 </nav>

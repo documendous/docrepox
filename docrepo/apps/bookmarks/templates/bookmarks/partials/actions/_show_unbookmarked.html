@@ -7,11 +7,11 @@
   <button
     type="submit"
     class="tooltip"
-    title="Bookmark {{ element.type }}: {{ element.name }}"
+    title="Bookmark {{ element.type }}: {{ element.name|truncatechars:30 }}"
     class="bg-none border-none p-0"
   >
     <span
-      class="material-icons-outlined nav-link"
+      class="material-icons-outlined nav-link text-gray-600 hover:text-blue-700"
     >
       bookmark
     </span>

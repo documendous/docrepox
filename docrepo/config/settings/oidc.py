@@ -1,6 +1,6 @@
-from .utils import env
 from .apps import INSTALLED_APPS
 from .middleware import MIDDLEWARE
+from .utils import env
 
 # The following should be set in your .env file:
 KC_HOST = env("KC_HOST")

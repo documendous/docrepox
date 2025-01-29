@@ -1,21 +1,24 @@
+import logging
+
 from django.urls import include, path
+
 from apps.repo.views.document.retrieve import DocumentRetrieverView
 from apps.repo.views.element.recycle import EmptyRecycleFolderView
+
 from .views import (
-    IndexView,
-    FolderView,
     AddDocumentView,
-    CreateDocumentView,
     AddMultiDocumentsView,
     AddVersionView,
+    CreateDocumentView,
     DeleteElementView,
+    ElementDetailsView,
+    FolderView,
+    IndexView,
     RecycleElementView,
     RestoreElementView,
-    ElementDetailsView,
     UpdateElementDetailsView,
     UpdateProfileView,
 )
-
 
 app_name = "repo"
 
@@ -97,3 +100,11 @@ urlpatterns = [
         name="update_element",
     ),
 ]
+
+
+log = logging.getLogger(__name__)
+
+try:
+    from extensions.apps.repo.urls import *  # noqa: F403, F401
+except ModuleNotFoundError:  # pragma: no coverage
+    log.warning("Expected module: 'urls' in extensions not found")

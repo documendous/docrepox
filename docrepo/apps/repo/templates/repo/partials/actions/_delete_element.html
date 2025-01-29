@@ -7,7 +7,8 @@
   >
     {% csrf_token %}
     <button type="submit"
-      title='Permanently Delete {{ element.type }} "{{ child.name }}" (Unrecoverable)'
+      title='Permanently Delete {{ element.type }} "{{ child.name|truncatechars:30 }}" (Unrecoverable)'
+      class="text-gray-700 hover:text-blue-700"
     >
       <span class="material-icons-outlined">
         delete_forever

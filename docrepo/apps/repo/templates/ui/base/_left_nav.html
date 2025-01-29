@@ -1,3 +1,7 @@
+{% load repo_tags %}
+
+{% is_admin_user request as user_is_admin  %}
+
 <nav class="left-nav gap-0.5">
   <a
     href="{% url 'repo:index' %}"
@@ -5,7 +9,9 @@
     title="Dashboard"
     hx-boost="{{ use_hx_boost_int }}"
   >
-    <span class="material-icons-outlined nav-link" style="font-size: 24px !important;">
+    <span
+      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700" style="font-size: 24px !important;"
+    >
       home
     </span>
   </a>
@@ -15,7 +21,10 @@
     title="Home Folder"
     hx-boost="{{ use_hx_boost_int }}"
   >
-    <span class="material-icons-outlined nav-link" style="font-size: 24px !important;">
+    <span
+      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700" 
+      style="font-size: 24px !important;"
+    >
       folder
     </span>
   </a>
@@ -25,18 +34,24 @@
     title="Projects"
     hx-boost="{{ use_hx_boost_ext }}"
   >
-    <span class="material-symbols-outlined nav-link" style="font-size: 20px !important;">
+    <span
+      class="material-symbols-outlined nav-link text-gray-700 hover:text-blue-700" 
+      style="font-size: 20px !important;"
+    >
       full_coverage
     </span>
   </a>
-  {% if user.username == 'admin' %}
+  {% if user_is_admin %}
     <a
       href="{% url 'repo:folder' root_folder_id %}"
       class="tooltip"
       title="Repository Root"
       hx-boost="{{ use_hx_boost_int }}"
     >
-      <span class="material-icons-outlined nav-link" style="font-size: 22px !important;">
+      <span
+        class="material-icons-outlined nav-link text-red-500 hover:text-red-700"
+        style="font-size: 22px !important;"
+      >
         storage
       </span>
     </a>
@@ -47,7 +62,10 @@
     title="Documentation"
     hx-boost="{{ use_hx_boost_ext }}"
   >
-    <span class="material-icons-outlined nav-link" style="font-size: 20px !important;">
+    <span
+      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700" 
+      style="font-size: 20px !important;"
+    >
       book_4
     </span>
   </a>

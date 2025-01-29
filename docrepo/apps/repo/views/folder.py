@@ -1,26 +1,24 @@
 import logging
+
 from django.conf import settings
 from django.contrib import messages
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.utils import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 
 from apps.clipboard.models import Clipboard
 from apps.core.views import View
 from apps.repo import rules
+from apps.repo.forms.element import AddDocumentForm, AddFolderForm, AddVersionForm
+from apps.repo.models.element.folder import Folder
 from apps.repo.utils.helpers import create_with_new_name
 from apps.repo.utils.system.object import (
     get_system_projects_folder,
     get_system_root_folder,
 )
-from apps.repo.forms.element import (
-    AddDocumentForm,
-    AddFolderForm,
-    AddVersionForm,
-)
-from apps.repo.models.element.folder import Folder
 
 
 class FolderView(View):
@@ -65,10 +63,10 @@ class FolderView(View):
             "create_doc_use_modal": settings.CREATE_DOC_USE_MODAL,
             "use_hx_boost_ext": settings.USE_HX_BOOST_EXT,
             "use_hx_boost_int": settings.USE_HX_BOOST_INT,
+            "max_upload_files": settings.DATA_UPLOAD_MAX_NUMBER_FILES,
         }
 
     def get(self, request, folder_id):
-
         parent = get_object_or_404(Folder, pk=folder_id)
         rules.can_view_folder(request, parent)
 
@@ -121,7 +119,7 @@ class FolderView(View):
                 messages.add_message(
                     request,
                     messages.INFO,
-                    f'Folder "{name}" was successfully created.',
+                    f'Folder "{truncatechars(name, 30)}" was successfully created.',
                 )
 
                 return HttpResponseRedirect(

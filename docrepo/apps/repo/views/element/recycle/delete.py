@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+
 from apps.core.views import View
 from apps.repo import rules
 from apps.repo.utils.static.lookup import get_model
