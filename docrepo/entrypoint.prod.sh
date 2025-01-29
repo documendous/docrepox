@@ -15,11 +15,7 @@ then
 fi
 
 python manage.py migrate
-python manage.py collectstatic --no-input --clear
-
-# Uncomment for cache-busting (this is a hack until we can figure
-# out how to serve STATIC_ROOT with nginx)
-cp -rf /tmp/staticfiles/* /home/docrepo/web/staticfiles/.
+python manage.py collectstatic --no-input
 
 # Uncomment for diagnostics
 # python manage.py diffsettings --all

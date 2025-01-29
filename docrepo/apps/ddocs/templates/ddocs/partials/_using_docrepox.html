@@ -751,17 +751,6 @@ python manage.py diffsettings
 </ul>
 <hr>
 <h2>Administering DocrepoX</h2>
-<h3>Cache Busting</h3>
-<p>Cache busting ensures that changes to static files (like CSS or JavaScript) are reflected immediately in your application by appending unique hashes to the filenames. If you are unfamiliar with this concept, you can safely skip this section, but it is generally recommended to keep it enabled.</p>
-<p><strong>DocrepoX</strong> uses Django's <code>ManifestStaticFilesStorage</code> for managing static files. This backend appends a hash to each static file name to facilitate cache busting. Ensure the following setting is included in your <code>settings.py</code>:</p>
-<pre><code class="language-python">STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-</code></pre>
-<p>For Docker deployments, include the following lines in your <code>entrypoint.prod.sh</code> script to enable this feature:</p>
-<pre><code class="language-sh">python manage.py collectstatic --no-input --clear
-cp -rf /tmp/staticfiles/* /home/docrepo/web/staticfiles/.
-</code></pre>
-<p>These commands ensure all static files are collected, outdated files are cleared, and the updated files are moved to the appropriate directory for serving.</p>
-<hr>
 <h3>Maintenance Tasks</h3>
 <h4>Removing Orphan Content</h4>
 <h5>Managing Orphaned Content Files</h5>

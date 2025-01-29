@@ -48,7 +48,6 @@ from .storage import (
     STATIC_ROOT,
     STATIC_URL,
     STATICFILES_DIRS,
-    STATICFILES_STORAGE,
 )
 from .utils import BASE_DIR
 
