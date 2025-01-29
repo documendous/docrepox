@@ -905,3 +905,49 @@ To automate this process, schedule the command to run periodically using support
     ```
 
 Automating this process ensures your system stays clean without manual intervention, improving storage efficiency and system performance.
+
+---
+
+### Upgrading
+
+Upgrading is simple if you installed via this github repo.
+
+1. Stop DocrepoX:
+
+```bash
+docker compose stop -f docker-compose.prod.yml 
+```
+
+2. Get newest version of DocrepoX:
+
+```bash
+git branch
+
+# if not on main do:
+git checkout main
+git pull
+```
+
+3. Update package changes:
+
+```bash
+source .venv/bin/activate
+poetry export --with dev -f requirements.txt --output requirements.txt
+cp requirements.txt docrepo/requirements.txt
+```
+
+4. Start up DocrepoX:
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
+Ensure the build and startup complete successfully. Log into DocrepoX. The correct version will show on the footer of the dashboard.
+
+Afterwards, you can stop the containers and run in daemon mode:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+---
