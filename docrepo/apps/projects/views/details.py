@@ -1,15 +1,15 @@
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.shortcuts import render
+
 from apps.comms.models import Communication
 from apps.core.views import View
-from apps.repo.utils.system.object import (
-    get_system_root_folder,
-)
+from apps.projects import rules
+from apps.repo.utils.system.object import get_system_root_folder
+
 from ..forms import MultipleUserSelectForm
 from ..models import Project
-
 
 User = get_user_model()
 
@@ -21,6 +21,9 @@ class ProjectDetailsView(View):
 
     def get(self, request, project_id):
         project = Project.objects.get(pk=project_id)
+
+        rules.can_view_project_details(request, element=project.folder)
+
         path_with_links = project.folder.get_path_with_links(request.user)
 
         managers_group = Group.objects.filter(

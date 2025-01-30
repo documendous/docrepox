@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+
 from apps.bookmarks.models import Bookmark
 from apps.bookmarks.utils import add_bookmark, remove_bookmark
 from apps.core.views import View
@@ -33,15 +34,13 @@ class AddBookmarkView(View):
         Add bookmark view
         """
         add_bookmark(request, element_type, element_pk)
-        return HttpResponseRedirect(
-            reverse(
-                "repo:element_details",
-                args=[
-                    element_type,
-                    element_pk,
-                ],
+        if "HTTP_REFERER" in request.META:  # pragma: no coverage
+            return_url = request.META["HTTP_REFERER"]
+        else:
+            return_url = reverse(
+                "repo:element_details", args=[element_type, element_pk]
             )
-        )
+        return HttpResponseRedirect(return_url)
 
 
 class RemoveBookmarkView(View):
@@ -50,12 +49,10 @@ class RemoveBookmarkView(View):
         Remove bookmark view
         """
         remove_bookmark(request, element_type, element_pk)
-        return HttpResponseRedirect(
-            reverse(
-                "repo:element_details",
-                args=[
-                    element_type,
-                    element_pk,
-                ],
+        if "HTTP_REFERER" in request.META:  # pragma: no coverage
+            return_url = request.META["HTTP_REFERER"]
+        else:
+            return_url = reverse(
+                "repo:element_details", args=[element_type, element_pk]
             )
-        )
+        return HttpResponseRedirect(return_url)

@@ -71,6 +71,7 @@ COPY config $APP_HOME/config
 COPY mediafiles $APP_HOME/mediafiles
 COPY staticfiles $APP_HOME/staticfiles
 COPY extensions $APP_HOME/extensions
+COPY global_settings-example.py $APP_HOME/global_settings-example.py
 COPY ./.env.prod $APP_HOME/.env
 COPY manage.py $APP_HOME/manage.py
 

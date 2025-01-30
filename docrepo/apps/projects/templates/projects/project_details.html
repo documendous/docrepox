@@ -14,7 +14,7 @@
         </div>
         <div class="flex items-center">
           <h2 class="text-xl font-bold mr-4 py-2">
-            {{ project.name }} Details
+            Project Details
           </h2>
           {% can_update_project request project as can_update_project %}
           {% if can_update_project %}
@@ -42,9 +42,9 @@
     {% include 'comments/comment_field.html' with element=project.folder %}
   {% endif %}
 
-  {% has_danger_privs_in_project request project.folder as can_perform_danger_privs %}
-  {% if can_perform_danger_privs %}
-    {% include 'projects/partials/_dangerous_tasks.html' %}
+  {% can_deactivate_project request project.folder as can_deactivate_project %}
+  {% if can_deactivate_project %}
+    {% include 'projects/partials/actions/_project_deactivation.html' %}
   {% endif %}
 </main>
 {% endblock main %}

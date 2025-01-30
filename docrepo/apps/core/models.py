@@ -1,5 +1,6 @@
-from functools import cached_property
 import uuid
+from functools import cached_property
+
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -7,7 +8,6 @@ from django.db import models
 
 from apps.core.utils.storage import content_file_name
 from apps.etags.models import Taggable
-
 
 User = get_user_model()
 
@@ -144,6 +144,14 @@ class Element(
                 if project.folder.id == folder_id:
                     return project
         return None
+
+    @cached_property
+    def is_document(self) -> bool:
+        return self.type == "document"
+
+    @cached_property
+    def is_folder(self) -> bool:
+        return self.type == "folder"
 
     class Meta:
         abstract = True

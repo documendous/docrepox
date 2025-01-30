@@ -1,5 +1,7 @@
 from uuid import UUID
+
 from django.urls import reverse
+
 from apps.projects.utils.project import is_a_project_folder
 from apps.repo.models.element.folder import Folder
 

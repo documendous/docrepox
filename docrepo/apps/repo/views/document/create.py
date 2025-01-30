@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.files.base import ContentFile
+
 from apps.repo.forms.element import AddVersionForm
 from apps.repo.views.document.abstract import BaseCreateDocumentView
 

@@ -15,8 +15,10 @@ import os
 import pathlib
 import subprocess
 import uuid
+
 from django.conf import settings
 from django.core.files import File
+
 from apps.repo.models.element.version import Version
 from apps.transformations.models import Preview
 
@@ -152,10 +154,15 @@ def generate_preview_file(
         log.debug("Generating preview file from {}".format(tmp_file))
         with open(tmp_file, "rb") as local_file:
             djangofile = File(local_file)
+            preview_content_file = str(uuid.uuid4()) + ".bin"
             preview = Preview()
             preview.version = version
-            preview.content_file.save(str(uuid.uuid4()) + ".bin", djangofile)
+            log.debug(
+                f"Attempting to save preview content file: {preview_content_file}"
+            )
+            preview.content_file.save(preview_content_file, djangofile)
             preview.save()
+            log.debug("Preview content file saved.")
 
         log.debug(
             "Preview file creation successful. Removing temp file: {}".format(tmp_file)

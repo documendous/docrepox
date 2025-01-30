@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import ModifySettingsView
 
+from .views import ModifySettingsView
 
 app_name = "ui"
 

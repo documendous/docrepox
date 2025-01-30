@@ -7,12 +7,12 @@
     <tr>
       {% if scope == 'full' or scope == 'summary' %}
         <td class="px-6 py-4 whitespace-nowrap text-sm">
-          {% if child.type == 'folder' %}
+          {% if child.is_folder or child.folder %}
           <a class="text-gray-600 hover:text-blue-700 flex items-center"
-            {% if child.type == 'folder' %}
+            {% if child.is_folder %}
               href="{% url 'repo:folder' child.pk %}"
-            {% elif child.type == 'document' %}
-              href=""
+            {% elif child.folder %}
+              href="{% url 'repo:folder' child.folder.pk %}"
             {% endif %}
             hx-boost="{{ use_hx_boost_ext }}"
             >
@@ -31,7 +31,9 @@
               href="{% url 'repo:element_details' child.type child.pk %}"
               hx-boost="{{ use_hx_boost_ext }}"
             >
-              <span class="material-icons-outlined mr-2">description</span>
+              <span class="material-icons-outlined mr-2">
+                description
+              </span>
               {% include "repo/partials/_folder_children_name.html" %}
               {% element_in_clipboard request child as in_clipboard %}
               {% if in_clipboard %}
@@ -48,28 +50,34 @@
       {% if is_bookmark_list_view %}
         <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
           <a
-            href="{% url 'repo:folder' child.parent.pk %}"
+            {% if child.type == 'project' %}
+              href="{% url 'repo:folder' child.folder.pk %}"
+            {% else %}
+              href="{% url 'repo:folder' child.parent.pk %}"
+            {% endif %}
             class="text-gray-600 hover:text-blue-700 flex items-center"
             hx-boost="{{ use_hx_boost_int }}"
           >
-            {{ child.parent.get_full_path }}
+            {% if child.type == 'project' %}
+              {{ child.folder.get_full_path }}
+            {% else %}
+              {{ child.parent.get_full_path }}
+            {% endif %}
           </a>
         </td>
       {% else %}
         {% if scope == 'full' %}
           <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
-            {{ child.title|default:'--' }}
+            {{ child.title|default:'--'|truncatechars:30 }}
           </td>
         {% endif %}
       {% endif %}
       {% if scope == 'summary' %}
         <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
-          {% if child.current_version.size  %}
-            {{ child.current_version.size|human_readable_size|default:'--' }}
+          {% if child.is_document %}
+            {% include "repo/partials/document/_document_size.html" %}
           {% else %}
-            <span class="text-red-500">
-              0.0 B or possibly missing content file
-            </span>
+            {% include "repo/partials/folder/_folder_size.html" %}
           {% endif %}
         </td>
       {% endif %}

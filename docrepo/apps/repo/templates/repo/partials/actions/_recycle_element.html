@@ -9,9 +9,9 @@
     <button
       id="recycleSubmit"
       type="submit"
-      title='Delete {{ element.type }} "{{ child.name }}" (Will be placed in recycling folder)'
+      title='Delete {{ element.type }} "{{ child.name|truncatechars:30 }}" (Will be placed in recycling folder)'
     >
-      <span class="material-icons-outlined">
+      <span class="material-icons-outlined text-gray-600 hover:text-blue-700">
         delete
       </span>
     </button>

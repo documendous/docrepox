@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+
 from .keycloak import KeycloakOIDCAuthenticationBackend, provider_logout
 
 log = logging.getLogger(__name__)

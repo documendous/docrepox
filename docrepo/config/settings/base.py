@@ -1,10 +1,8 @@
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-from config.settings.utils import BASE_DIR
 from .utils import env
 
-
-VERSION = "24.4.0"
+VERSION = "24.4.1"
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost"])
 
@@ -30,6 +28,3 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-
-if ENABLE_EXTENSIONS:
-    TEMPLATES[0]["DIRS"].append(BASE_DIR / "extensions/templates")

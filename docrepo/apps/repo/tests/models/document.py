@@ -1,6 +1,7 @@
 from django.test import TestCase
-from apps.repo.tests.utils import get_test_user, get_test_document
+
 from apps.repo.models.element.version import Version
+from apps.repo.tests.utils import get_test_document, get_test_user
 
 
 class DocumentModelTest(TestCase):

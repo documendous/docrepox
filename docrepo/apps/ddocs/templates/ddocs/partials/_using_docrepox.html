@@ -30,6 +30,8 @@
     font-size: smaller;
     margin-bottom: 1rem;
     margin-top: 1rem;
+    background-color: lightgrey;
+    padding: 10px;
   }
   ul {
     margin-bottom: 0.5rem;
@@ -41,37 +43,69 @@
     padding: 1rem;
     list-style-type: decimal;
   }
+  a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+  }
+
+  a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+
+  a:active {
+    color: #003f7f;
+  }
+
+  a:focus {
+    outline: 2px solid #80bdff;
+    outline-offset: 2px;
+  }
 </style>
 <h2>Using DocrepoX</h2>
 <h3>Licensing</h3>
 <p>DocrepoX LGPLv3</p>
 <p>For commercial licensing inquiries, contact documendous@gmail.com.</p>
 <p>To view the license in its entirety see LICENSE.txt in this repository.</p>
+<hr>
 <h3>Support</h3>
 <h4>Supported Features</h4>
-<p>All features listed in the "Using DocrepoX" and "Customizing DocrepoX" sections are fully supported and should function as described. If you experience any issues, please report them by creating an issue.</p>
+<p>All features listed in the "Using DocrepoX" and "Customizing DocrepoX" sections are fully supported and should function as described. If you experience any issues, please report them by creating an issue here:</p>
+<p><a href="https://github.com/documendous/docrepox/issues">https://github.com/documendous/docrepox/issues</a></p>
 <h4>Unsupported Features Requiring Consulting</h4>
-<p>Any features not covered in the "Using DocrepoX" section, including those related to development documentation, are not supported and will require consulting services.</p>
+<p>Any features not covered in the "Using DocrepoX" section, including those related to development documentation, are not supported under standard support subscriptions and will require consulting services.</p>
+<hr>
 <h3>Startup</h3>
+<p>For quick start instructions see the README here:</p>
+<p><a href="https://github.com/documendous/docrepox">https://github.com/documendous/docrepox</a></p>
+<p>DocrepoX should run as expected with its default settings, but customization is often needed. Modify docrepo/global_settings.py instead of app settings to avoid overwrites during upgrades. This file preserves changes and remains unchanged when updating via Git.</p>
 <p>When the application starts, a default admin user is created with the following credentials:</p>
 <ul>
 <li><strong>Username:</strong> admin  </li>
 <li><strong>Password:</strong> admin  </li>
-<li><strong>Email:</strong> admin@localhost  </li>
+<li><strong>Email:</strong> admin@localhost</li>
 </ul>
 <p>To customize these credentials, update the following variables in your .env file to values appropriate for your environment:  </p>
 <ul>
 <li>ADMIN_USERNAME  </li>
 <li>ADMIN_EMAIL  </li>
-<li>ADMIN_PASSWORD  </li>
+<li>ADMIN_PASSWORD</li>
 </ul>
 <p>After the initial startup, ensure you update the admin user's password if you haven't already done so.</p>
+<p>The terms "system administrator" and "system admin user" (default username: 'admin') refer to the same entity in this documentation.</p>
+<p>By default, the admin user, like any regular non-privileged user, cannot view the contents of projects they are not a member of or access other users' home directories. However, the admin user does have access to the admin console and can make changes to elements and projects from there, which should only be done for maintenance or emergencies. </p>
+<p>To grant the admin user superuser privileges in the UI, set ADMIN_ALLOW_ALL=True in docrepo/global_settings.py. </p>
+<p>Be aware: Setting ADMIN_ALLOW_ALL to True will allow the admin user to bookmark even non-member projects but resetting ADMIN_ALLOW_ALL to False will permanently remove these type of bookmarks. </p>
+<hr>
 <h3>Locale and Timezones</h3>
 <h4>Local Browser Timezone</h4>
-<p>By default, DocrepoX uses tz_detect to manage local browser timezones. This behavior is controlled in apps/repo/settings.py with the following setting:</p>
+<p>By default, DocrepoX uses tz_detect to manage local browser timezones. This behavior is controlled in docrepo/global_settings.py with the following setting:</p>
 <pre><code>USE_LOCAL_TZ = True
 </code></pre>
 <p>To disable this feature, set USE_LOCAL_TZ to False and re-login, as the timezone preference is stored in the user's session.</p>
+<hr>
 <h3>Keycloak Integration with DocrepoX</h3>
 <p>To set up Keycloak with DocrepoX, follow these steps:</p>
 <h4>Setting Up Keycloak in Docker</h4>
@@ -112,12 +146,12 @@ volumes:
   ### Uncomment for Keycloak:
   # dev_postgres_data_kc:
 </code></pre>
-<h4>Using Mozilla Django OIDC</h4>
+<h4>Mozilla Django OIDC</h4>
 <p>DocrepoX uses the Mozilla Django OIDC library to support Keycloak's OpenID Connect protocol. Ensure the following is configured:</p>
-<p>The library is already installed in pyproject.toml:</p>
+<p>The library is already installed in pyproject.toml (this should be here by default):</p>
 <pre><code>mozilla-django-oidc = &quot;^4.0.1&quot;
 </code></pre>
-<p>In config/settings/security.py, enable Keycloak:</p>
+<p>In docrepo/global_settings.py, enable Keycloak:</p>
 <pre><code>USE_KEYCLOAK = True
 </code></pre>
 <p>Add OIDC URLs in config/urls.py:</p>
@@ -127,7 +161,8 @@ volumes:
     path(&quot;&quot;, include(&quot;apps.repo.urls&quot;)),
 ]
 </code></pre>
-<p>Configure Keycloak settings in config/settings/oidc.py:</p>
+<p><strong>Note:</strong> The following should work out of the box if you are running the docker containers as configured in the default docker-compose files.</p>
+<p>Configure Keycloak settings in docrepo/global_settings.py:</p>
 <pre><code>from .utils import env
 
 KC_HOST = env(&quot;KC_HOST&quot;)
@@ -158,11 +193,11 @@ KC_REALM=documendous  # Your Keycloak realm
 KC_CLIENT=documendous  # Your Keycloak client
 KC_CLIENT_SECRET=my-secret  # Found in the client credentials tab in Keycloak
 </code></pre>
-<h4>Starting the Integration</h4>
-<p>Run the application using dev-up.sh. On the login page, you should see a link to the Keycloak login provider. Ensure a user is created in the DocrepoX client within the Documendous realm.</p>
+<p>Next, restart. On the login page, you should see a link to the Keycloak login provider. Ensure a user is created in the DocrepoX client within the Documendous realm in the Keycloak application.</p>
 <h4>Additional Recommendations</h4>
 <p>If you're new to Keycloak, review the Keycloak documentation. See https://www.keycloak.org/documentation. </p>
 <p>For easier setup, import the provided documendous-realm.json file when creating your Keycloak realm. Note that this file must be imported at the time of realm creation, not from the admin interface. Update the client URLs in Keycloak if your hostname or port is different.</p>
+<hr>
 <h3>Minio</h3>
 <p>Some things to consider:</p>
 <ul>
@@ -171,7 +206,6 @@ KC_CLIENT_SECRET=my-secret  # Found in the client credentials tab in Keycloak
 <li>Switch Minio with AWS S3 and this means pretty much the same.</li>
 <li>If you do not understand Minio or AWS S3, we recommend using default storage. If you do understand Minio or AWS S3 very well, then use that.</li>
 </ul>
-<p>It is possible to switch midstream but this would require consulting hours from Documendous Software to assist with that and be supported.</p>
 <h4>Initial Setup</h4>
 <p>Ensure the following settings are in config/settings/storage.py:</p>
 <pre><code>DEFAULT_FILE_STORAGE = &quot;minio_storage.storage.MinioMediaStorage&quot;
@@ -203,8 +237,7 @@ MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 <ul>
 <li>In config/settings/<strong>init</strong>.py, uncomment the following:</li>
 </ul>
-<pre><code>### Uncomment the following import to use Minio:
-# from .minio import (
+<pre><code># from .minio import (
 #     INSTALLED_APPS,
 #     DEFAULT_FILE_STORAGE,
 #     MINIO_STORAGE_ENDPOINT,
@@ -218,13 +251,12 @@ MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 #     MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET,
 # )
 </code></pre>
-<p>Note that static storage is commented out. We don't recommend using Minio for static (docrepo's css/js/img files that are part of the product) but you can use this if you like.</p>
+<p>Note that static storage is commented out. Usage with static files service is not recommended (docrepo's css/js/img files that are part of the product).</p>
 <ul>
-<li>Also, uncomment the appropriate area in your docker-compose.yml. For example:</li>
+<li>Uncomment the appropriate area in your docker-compose.yml. For example:</li>
 </ul>
 <pre><code>services:
   ...
-### Uncomment the following to use Minio
   # minio:
   #   # See https://hub.docker.com/r/minio/minio/tags
   #   image: quay.io/minio/minio:RELEASE.2024-07-16T23-46-41Z.fips
@@ -241,7 +273,6 @@ MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 
 volumes:
   ...
-  ### Uncomment the following to use Minio
   # miniodata:
   #   driver: local
 </code></pre>
@@ -253,7 +284,7 @@ volumes:
 <p>Create a bucket called docrepo or whatever you want to name it.</p>
 </li>
 </ul>
-<p>Enter the bucket name into your .env file:</p>
+<p>Enter this bucket name into your .env file:</p>
 <pre><code>MINIO_STORAGE_MEDIA_BUCKET_NAME=docrepo
 </code></pre>
 <ul>
@@ -275,14 +306,14 @@ volumes:
 MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
 </code></pre>
 <p>Restart your docker containers. If you delete your volumes however, you'll have to repeat the process.</p>
+<hr>
 <h3>Elastic Search</h3>
-<p>Note that elastic search is not implemented yet.</p>
+<p>Note that elastic search is not implemented yet. If you are interesed in developing with Elastic Search you can use the following instructions to include it into your projects. Be aware that there is no elastic search usage at this point in DocrepoX.</p>
 <p>Here are directions however for adding Elastic Search to this project. </p>
 <ul>
 <li>In docker-compose.yml uncomment this block:</li>
 </ul>
-<pre><code># Elastic Search
-  # elasticsearch:
+<pre><code>  # elasticsearch:
   #   image: elasticsearch:8.15.1
   #   volumes:
   #     - es_data:/usr/share/elasticsearch/data
@@ -296,15 +327,13 @@ MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
 <p>and ...</p>
 <pre><code>volumes:
   ...
-  ### Uncomment to use Elastic
   # es_data:
 </code></pre>
 <p>Do the same in docker-compose.prod.yml as well if you wish to use that environment.</p>
 <ul>
 <li>In docrepo/config/settings/<strong>init</strong>.py:</li>
 </ul>
-<pre><code># ## Uncomment to use elastic
-# from .elastic import ELASTICSEARCH_DSL
+<pre><code># from .elastic import ELASTICSEARCH_DSL
 </code></pre>
 <ul>
 <li>In docrepo/config/settings/apps.py:</li>
@@ -328,8 +357,11 @@ MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
 <pre><code># Uncomment to use Elastic search indexing
 # python manage.py search_index --rebuild -f
 </code></pre>
+<hr>
 <h3>Troubleshooting</h3>
 <h4>Download Size is Limited</h4>
+<p>The default download and upload size limit in Nginx is 1 megabyte (MB), controlled by the "client_max_body_size" directive which sets the maximum size of a client request body, including file uploads and POST data.</p>
+<p>The Nginx container for DocrepoX is configured with a 1GB limit to accommodate the large and varied document files commonly found in content management systems.</p>
 <p>To restrict or increase the size of file downloads, update the client_max_body_size property in nginx.conf as shown below:</p>
 <pre><code>server {
 
@@ -340,7 +372,7 @@ MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
 }
 </code></pre>
 <p><strong>Note:</strong> Restart the server for the changes to take effect.</p>
-<h4><em>No preview or download available</em></h4>
+<h4>No preview or download available</h4>
 <p>This warning appears on a document detail page when either:</p>
 <ul>
 <li>The document has no data (its content file is empty).</li>
@@ -348,7 +380,7 @@ MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
 </ul>
 <p>Content files are stored in a date-time structured folder system within the mediafiles/ directory. If a content file is deleted, previews and downloads will not be available.</p>
 <h4>Docker</h4>
-<h5>Error response from daemon: network [long hash] not found</h5>
+<p><strong>Error response from daemon: network [long hash] not found</strong></p>
 <p>You may need to run something like this:</p>
 <pre><code># docker compose -f docker-compose.prod.yml up --build --force-recreate
 </code></pre>
@@ -361,26 +393,26 @@ MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
 python manage.py collectstatic --no-input
 python manage.py diffsettings
 </code></pre>
-<p>Warning: the diffsettings will display the values passwords and secret keys. This should be turned on while your install is exposed to the public.</p>
+<p>Warning: The diffsettings command may expose passwords and secret keys. It should not be used in production. If a support engineer requests these settings, run the commands manually inside a container or running server.</p>
+<hr>
 <h3>Get Support</h3>
 <p>To receive assistance, click the <strong>Support</strong> link in the footer to open an issue.  </p>
 <h4>Types of Requests</h4>
 <ol>
-<li>Enhancement Request</li>
+<li>
+<p>Enhancement Request: Describe how something can be improved. Be specific about what changes you would like to see.</p>
+</li>
+<li>
+<p>Feature Request: Suggest a new feature that does not currently exist. Explain why it would be valuable or necessary.</p>
+</li>
+<li>
+<p>Bug Fix: Report an issue by explaining what is not working correctly. Include relevant details for troubleshooting.</p>
+</li>
 </ol>
-<p>Describe how something can be improved. Be specific about what changes you’d like to see.  </p>
-<ol>
-<li>Feature Request</li>
-</ol>
-<p>Suggest a new feature that doesn’t currently exist. Explain why it would be valuable or necessary.  </p>
-<ol>
-<li>Bug Fix</li>
-</ol>
-<p>Report an issue by explaining what isn’t working correctly. Include relevant details for troubleshooting.</p>
+<hr>
 <h3>UI</h3>
 <h4>Dashboard</h4>
-<p>This guide will help you understand the various sections and features available on the main dashboard.</p>
-<p>The DocrepoX dashboard provides an easy-to-use interface for managing and organizing your digital assets and documents. Below is a breakdown of the different sections and their functionalities.</p>
+<p>The DocrepoX dashboard provides an easy-to-use interface for managing and organizing your digital assets and documents. Below is an outline of these sections and their functionalities.</p>
 <h5>Navigation</h5>
 <p>The header includes several icons for quick navigation:</p>
 <ul>
@@ -388,7 +420,7 @@ python manage.py diffsettings
 <li><strong>Home Icon</strong>: Navigate back to the home screen.</li>
 <li><strong>Documents Icon</strong>: Access the document management section to view and manage your documents.</li>
 <li><strong>Projects Icon</strong>: View and manage your projects.</li>
-<li><strong>Bookmark Icon</strong>: List of user's bookmarks.</li>
+<li><strong>Bookmark Icon</strong>: A list view of a user's bookmarks.</li>
 <li><strong>Admin Console</strong>: An admin console for use by the system admin user.</li>
 <li><strong>User Profile Icon</strong>: Access your user settings and profile information.</li>
 <li><strong>Notifications Icon</strong>: View any notifications and alerts.</li>
@@ -402,43 +434,50 @@ python manage.py diffsettings
 <li><strong>Security</strong>: Ensures your data is protected with advanced permissions and encryption.</li>
 <li><strong>Innovation</strong>: A tool designed to enhance your document management processes and drive innovation.</li>
 </ul>
-<p>You can remove the welcome section and the documentation links section by clicking the close button to the right of these areas. If needed, the admin user can reset these settings: 'show_welcome' and 'show_getting_started' in the admin console under UI Settings per user by changing the value to 'true'.</p>
+<p>You can remove the welcome section and the documentation links section by clicking the close button to the right of these areas.</p>
+<p>If needed, the admin user can reset these settings: 'show_welcome' and 'show_getting_started' in the admin console under UI Settings per user by changing the value to 'true'.</p>
 <p>For example if the admin user wants to reset 'show_welcome' to 'true', look for UI Setting: "admin | show_welcome: false", go to its change page and change the string, 'false' to 'true'.</p>
 <h4>Dashlets</h4>
-<p>DocrepoX makes use of dashlets as a way of providing simple components that can be added to the dashboard or other areas in the application.</p>
-<ul>
-<li><strong>Message of the Day (MOTD) Dashlet</strong></li>
-</ul>
+<p>DocrepoX uses dashlets as a way of providing simple components that can be added to the dashboard or other areas in the application.</p>
+<p>An example dashlet provided is called MOTD (not enabled by default).</p>
+<p><strong>Message of the Day (MOTD) Dashlet</strong></p>
 <p>A message of the day can be created to be displayed on the dashboard.</p>
-<p>Steps to include an MOTD:</p>
+<p>Steps to include MOTD:</p>
 <ol>
-<li>Set USE_MOTD = True in config/settings/dashlets.py.</li>
+<li>Set USE_MOTD = True in docrepo/global_settings.py</li>
 <li>Create a new MOTD in the admin console.</li>
 <li>Set the new MOTD is_published to True.</li>
 </ol>
-<p>Of course, to disable the MOTD dashlet, set USE_MOTD=False in config/settings/dashlets.py</p>
+<p>To disable the MOTD dashlet, set USE_MOTD=False in docrepo/global_settings.py.</p>
 <h4>Getting Started</h4>
-<p>The <strong>Getting Started</strong> section provides introductory information to help you begin using DocrepoX. Currently, it displays a placeholder message "Docs to come ...", indicating that detailed documentation will be available soon.</p>
+<p>The "Getting Started" section provides introductory information to help you begin using DocrepoX. Currently, it displays a placeholder message "Docs to come ...", indicating that detailed documentation will be available soon.</p>
 <h4>Latest Content</h4>
-<p>The <strong>Latest Content</strong> section shows the most recent documents added to your system. It currently displays a placeholder message "List of documents in your home folder or projects ...", indicating where your recent documents will be listed.</p>
-<p>By default, the number of content items for projects and documents shown on the dashboard in each section is set to 5. This can be changed in ui/settings.py: MAX_CONTENT_ITEM_SIZE.</p>
+<p>The "Latest Content" section shows the most recent documents added to your system. It currently displays a placeholder message "List of documents in your home folder or projects ...", indicating where your recent documents will be listed.</p>
+<p>By default, the number of content items for projects and documents shown on the dashboard in each section is set to 5. This can be changed in docrepo/global_settings.py: MAX_CONTENT_ITEM_SIZE.</p>
+<p><strong>Note:</strong> In "Latest Content", you will only see content you have read access to, including documents you own, those in projects where you are a member, and public projects, regardless of membership.</p>
+<hr>
 <h3>Projects</h3>
+<p>A "Project" is a collection of documents that have designated privileges for a specific group of users. Projects can be designated with visibility of public, managed or private. A public project allows any user in the system to read the project documents but only a member user can read and work with documents in a managed or private project.</p>
 <p>The <strong>Projects</strong> section lists all your active projects. It currently displays a placeholder message "List of projects ...", indicating where your projects will appear.</p>
 <h4>Searching for Projects</h4>
-<p>Public Projects
-- All public projects are automatically visible in your project list
-- No special access or search required</p>
-<p>Finding Additional Projects
-- Use the search function to discover more projects
-- Type any part of the project name in the search box
-- Search results will include:
-  - Public projects
-  - Managed projects
-  - Private projects (if you have permissions)</p>
+<p>Public Projects</p>
+<ul>
+<li>All public projects are automatically visible in your project list</li>
+<li>No special access or search required</li>
+</ul>
+<p>Finding Additional Projects</p>
+<ul>
+<li>Use the search function to discover more projects</li>
+<li>Type any part of the project name in the search box</li>
+<li>Search results will include:</li>
+<li>Public projects</li>
+<li>Managed projects</li>
+<li>Private projects (if you have membership)</li>
+</ul>
 <h4>Requesting Access and Joining a Project</h4>
 <h5>Join Process</h5>
 <ol>
-<li>Look for the join request icon next to projects you're not a member of</li>
+<li>Look for the join request icon next to projects where you are not already a member.</li>
 <li>Click the icon to send a membership request</li>
 <li>Project managers will receive your request</li>
 <li>Once requested:</li>
@@ -455,13 +494,13 @@ python manage.py diffsettings
 <li>Remove the pending request message</li>
 </ul>
 <h4>Project Access Levels</h4>
-<p>Once approved, you may be added as:</p>
+<p>Once approved, you can be added as:</p>
 <ul>
 <li>A reader (view-only access)</li>
 <li>An editor (can add documents and folders and make changes)</li>
 <li>A manager (full project control)</li>
 </ul>
-<p><em>Note: Your specific access level will be determined by the project managers.</em></p>
+<p><strong>Note:</strong> Only project managers can assign users to a project group.</p>
 <p>As a member of a project, you will be able to see your role and access level below the navigation links in the project's folder view.</p>
 <h4>Project Details</h4>
 <p>For each project that you own or manage, you can view the project's details by clicking on the gear symbol to the right of it either in the actions to the right of the project in the folder list view or on the gear symbol while in the project (near the breadcrumb or in a project folder or document's detail page).</p>
@@ -472,7 +511,7 @@ python manage.py diffsettings
 <li>Description</li>
 <li>Visibility</li>
 </ul>
-<p>From this page, if you are a project editor or manager, you can update its details.</p>
+<p>From this page, if you are a project manager, you can update the project's details.</p>
 <p>Visibility means the intended audience. By default there are 3 options:</p>
 <ul>
 <li>Public: any user can find this project and join as a reader.</li>
@@ -483,16 +522,19 @@ python manage.py diffsettings
 <ul>
 <li>Manager: Denotes project ownership. A project manager can add, edit and delete documents.</li>
 <li>Editor: A project editor can add and edit documents.</li>
-<li>Reader: A project reader can only consume the content.</li>
+<li>Reader: A project reader can only view documents.</li>
 </ul>
-<p>A member of any project will be able to access all folders in the project. All users regardless of membership will be able to access all folders in a project whose visiblity is set to 'Public'.</p>
-<p>The project details page includes a section at the bottom where users can add comments. This feature can be enabled or disabled by setting ENABLE_PROJECT_COMMENTS = True or False in repo/settings.py.</p>
+<p>A member of any project will be able to access all folders in the project.</p>
+<p>All users regardless of membership will be able to access all folders in a project whose visiblity is set to 'Public'.</p>
+<p>The project details page includes a section at the bottom where users can add comments. This feature can be enabled or disabled by setting ENABLE_PROJECT_COMMENTS = True or False in docrepo/global_settings.py.</p>
 <p>The comment author can delete their own comments.</p>
 <p>Project managers can delete any comments on project details, documents or folders.</p>
 <p>Public projects can enable comments by anyone including non-members if ENABLE_PUBLIC_COMMENTS is set to True.</p>
-<h3>Deactivating a Project</h3>
+<h4>Deactivating a Project</h4>
 <p>Only project owners can deactivate projects, preventing them from appearing in searches or project lists, regardless of visibility settings.</p>
 <p>To deactivate a project, the owner should navigate to the project detail page, scroll to the bottom, and select the option to deactivate the project. Reactivating the project requires the system admin user to access the admin console, locate the project, and set is_active=True by checking the <strong>is_active</strong> checkbox.</p>
+<p><strong>Note:</strong> Only the system administrator can delete a project. To do this, the administrator must access the admin console and delete the project. However, please note that this action will immediately and permanently delete all associated folders (including the project root folder), documents, all versions, and content files. <strong>This process is irreversible.</strong></p>
+<hr>
 <h3>Folder View</h3>
 <h4>Folder Actions (shown above the element list)</h4>
 <ul>
@@ -500,10 +542,10 @@ python manage.py diffsettings
 <p>Add Documents: This will open an add document modal where the user can add a document to the current folder.</p>
 </li>
 <li>
-<p>Create Documents: By default, a new page opens to create a text file in the current folder. To use a modal instead, set CREATE_DOC_USE_MODAL=True in repo/settings.py (rich text not supported). If CREATE_DOC_USE_MODAL=False, enable rich text with CREATE_DOC_AS_RTF=True, which uses the Quill editor. Note: Quill generates and saves HTML content as "text/html" regardless of file extension.</p>
+<p>Create Documents: By default, a new page opens to create a text file in the current folder. </p>
 </li>
 <li>
-<p>Upload Multiple Documents: This will allow the user to upload many documents at once. However, this process will automatically create the document names based on the file name. You will be able to make changes to name, title, description, etc. on the document details page.</p>
+<p>Upload Multiple Documents: This feature lets users upload multiple documents simultaneously. The document names will automatically be generated based on the uploaded file names. Users can later edit the name, title, description, and other details on the document details page. By default, the maximum number of documents allowed per upload is 256. This limit can be adjusted by modifying the DATA_UPLOAD_MAX_NUMBER_FILES setting in docrepo/global_settings.py.</p>
 </li>
 <li>
 <p>Add Folders: This will open an add folder modal where the user can create a subfolder in the current folder. Be aware that 'Recycle' is a reserved system name for folders and cannot be used when creating a folder.</p>
@@ -512,6 +554,8 @@ python manage.py diffsettings
 <p>Clipboard: The clipboard temporarily stores documents and folders for moving to another folder. Items can be removed before pasting. A blue clipboard icon appears next to items in the folder list and disappears after pasting. By default, the clipboard is cleared on logout, but setting DELETE_CLIPBOARD_ON_LOGOUT=False saves items between sessions.</p>
 </li>
 </ul>
+<p><strong>Note:</strong> To use a modal instead for "Create Documents", set CREATE_DOC_USE_MODAL=True in docrepo/global_settings.py (rich text not supported). If CREATE_DOC_USE_MODAL=False, enable rich text with CREATE_DOC_AS_RTF=True, which uses the Quill editor.</p>
+<p><strong>Note:</strong> For "Create Documents", Quill generates and saves HTML content as "text/html" regardless of file extension.</p>
 <h4>Element List View</h4>
 <p>In the folder view are a list of subfolders and documents (child elements) in the parent folder view.</p>
 <p>Each child element should show:</p>
@@ -522,7 +566,7 @@ python manage.py diffsettings
 <li>Created and Last Modified dates</li>
 <li>List of Actions available for each element</li>
 </ul>
-<p>By default, items in the folder view will paginate by 10. This can be changed in repo/settings.py by changing:</p>
+<p>By default, items in the folder view will paginate by 10. This can be changed in docrepo/global_settings.py by changing:</p>
 <pre><code>FOLDER_VIEW_PAGINATE_BY = 10
 </code></pre>
 <p>By default, the following columns are sortable:</p>
@@ -540,6 +584,9 @@ python manage.py diffsettings
 <p>You can move documents and folders by clicking on the move icon. This will place elements in the user's clipboard (see Clipboard in Folder Actions section).</p>
 </li>
 <li>
+<p>You can bookmark a document, folder or project by clicking on the bookmark icon to the right of the element. This converts the bookmark icon to a star. To remove the bookmark, click the star.</p>
+</li>
+<li>
 <p>You can recycle documents and folders (and their contents) by clicking on the trashcan icon. This will place the document/folder into your Recycle folder. Note that once documents and folders are moved to your recycle folder, you can only move them by restoring them to their original parent folder.</p>
 </li>
 <li>
@@ -552,7 +599,7 @@ python manage.py diffsettings
 <p>On the detail page, you can view details about a folder or document. From here you can download a document (or preview if your browser supports the mimetype or if a previewable PDF file is generated for it) and bookmark either a document or folder.</p>
 </li>
 <li>
-<p>Note that bookmarks are removed when a document has been recycled or deleted.</p>
+<p>A bookmarked document, folder or project will show a star icon next to its name. On the detail page or in the element actions, the user can click the star to remove the bookmark.</p>
 </li>
 <li>
 <p>If you own a folder or document, you can update its details from the details page.</p>
@@ -561,6 +608,7 @@ python manage.py diffsettings
 <p>If you need to find the content file path (on the file system) for a document, you can see this in the document details page if you are the admin user. Note that the admin user can also find this information in the admin console.</p>
 </li>
 </ul>
+<p><strong>Note:</strong> that bookmarks are removed when a document has been recycled or deleted.</p>
 <h4>Updating Document/Folder/Project Details</h4>
 <p>Only the owner (or project editor and manager if in a project) can update the details of the document or folder.</p>
 <p>You can update the following:</p>
@@ -574,112 +622,197 @@ python manage.py diffsettings
 <h5>Tags</h5>
 <ul>
 <li>Tags must be comma delimited.</li>
-<li>By default MAX_TAG_COUNT is set to 5 but this can be changed in apps/etags/settings.py file.</li>
+<li>By default MAX_TAG_COUNT is set to 5 but this can be changed in docrepo/global_settings.py file.</li>
 </ul>
-<h3>Special Elements</h3>
+<h4>Special Elements</h4>
 <ul>
-<li>User's recycle folder - this folder will not show by default for DocrepoX users though it can be accessed via the recycle folder icon. The recycle folder details cannot be updated.</li>
+<li>
+<p>User's recycle folder - this folder will not show by default for DocrepoX users though it can be accessed via the recycle folder icon. The recycle folder details cannot be updated.</p>
+</li>
+<li>
+<p>Most system folders cannot be changed.</p>
+</li>
 </ul>
+<hr>
 <h3>Comments</h3>
-<p>At the bottom of folder and document detail pages, users can add comments. To enable or disable this feature, update repo/settings.py as follows:</p>
+<p>At the bottom of folder and document detail pages, users can add comments. To enable or disable this feature, update docrepo/global_settings.py as follows:</p>
 <ul>
 <li>For folders: ENABLE_FOLDER_COMMENTS = True or False</li>
 <li>For documents: ENABLE_DOCUMENT_COMMENTS = True or False</li>
 <li>For projects: ENABLE_DOCUMENT_COMMENTS = True or False</li>
 </ul>
 <p>Any comment author can delete his/her own comments.</p>
+<hr>
 <h3>Transformations</h3>
 <h4>Generating Previews and PDFs with Transformations</h4>
 <p>DocrepoX provides features for handling document transformations, including generating previews and PDFs. This guide explains how these features work and how they integrate into the platform.</p>
-<hr>
-<h4><strong>Generating Previews</strong></h4>
-<p>Note: In order to be able to view previews, you must have LibreOffice (or OpenOffice) installed on your system. The path to its binary must be set in apps/transformations/settings.py: </p>
+<h4>Generating Previews</h4>
+<p><strong>Note:</strong> In order to be able to view previews, you must have LibreOffice (or OpenOffice) installed on your system. The path to its binary must be set in docrepo/global_settings.py: </p>
 <pre><code>SOFFICE_EXE = (
     &quot;/usr/bin/soffice&quot;  # Path to open/libre/star office executable for transformations
 )
 </code></pre>
 <p>If you are using the docker containers, then LibreOffice should be installed.</p>
 <p>Previews allow you to quickly view document content without downloading the full file. Supported file types include .doc, .docx, .jpg, .png, .pdf, and more.</p>
-<h5><strong>How Previews Are Generated</strong></h5>
-<ol>
-<li>When a document is uploaded, the system checks:</li>
+<h5>How Previews Are Generated</h5>
+<p>When a document is uploaded, the system checks:</p>
+<ul>
 <li>File size (must be under 10MB).</li>
 <li>File type (must be one of the supported preview types).</li>
-<li>If the file meets the criteria, a preview file is generated automatically using LibreOffice (for transformable types) or directly from the content (for supported image and PDF files).</li>
-</ol>
-<h5><strong>Preview Actions</strong></h5>
+</ul>
+<p>If the file meets the criteria, a preview file is generated automatically using LibreOffice (for transformable types) or directly from the content (for supported image and PDF files).</p>
+<h5>Preview Actions</h5>
 <p>View previews directly from the document details page.</p>
-<h5><strong>Troubleshooting</strong></h5>
+<h5>Troubleshooting</h5>
 <ul>
 <li>If a preview is unavailable, ensure the document meets the size and type requirements.</li>
+<li>If you're expecting your document type to be previewable but it's downloading a file instead, check the setting, ALLOWED_PREVIEW_TYPES and ensure your document extension isn't missing. </li>
 <li>Admins can check the system logs for errors, such as missing LibreOffice executables or unsupported file extensions.</li>
 </ul>
-<h4><strong>PDF Generation</strong></h4>
+<p>By default, browsers will typically preview the following file types inline instead of downloading them as attachments:</p>
+<p><strong>Text &amp; Code Files</strong>  </p>
+<ul>
+<li>.txt (Plain Text)  </li>
+<li>.html, .htm (HTML)  </li>
+<li>.xml (XML)  </li>
+<li>.css (CSS)  </li>
+<li>.js (JavaScript)  </li>
+</ul>
+<p><strong>Image Files</strong>  </p>
+<ul>
+<li>.jpeg, .jpg  </li>
+<li>.png  </li>
+<li>.gif  </li>
+<li>.bmp  </li>
+<li>.svg  </li>
+<li>.webp  </li>
+</ul>
+<p><strong>Audio Files</strong> (Depends on browser support)  </p>
+<ul>
+<li>.mp3  </li>
+<li>.wav  </li>
+<li>.ogg  </li>
+<li>.m4a  </li>
+</ul>
+<p><strong>Video Files</strong> (Depends on browser support)  </p>
+<ul>
+<li>.mp4  </li>
+<li>.webm  </li>
+<li>.ogg (OGV)  </li>
+</ul>
+<p><strong>PDF Files</strong>  </p>
+<ul>
+<li>.pdf (Most modern browsers have built-in PDF viewers)  </li>
+</ul>
+<p><strong>Other Files That Might Open Inline</strong>  </p>
+<ul>
+<li>.json (if the browser has built-in JSON formatting)  </li>
+<li>.md (Markdown, but depends on the browser)  </li>
+</ul>
+<p><strong>Factors That Influence Inline Display</strong></p>
+<ul>
+<li><strong>'Content-Disposition' Header:</strong> If set to <code>inline</code>, the browser will try to preview the file. If set to 'attachment', it forces download. This part, DocrepoX handles. </li>
+<li><strong>MIME Type Handling:</strong> Browsers use MIME types to decide whether to display or download a file. To make changes, the user would have to make changes to their browser settings.</li>
+<li><strong>User Settings &amp; Extensions:</strong> Some users configure their browsers to always download certain file types.</li>
+</ul>
+<h4>PDF Generation</h4>
 <p>For transformable file types (e.g., .docx, .pptx, .xls), DocrepoX uses LibreOffice to convert files into PDF format. This ensures compatibility and easier preview generation.</p>
-<h5><strong>When PDFs Are Generated</strong></h5>
+<h5>When PDFs Are Generated</h5>
 <ul>
 <li>If a document is not already in PDF format, a transformation process is triggered.</li>
 <li>PDF files are stored temporarily for processing before preview files are created.</li>
 </ul>
-<h5><strong>Key Requirements</strong></h5>
+<h5>Requirements</h5>
 <ul>
-<li>The LibreOffice executable (/usr/bin/soffice) must be installed and configured in the system settings.</li>
+<li>The LibreOffice executable (/usr/bin/soffice) must be installed and configured in the system settings. This is already included in a container install.</li>
 <li>Supported file types for transformation include .doc, .docx, .ppt, .pptx, .xls, .xlsx, .txt, and .md.</li>
 </ul>
-<h4><strong>Configuration Settings</strong></h4>
-<p>The following settings ensure proper functionality for transformations:
-- <strong>SOFFICE_EXE</strong>: Path to the LibreOffice executable.
-- <strong>SOFFICE_TEMP_DIR</strong>: Temporary storage for transformation processes.
-- <strong>ALLOWED_PREVIEW_TYPES</strong>: List of file extensions allowed for previews.
-- <strong>MAX_PREVIEW_SIZE</strong>: Maximum file size for preview transformation (10MB).</p>
-<h4><strong>Auto-Deleting Previews</strong></h4>
-<p>When a preview file is deleted, the system automatically removes its associated content file from storage, freeing up space. This can be set in repo/settings.py with AUTO_DELETE_CONTENT_FILES=True (or False for retaining all document version files).</p>
-<h4><strong>Using the Features</strong></h4>
-<ol>
-<li><strong>Preview Files</strong></li>
-<li>Navigate to the document details page to view a preview if available.</li>
-<li>
-<p>If no preview is displayed, the document may have exceeded size limits or uses an unsupported type. There can also be an issue where the document version content file is accidentally deleted.</p>
-</li>
-<li>
-<p><strong>Download Options</strong></p>
-</li>
-<li>Users can download original files or their previews (if supported by the browser or as a previewable PDF).</li>
-</ol>
-<h4><strong>Best Practices</strong></h4>
+<h4>Configuration Settings</h4>
+<p>The following settings ensure proper functionality for transformations:</p>
+<ul>
+<li>SOFFICE_EXE: Path to the LibreOffice executable.</li>
+<li>SOFFICE_TEMP_DIR: Temporary storage for transformation processes.</li>
+<li>ALLOWED_PREVIEW_TYPES: List of file extensions allowed for previews. Be aware that your browser may not allow a preview for many extensions (.docx for example)</li>
+<li>TRANSFORMABLE_TYPES: List of file extension types allowed for PDF/Preview transformations. Be aware that some extesions types cannot be converted without a custom converter. For example, .otf and .ttf (font types) cannot be transformed to PDFs.</li>
+<li>MAX_PREVIEW_SIZE: Maximum file size for preview transformation (10MB).</li>
+</ul>
+<h4>Auto-Deleting Previews</h4>
+<p>When a preview file is deleted, the system automatically removes its associated content file from storage, freeing up space. This can be set in docrepo/global_settings.py with AUTO_DELETE_CONTENT_FILES=True (or False for retaining all document version files).</p>
+<h4>Retrieving Document (Preview or Download)</h4>
+<p><strong>Preview Files</strong>
+   - Navigate to the document details page to view a preview if available.
+   - If no preview is displayed, the document may have exceeded size limits or uses an unsupported type. There can also be an issue where the document version content file is accidentally deleted.</p>
+<p><strong>Download Options</strong>
+   - Users can download original files or their previews (if supported by the browser or as a previewable PDF).</p>
+<h4>Best Practices</h4>
 <ul>
 <li>For performance consideration with large files, consider compressing them or breaking them into smaller parts.</li>
 <li>Always ensure your files are in supported formats to take full advantage of previews and transformations.</li>
 </ul>
+<hr>
 <h2>Administering DocrepoX</h2>
 <h3>Maintenance Tasks</h3>
 <h4>Removing Orphan Content</h4>
 <h5>Managing Orphaned Content Files</h5>
 <p>Orphaned content files are files that no longer have a linked document version or rendition, such as thumbnails or previews.</p>
 <p>This typically happens when <code>AUTO_DELETE_CONTENT_FILES</code> is set to <code>False</code>. In this setting, content files are not fully deleted even when the parent documents or renditions (e.g., thumbnails or previews) are removed.</p>
-<p>Here is the document lifecycle in the system:</p>
-<ul>
+<p>Here is the document lifecycle in DocrepoX:</p>
+<ol>
 <li>A file is uploaded, creating a document. A new version of the document is also created automatically.</li>
 <li>While the document exists in the system, additional versions can be added.</li>
 <li>The document is recycled (soft deleted and moved to the user's recycle folder).</li>
 <li>The document is permanently deleted (hard deleted) from the recycle folder.</li>
 <li>If <code>AUTO_DELETE_CONTENT_FILES</code> is set to <code>True</code>, the associated content files for each document version are deleted from the system when the document is hard deleted.</li>
 <li>If <code>AUTO_DELETE_CONTENT_FILES</code> is set to <code>False</code>, the associated content files remain in the file system. In such cases, it is recommended to periodically run the <code>manage.py remove_orphan_content</code> command to clean up orphaned content files.</li>
-</ul>
+</ol>
 <p>To maintain a clean and organized system, orphaned content files should be removed regularly. This can be done manually using the Django management command:</p>
 <pre><code># python manage.py remove_orphan_content
 </code></pre>
-<p>When this command runs, any orphaned files detected will be moved to a designated folder specified in <code>repo/settings.py</code>:</p>
+<p>When this command runs, any orphaned files detected will be moved to a designated folder specified in <code>docrepo/global_settings.py</code>:</p>
 <pre><code>DELETED_ORPHAN_FOLDER = BASE_DIR / &quot;deleted&quot;  # &quot;deleted&quot; is the default folder name
 </code></pre>
-<p>Regularly clearing orphaned content helps free up storage and improve system performance. Adjust the folder path in <code>settings.py</code> if a different location is preferred.</p>
+<p>Regularly clearing orphaned content helps free up storage and improve system performance. Adjust the folder path in <code>docrepo/global_settings.py</code> if a different location is preferred.</p>
 <h5>Automating Orphaned Content Cleanup</h5>
 <p>To automate this process, schedule the command to run periodically using supported task schedulers:</p>
-<h4><strong>1. Using Cron (Linux/Unix):</strong></h4>
+<p><strong>Using Cron (Linux/Unix):</strong></p>
 <ol>
 <li>Open the crontab editor:
-   <code>crontab -e</code></li>
+    <code>crontab -e</code></li>
 <li>Add a cron job to run the command at the desired frequency (e.g., daily at midnight):
-   <code>0 0 * * * /path/to/your/project/.venv/bin/python /path/to/your/project/manage.py remove_orphan_content</code></li>
+    <code>0 0 * * * /path/to/your/project/.venv/bin/python /path/to/your/project/manage.py remove_orphan_content</code></li>
 </ol>
 <p>Automating this process ensures your system stays clean without manual intervention, improving storage efficiency and system performance.</p>
+<hr>
+<h3>Upgrading</h3>
+<p>Upgrading is simple if you installed via this github repo.</p>
+<ol>
+<li>Stop DocrepoX:</li>
+</ol>
+<pre><code class="language-bash">docker compose stop -f docker-compose.prod.yml 
+</code></pre>
+<ol>
+<li>Get newest version of DocrepoX:</li>
+</ol>
+<pre><code class="language-bash">git branch
+
+# if not on main do:
+git checkout main
+git pull
+</code></pre>
+<ol>
+<li>Update package changes:</li>
+</ol>
+<pre><code class="language-bash">source .venv/bin/activate
+poetry export --with dev -f requirements.txt --output requirements.txt
+cp requirements.txt docrepo/requirements.txt
+</code></pre>
+<ol>
+<li>Start up DocrepoX:</li>
+</ol>
+<pre><code class="language-bash">docker compose -f docker-compose.prod.yml up --build
+</code></pre>
+<p>Ensure the build and startup complete successfully. Log into DocrepoX. The correct version will show on the footer of the dashboard.</p>
+<p>Afterwards, you can stop the containers and run in daemon mode:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.prod.yml up -d
+</code></pre>
+<hr>

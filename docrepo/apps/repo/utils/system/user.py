@@ -1,11 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from apps.repo.models import Profile, Folder
-from apps.repo.utils.system.object import (
-    get_admin_user,
-    get_system_home_folder,
-)
 
+from apps.repo.models import Folder, Profile
+from apps.repo.utils.system.object import get_admin_user, get_system_home_folder
 
 User = get_user_model()
 

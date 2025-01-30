@@ -1,6 +1,6 @@
 from config.settings import INSTALLED_APPS
-from .utils import env
 
+from .utils import env
 
 minio_storage_app = "minio_storage"
 

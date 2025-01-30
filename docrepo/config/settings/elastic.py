@@ -1,6 +1,5 @@
 from .apps import INSTALLED_APPS
 
-
 INSTALLED_APPS.append("django_elasticsearch_dsl")
 
 ELASTICSEARCH_DSL = {

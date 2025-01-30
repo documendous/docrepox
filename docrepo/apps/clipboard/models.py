@@ -1,8 +1,8 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
+
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
-
 
 User = get_user_model()
 

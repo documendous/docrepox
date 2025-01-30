@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from apps.repo.models import Folder
 
+from apps.repo.models import Folder
 
 User = get_user_model()
 

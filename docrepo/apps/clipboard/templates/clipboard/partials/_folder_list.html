@@ -4,7 +4,7 @@
 {% for item in clipboard_folders %}
   <li id="cbf-{{ item.pk }}" class="mb-4">
     <div class="flex items-center gap-2">
-      - {{ item.folder.name }}
+      - {{ item.folder.name|truncatechars:30 }}
       <span
         class="material-symbols-outlined cursor-pointer"
         hx-post="{% url 'repo:clipboard:remove_item' 'folder' item.pk %}"

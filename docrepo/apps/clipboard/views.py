@@ -1,4 +1,6 @@
 import logging
+
+from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -13,6 +15,7 @@ from apps.clipboard.utils.paste import (
 from apps.core.views import View
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
+
 from .models import Clipboard, PastedDocument, PastedFolder
 
 
@@ -41,11 +44,17 @@ class PasteCopyElementsView(View):
         """
         View that deep copies (sub folders and documents including version but not renditions) a folder or document to another parent folder
         """
+        log = logging.getLogger(__name__)
         parent = Folder.objects.get(pk=folder_id)
         clipboard = get_object_or_404(Clipboard, user=request.user)
 
-        copy_documents(request, clipboard, parent)
-        copy_folders(request, clipboard, parent)
+        try:
+            copy_documents(request, clipboard, parent)
+            copy_folders(request, clipboard, parent)
+            messages.info(request, "Item(s) copied to new parent folder")
+        except Exception as err:
+            messages.error(request, "Unable to copy item(s) to new parent folder")
+            log.error(err)
 
         return HttpResponseRedirect(
             reverse(

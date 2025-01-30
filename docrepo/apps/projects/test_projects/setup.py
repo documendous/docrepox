@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from apps.projects.models import Project
+
 from .users import users_data
 
 User = get_user_model()

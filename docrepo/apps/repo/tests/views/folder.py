@@ -1,7 +1,9 @@
 # from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
+
+from apps.repo.models.element.folder import Folder
 from apps.repo.settings import ADMIN_PASSWORD, ADMIN_USERNAME
 from apps.repo.tests.utils import (
     TEST_USER,
@@ -9,9 +11,7 @@ from apps.repo.tests.utils import (
     get_test_folder,
     get_test_user,
 )
-from apps.repo.models.element.folder import Folder
 from apps.repo.utils.system.object import get_admin_user, get_system_projects_folder
-
 
 User = get_user_model()
 

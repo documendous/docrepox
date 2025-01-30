@@ -12,15 +12,15 @@
     >
       {% csrf_token %}
       <legend>
-        <h2 class="text-xl font-semibold text-center mb-4 flex items-center">
+        <h2 class="text-xl font-semibold mb-4 flex items-center justify-center">
           Login {% include 'ddocs/customization_tips/_tip.html' with anchor_name="customize-login-page" %}          
         </h2>
         {% if not request.user.is_authenticated %}
-          <p class="text-blue-400 font-semibold italic mb-3">
+          <p class="text-blue-400 font-semibold mb-3 text-center">
             Logged out
           </p>
         {% else %}
-        <p class="text-red-400 font-semibold italic mb-3">
+        <p class="text-blue-400 font-semibold mb-3 text-center">
           Currently logged in as {{ request.user.username }}
         </p>
         {% endif %}
@@ -29,13 +29,13 @@
         <label for="username" class="block text-sm font-medium text-gray-700">
           Username: 
         </label>
-        {% render_field form.username class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+        {% render_field form.username class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
       </div>
       <div class="mb-4">
         <label for="password" class="block text-sm font-medium text-gray-700">
           Password
         </label>
-        {% render_field form.password class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+        {% render_field form.password class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
       </div>
       {% if form.errors %}
         <p class="text-red-600 text-sm">

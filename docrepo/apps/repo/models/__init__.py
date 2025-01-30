@@ -1,13 +1,9 @@
 import logging
-from django.conf import settings
-from .element import (
-    Folder,
-    Version,
-    Mimetype,
-    Document,
-)
-from .profile import Profile
 
+from django.conf import settings
+
+from .element import Document, Folder, Mimetype, Version
+from .profile import Profile
 
 log = logging.getLogger(__name__)
 

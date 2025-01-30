@@ -1,14 +1,18 @@
 import logging
-from django.contrib.auth import get_user_model
+
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.shortcuts import render
+from django.template.defaultfilters import truncatechars
+from django.urls import reverse
+
 from apps.core.views import View
 from apps.repo.utils.system.object import (
-    get_system_root_folder,
     get_system_projects_folder,
+    get_system_root_folder,
 )
+
 from ..forms import AddProjectForm
 from ..utils.project import get_viewable_project_list
 
@@ -59,7 +63,7 @@ class ProjectsView(View):
             messages.add_message(
                 request,
                 messages.INFO,
-                f'Project "{project.name}" was successfully created.',
+                f'Project "{truncatechars(project.name, 60)}" was successfully created.',
             )
 
             return HttpResponseRedirect(reverse("repo:projects:index"))

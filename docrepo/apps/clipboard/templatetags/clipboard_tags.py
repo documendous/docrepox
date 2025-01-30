@@ -1,4 +1,5 @@
 from django import template
+
 from apps.clipboard.models import Clipboard
 
 register = template.Library()

@@ -1,5 +1,5 @@
 {% block summary_children_data %}
-  {% if element.type == 'folder' and not element.is_recycle_folder %}
+  {% if element.is_folder and not element.is_recycle_folder %}
     <div class="mt-8">
       <table class="min-w-full divide-y divide-gray-200 border shadow">
         <caption class="text-left p-2 relative mx-4">
@@ -28,7 +28,7 @@
         {% include "repo/partials/_folder_children_table_data.html" with scope="summary" children=element.get_children %}
       </table>
     </div>
-  {% elif element.type == 'folder' and element.name == 'Recycle' %}
+  {% elif element.is_folder and element.name == 'Recycle' %}
     <div class="mt-8 text-center text-sm text-gray-500">
       To view folders and documents in this space, return to the Recycle folder view.
     </div>

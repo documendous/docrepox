@@ -1,4 +1,4 @@
-from .folder import Folder
-from .version import Version
-from .mimetype import Mimetype
 from .document import Document
+from .folder import Folder
+from .mimetype import Mimetype
+from .version import Version

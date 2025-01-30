@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 
 
@@ -13,3 +15,11 @@ def global_settings(request):
         "app_version": settings.VERSION,
         "support_url": settings.SUPPORT_URL,
     }
+
+
+log = logging.getLogger(__name__)
+
+try:
+    from extensions.apps.repo.context_processors import *  # noqa: F403, F401
+except ModuleNotFoundError:  # pragma: no coverage
+    log.warning("Expected module: 'context_processors' in extensions not found")

@@ -1,12 +1,23 @@
 {% load project_tags %}
 
 {% get_role_display request folder.parent_project as role %}
+{% can_view_project_details request folder as can_view_project_details %}
+
 <div
   class="
-    p-1 {% if role == 'manager' %}text-red-500{% else %}text-blue-500{% endif %}
+    p-1 {% if role == 'manager' or role == 'admin' %}text-red-500{% else %}text-blue-500{% endif %}
   "
 >
-  <span class="font-semibold" title="Project role">
-    Project {{ role|title }}
+  <span class="font-semibold flex items-center gap-2" title="Project role">
+    {% if role == 'admin' %}
+      ADMIN
+    {% else %}
+      Project {{ role|title }}
+    {% endif %}
+    {% if can_view_project_details %}
+      <span class="flex items-center pt-2">
+        {% include "projects/partials/_view_project_details.html" with element=folder %}
+      </span>
+    {% endif %}
   </span>
 </div>

@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
 from django.db.models import QuerySet
+
 from apps.comments.models import Commentable
 from apps.core.models import ActivatedModel, Element
 from apps.repo.models.element import Folder
@@ -40,13 +42,15 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
         )
         ordering = ["-created"]
         indexes = [
-            models.Index(fields=["folder"]),
-            models.Index(fields=["created"]),
-            models.Index(fields=["visibility"]),
-            models.Index(fields=["is_active"]),
-            models.Index(fields=["managers_group"]),
-            models.Index(fields=["editors_group"]),
-            models.Index(fields=["readers_group"]),
+            models.Index(fields=["visibility", "is_active"]),  # Compound index
+            models.Index(fields=["managers_group", "is_active"]),
+            models.Index(fields=["editors_group", "is_active"]),
+            models.Index(fields=["readers_group", "is_active"]),
+            models.Index(fields=["owner"]),
+            models.Index(
+                fields=["created"]
+            ),  # Retain if sorting by created date is frequent
+            models.Index(fields=["folder"]),  # Retain for folder-based queries
         ]
 
     @property
@@ -100,6 +104,7 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
             self.in_managers_group(user)
             or self.in_editors_group(user)
             or self.in_readers_group(user)
+            or self.owner == user
         ):
             return True
         return False
@@ -153,7 +158,9 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
         """
         Returns display string of a user's role in a project (manager, editor, reader, nonmember)
         """
-        if user in self.get_managers():
+        if settings.ADMIN_ALLOW_ALL and user.profile.is_admin_user():
+            return "admin"
+        elif user in self.get_managers():
             return "manager"
         elif user in self.get_editors():
             return "editor"

@@ -9,14 +9,13 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "4.2.17"
+django = "4.2.18"
 psycopg2-binary = "^2.9.9"
 gunicorn = "22.0.0"
 django-environ = "^0.11.2"
 django-widget-tweaks = "^1.5.0"
 idna = "3.7"
 sqlparse = "0.5.0"
-django-unfold = "^0.22.0"
 django-minio-storage = "^0.5.7"
 requests = "2.32.0"
 pillow = "^10.3.0"
@@ -32,6 +31,8 @@ sphinx-autoapi = "^3.3.3"
 sphinx-rtd-theme = "^3.0.1"
 sphinx-copybutton = "^0.5.2"
 jinja2 = "3.1.5"
+django-jazzmin = "^3.0.1"
+virtualenv = "20.26.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"

@@ -16,7 +16,9 @@ fi
 
 python manage.py migrate
 python manage.py collectstatic --no-input
-# python manage.py diffsettings
+
+# Uncomment for diagnostics
+# python manage.py diffsettings --all
 
 # Uncomment to use Elastic search indexing
 # python manage.py search_index --rebuild -f

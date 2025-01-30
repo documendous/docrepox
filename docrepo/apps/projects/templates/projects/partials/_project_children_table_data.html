@@ -1,4 +1,5 @@
 {% load project_tags %}
+{% load bookmark_tags %}
 
 <tbody class="bg-white divide-y divide-gray-200" id="project-children-table-data">
   {% for project in projects %}
@@ -12,6 +13,14 @@
           >
             <span class="material-icons-outlined">folder</span>&nbsp;&nbsp;
             {{ project.name }}
+            {% if project|is_bookmarked:request.user %}
+              <span
+                class="material-icons-outlined nav-link ml-2 pt-0.5"
+                style="font-size: 18px !important;"
+              >
+                star
+              </span>
+            {% endif %}
           </a>
         {% else %}
           <span class="text-gray-400 flex items-center">

@@ -1,12 +1,14 @@
 {% extends "ui/base/_base.html" %}
 {% load static %}
 {% load project_tags %}
+{% load repo_tags %}
 {% load widget_tweaks %}
 
 {% block main %}
 
 {% can_update_element request element as can_update_element %}
 {% can_view_project_details request element as can_view_project_details %}
+{% can_bookmark request element as can_bookmark %}
 
 <main>
   <div class="mt-8">
@@ -19,19 +21,22 @@
           {% if can_view_project_details %}
             {% include "projects/partials/_view_project_details.html" with element=element %}
           {% endif %}
-          {% if not element.is_in_recycle_path %}
+          {% if not element.is_in_recycle_path and can_bookmark %}
             {% include "bookmarks/partials/actions/_bookmark_element.html" %}
           {% endif %}
         </div>
         <div class="flex items-center">
           <h2 class="text-xl font-bold mr-4 py-2">
-            {{ element.name }} Details
+            {{ element.type|title }} Details
           </h2>
           {% if can_update_element %}
-            <a href="{% url 'repo:update_element' element.type element.id %}" class="text-blue-500 hover:text-blue-700">
+            <a
+              href="{% url 'repo:update_element' element.type element.id %}" 
+              class="text-gray-700 hover:text-blue-700"
+            >
               <span
                 class="material-icons-outlined"
-                title="Update {{ element.type }} '{{ element.name }}' details"
+                title="Update {{ element.type }} '{{ element.name|truncatechars:30 }}' details"
               >
                 edit
               </span>
@@ -46,7 +51,7 @@
   {% include 'repo/partials/_summary_children_data.html' %}
   
   {% if not element.is_in_recycle_path %}
-    {% if element.type == 'document' and document_comments_enabled or element.type == 'folder' and folder_comments_enabled %}
+    {% if element.is_document and document_comments_enabled or element.is_folder and folder_comments_enabled %}
       {% include 'comments/comment_field.html' with element=element %}
     {% endif %}
   {% endif %}

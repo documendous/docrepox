@@ -1,26 +1,23 @@
 import logging
-from django.conf import settings
-from .document import (
-    AddDocumentView,
-    CreateDocumentView,
-    AddMultiDocumentsView,
-)
-from .version import AddVersionView
+
+from config.settings import ENABLE_EXTENSIONS
+
+from .document import AddDocumentView, AddMultiDocumentsView, CreateDocumentView
 from .element import (
+    DeleteElementView,
     ElementDetailsView,
-    UpdateElementDetailsView,
     RecycleElementView,
     RestoreElementView,
-    DeleteElementView,
+    UpdateElementDetailsView,
 )
 from .folder import FolderView
 from .index import IndexView
 from .profile import UpdateProfileView
-
+from .version import AddVersionView
 
 log = logging.getLogger(__name__)
 
-if settings.ENABLE_EXTENSIONS:
+if ENABLE_EXTENSIONS:
     try:
         from extensions.apps.repo.views import *
     except ModuleNotFoundError:

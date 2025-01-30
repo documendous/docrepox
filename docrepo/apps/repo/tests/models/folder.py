@@ -1,10 +1,8 @@
 from django.test import TestCase
-from apps.repo.tests.utils import get_test_user
+
 from apps.repo.models.element.folder import Folder
-from apps.repo.utils.system.object import (
-    get_system_home_folder,
-    get_system_root_folder,
-)
+from apps.repo.tests.utils import get_test_user
+from apps.repo.utils.system.object import get_system_home_folder, get_system_root_folder
 
 
 class FolderModelTest(TestCase):

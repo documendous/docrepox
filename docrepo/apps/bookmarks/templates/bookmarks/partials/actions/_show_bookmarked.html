@@ -3,10 +3,10 @@
   <button
     type="submit"
     class="tooltip"
-    title="Remove bookmark for {{ element.type }}: {{ element.name }}"
+    title="Remove bookmark for {{ element.type }}: {{ element.name|truncatechars:30 }}"
     class="bg-none border-none p-0"
   >
-    <span class="material-icons-outlined nav-link">
+    <span class="material-icons-outlined nav-link text-gray-600 hover:text-blue-700">
       star
     </span>
   </button>

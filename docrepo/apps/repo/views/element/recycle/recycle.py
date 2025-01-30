@@ -1,8 +1,10 @@
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+
 from apps.bookmarks.templatetags.bookmark_tags import is_bookmarked
 from apps.bookmarks.utils import remove_bookmark
+from apps.clipboard.utils.clipboard import is_in_clipboard, remove_from_clipboard
 from apps.core.views import View
 from apps.repo import rules
 from apps.repo.utils.helpers import update_with_new_name
@@ -26,6 +28,9 @@ class RecycleElementView(View):
 
         if is_bookmarked(element, user=request.user):
             remove_bookmark(request, element_type, element_id)
+
+        if is_in_clipboard(request.user, element):
+            remove_from_clipboard(request.user, element)
 
         try:
             element.save()

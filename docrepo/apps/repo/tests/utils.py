@@ -1,14 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+
+from apps.projects.models import Project
+from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
+from apps.repo.models.element.version import Version
 from apps.repo.utils.system.object import (
     get_system_home_folder,
     get_user_recycle_folder,
 )
-from apps.repo.models.element.document import Document
-from apps.repo.models.element.version import Version
-from apps.projects.models import Project
-
 
 TEST_USER = {
     "username": "testuser1",
@@ -37,14 +37,14 @@ def get_test_folder(name=None, parent=None):
     return test_folder
 
 
-def get_test_document(name=None, parent=None):
+def get_test_document(name=None, parent=None, ext="txt"):
     test_document = Document.objects.create(
-        name="TestDocument.txt" if not name else name,
+        name=f"TestDocument.{ext}" if not name else name,
         owner=get_test_user(),
         parent=parent if parent else get_system_home_folder(),
     )
     test_content = b"Hello world"
-    test_file = SimpleUploadedFile("TestDocument.txt", test_content)
+    test_file = SimpleUploadedFile(f"TestDocument.{ext}", test_content)
     Version.objects.create(parent=test_document, content_file=test_file)
     return test_document
 

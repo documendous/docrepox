@@ -1,14 +1,16 @@
 from itertools import chain
+
 from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
+
 from apps.core.utils.htmx import htmx_redirect
 from apps.projects.models import Project
 from apps.projects.utils.project import get_viewable_project_list
-from apps.repo.utils.system.object import get_admin_user
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
+from apps.repo.utils.system.object import get_admin_user
 
 
 class SearchProjectsView(View):

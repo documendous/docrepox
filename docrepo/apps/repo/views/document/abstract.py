@@ -1,8 +1,10 @@
+from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.contrib import messages
 from django.shortcuts import get_object_or_404, render
+from django.template.defaultfilters import truncatechars
 from django.urls import reverse
+
 from apps.core.views import View
 from apps.repo import rules
 from apps.repo.forms.element import AddDocumentForm, AddVersionForm
@@ -52,7 +54,7 @@ class BaseCreateDocumentView(DocumentCreator, View):
             self._create_version(new_document, version_form)
             messages.info(
                 request,
-                f'Document "{name}" was successfully created.',
+                f'Document "{truncatechars(name, 30)}" was successfully created.',
             )
             return new_document
 

@@ -1,13 +1,15 @@
 from django.contrib import messages
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.template.defaultfilters import truncatechars
 from django.urls import reverse
+
 from apps.core.views import View
 from apps.etags.models import Tag
-
+from apps.projects import rules as project_rules
 from apps.projects.forms import UpdateProjectForm
 from apps.projects.utils.project import is_a_project_folder
-from apps.repo import rules
+from apps.repo import rules as repo_rules
 from apps.repo.forms.element import UpdateElementForm
 from apps.repo.utils.static.lookup import get_model
 from apps.repo.utils.system.object import get_system_root_folder
@@ -50,9 +52,9 @@ class UpdateElementDetailsView(View):
     def get(self, request, element_id, element_type):
         element, parent = self.get_element_and_parent(element_id, element_type)
         if element.type == "project":
-            rules.can_update_project(request, element)
+            project_rules.can_update_project(request, element)
         else:
-            rules.can_update_element(request, element)
+            repo_rules.can_update_element(request, element)
         if element_type == "folder" and is_a_project_folder(element):
             return HttpResponseRedirect(
                 reverse(
@@ -91,18 +93,21 @@ class UpdateElementDetailsView(View):
     def post(self, request, element_id, element_type):
         element, parent = self.get_element_and_parent(element_id, element_type)
         if element.type == "project":
-            rules.can_update_project(request, element)
+            project_rules.can_update_project(request, element)
+            form = UpdateProjectForm(request.POST, instance=element)
         else:
-            rules.can_update_element(request, element)
+            repo_rules.can_update_element(request, element)
+            form = UpdateElementForm(request.POST, instance=element)
 
-        form = UpdateElementForm(request.POST, instance=element)
         if form.is_valid():
             updated_element = form.save(commit=False)
             updated_element.save()
 
             self._handle_tags(updated_element, form)
 
-            messages.info(request, f'"{element.name}" details updated.')
+            messages.info(
+                request, f'"{truncatechars(element.name, 30)}" details updated.'
+            )
             return HttpResponseRedirect(
                 reverse("repo:update_element", args=[element.type, element.id])
             )

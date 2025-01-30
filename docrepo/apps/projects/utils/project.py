@@ -1,11 +1,14 @@
 import logging
+
 from django.contrib.auth.models import Group
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest
 from django.template.defaultfilters import slugify
-from apps.repo.models.element.folder import Folder
+
 from apps.repo.models.element.document import Document
+from apps.repo.models.element.folder import Folder
 from apps.repo.utils.system.object import get_system_projects_folder
+
 from ..models import Project
 
 
@@ -56,6 +59,21 @@ def change_project_folder_name(instance: Project) -> None:
         folder.save()
 
 
+def delete_project_groups(instance):
+    # Delete associated groups if they exist
+    for group_name in [
+        instance.managers_group,
+        instance.editors_group,
+        instance.readers_group,
+    ]:
+        if group_name:
+            try:
+                group = Group.objects.get(name=group_name)
+                group.delete()
+            except Group.DoesNotExist:  # pragma: no coverage
+                pass
+
+
 def get_accessible_projects(request: HttpRequest) -> QuerySet:  # pragma: no coverage
     """
     Returns a list of projects a user is either a member of is a public project
@@ -77,26 +95,25 @@ def get_accessible_projects(request: HttpRequest) -> QuerySet:  # pragma: no cov
     return projects
 
 
-def get_viewable_project_list(request: HttpRequest) -> QuerySet:
+def get_viewable_project_list(request: HttpRequest):
     """
-    Returns a list of projects a user can view in a list but not necessarily access
+    Returns a list of projects a user can view in a list but not necessarily access.
     """
     if request.user.profile.is_admin_user():
-        projects = Project.objects.filter(is_active=True)
-    else:
-        projects = Project.objects.filter(
-            Q(visibility="public")
-            | Q(visibility="managed")
-            | Q(
-                id__in=[
-                    project.id
-                    for project in Project.objects.all()
-                    if project.is_member(request.user)
-                ]
-            ),
-            is_active=True,
-        )
-    return projects
+        return Project.objects.filter(is_active=True)
+
+    public_or_managed_projects = Project.objects.filter(
+        Q(visibility="public") | Q(visibility="managed"), is_active=True
+    )
+
+    final_projects = list(public_or_managed_projects)
+
+    # Add private projects where the user is a member
+    for project in Project.objects.filter(visibility="private", is_active=True):
+        if project.is_member(request.user):
+            final_projects.append(project)  # pragma: no coverage
+
+    return final_projects
 
 
 def is_a_project_folder(folder: Folder) -> bool:

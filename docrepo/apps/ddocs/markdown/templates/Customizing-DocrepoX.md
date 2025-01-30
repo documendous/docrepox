@@ -29,9 +29,11 @@ extensions/
         └── login.html
 ```
 
-If ENABLE_EXTENSIONS is set to True, the extensions file system becomes active, and the system will use any modules and templates placed there. Be aware that if a module in this directory contains errors, it can disrupt the operation of the system.
+If ENABLE_EXTENSIONS is set to True, the extensions file system becomes active, and the system will use any modules and templates placed there. 
 
-Here’s how customization with the extensions directory works:
+**Note:** Be aware that if a module in this directory contains errors, it can disrupt the operation of the system.
+
+Here is how customization with the extensions directory works:
 
 - **Customizing Views:** Add a custom IndexView to extensions/apps/repo/views.py. The system will automatically use this version instead of the default at startup.
 
@@ -42,9 +44,7 @@ Here’s how customization with the extensions directory works:
 
 For a different login page, you will need to override the apps/repo/templates/registration/login.html file. Copy this file to extensions/templates/registration/login.html. Make your changes to the template and ensure ENABLE_EXTENSIONS is set to True. Restart the server and your changes should be apparent at login.
 
-Note:
-
-DocrepoX at this time only uses Django's internal authentication and Keycloak OpenID. To make deep changes to Django's internal authentication requires code changes for the django.contrib.auth package and is not supported. In other words, you would have to likely use your own custom Django module.
+**Note:** DocrepoX at this time only uses Django's internal authentication and Keycloak OpenID. To make deep changes to Django's internal authentication requires code changes for the django.contrib.auth package and is not supported. In other words, you would have to likely use your own custom Django module.
 
 To make changes to the Keycloak OpenID backend, you'll need to add your own KeycloakOIDCAuthenticationBackend class to extensions/apps/repo/backends.py
 
@@ -151,7 +151,7 @@ Think of each dashlet as a combination of a model (and potentially supporting mo
 
 To create a custom dashlet displaying recent documents, first create a template file named recent_documents.html:
 
-Path: extensions/apps/templates/dashlets/recentdocs/recent_documents.html
+**Path:** extensions/apps/templates/dashlets/recentdocs/recent_documents.html
 
 ```
 <section class="w-full md:w-3/4 p-4 mx-6 bg-white rounded-lg shadow-md outline outline-offset-1 outline-1 outline-gray-200 mt-4">
@@ -167,7 +167,7 @@ Path: extensions/apps/templates/dashlets/recentdocs/recent_documents.html
     {% for document in documents %}
         <tr>
             <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
-              {{ document.name }}
+              {{ document.name|truncatechars:30 }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
               {{ document.owner.username }}
@@ -281,7 +281,7 @@ Make the following change at this location in _folder_actions.html:
 ...
 ```
 
-And further down, in the same file, you'll need to import the modal that you'll create.
+And further down, in the same file, you will need to import the modal that you intend to create.
 
 ```
 ...
@@ -323,7 +323,7 @@ Create a file at extensions/templates/repo/partials/ called _hello_modal.html. A
 </div>
 ```
 
-And that's very much it. After a restart, you should see a tooltip icon on the folder list page next to the Create Folder icon. Clicking on it should render a message.
+And that's it. After a restart, you should see a tooltip icon on the folder list page next to the Create Folder icon. Clicking on it should render a message.
 
 <a id="customize-table-sorting"></a>
 ### Customizing Sortable Table Columns for Folder View
@@ -369,7 +369,7 @@ The column name must match up with a field for an Element. Here are the availabl
 - Modified
 - Parent
 
-See the Folder and Document models for details on what can be used here.
+See the Folder and Document models for details on what more could be used here.
 
 The _sortable_th.html template below could be used for any named column field name that is supported for the views result object.
 

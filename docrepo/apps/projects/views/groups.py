@@ -1,13 +1,14 @@
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+
 from apps.core.views import View
-from apps.repo import rules
+from apps.projects import rules
+
 from ..forms import MultipleUserSelectForm
 from ..models import Project
-
 
 User = get_user_model()
 

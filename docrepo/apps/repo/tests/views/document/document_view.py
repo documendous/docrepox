@@ -1,13 +1,10 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
-from apps.repo.tests.utils import (
-    TEST_USER,
-    get_test_folder,
-    get_test_user,
-)
+
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.version import Version
+from apps.repo.tests.utils import TEST_USER, get_test_folder, get_test_user
 
 
 class DocumentViewTest(TestCase):

@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth import get_user_model
+
 from apps.projects.models import Project
 from apps.repo.forms.element import UpdateElementForm
-
 
 User = get_user_model()
 
@@ -17,6 +17,11 @@ class UpdateProjectForm(UpdateElementForm):
         exclude = (
             "owner",
             "parent",
+            "managers_group",
+            "editors_group",
+            "readers_group",
+            "folder",
+            "is_active",
         )
 
 

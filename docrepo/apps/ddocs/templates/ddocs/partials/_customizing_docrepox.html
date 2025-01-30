@@ -30,6 +30,8 @@
     font-size: smaller;
     margin-bottom: 1rem;
     margin-top: 1rem;
+    background-color: lightgrey;
+    padding: 10px;
   }
   ul {
     margin-bottom: 0.5rem;
@@ -40,6 +42,26 @@
     margin-bottom: 0.5rem;
     padding: 1rem;
     list-style-type: decimal;
+  }
+  a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+  }
+
+  a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+
+  a:active {
+    color: #003f7f;
+  }
+
+  a:focus {
+    outline: 2px solid #80bdff;
+    outline-offset: 2px;
   }
 </style>
 <h2>Customizing DocrepoX</h2>
@@ -72,8 +94,9 @@
     └── registration
         └── login.html
 </code></pre>
-<p>If ENABLE_EXTENSIONS is set to True, the extensions file system becomes active, and the system will use any modules and templates placed there. Be aware that if a module in this directory contains errors, it can disrupt the operation of the system.</p>
-<p>Here’s how customization with the extensions directory works:</p>
+<p>If ENABLE_EXTENSIONS is set to True, the extensions file system becomes active, and the system will use any modules and templates placed there. </p>
+<p><strong>Note:</strong> Be aware that if a module in this directory contains errors, it can disrupt the operation of the system.</p>
+<p>Here is how customization with the extensions directory works:</p>
 <ul>
 <li>
 <p><strong>Customizing Views:</strong> Add a custom IndexView to extensions/apps/repo/views.py. The system will automatically use this version instead of the default at startup.</p>
@@ -85,8 +108,7 @@
 <p><a id="customize-login-page"></a></p>
 <h4>Login Page Customization</h4>
 <p>For a different login page, you will need to override the apps/repo/templates/registration/login.html file. Copy this file to extensions/templates/registration/login.html. Make your changes to the template and ensure ENABLE_EXTENSIONS is set to True. Restart the server and your changes should be apparent at login.</p>
-<p>Note:</p>
-<p>DocrepoX at this time only uses Django's internal authentication and Keycloak OpenID. To make deep changes to Django's internal authentication requires code changes for the django.contrib.auth package and is not supported. In other words, you would have to likely use your own custom Django module.</p>
+<p><strong>Note:</strong> DocrepoX at this time only uses Django's internal authentication and Keycloak OpenID. To make deep changes to Django's internal authentication requires code changes for the django.contrib.auth package and is not supported. In other words, you would have to likely use your own custom Django module.</p>
 <p>To make changes to the Keycloak OpenID backend, you'll need to add your own KeycloakOIDCAuthenticationBackend class to extensions/apps/repo/backends.py</p>
 <p>Here is the code for the full KeycloakOIDCAuthenticationBackend class:</p>
 <pre><code>
@@ -178,7 +200,7 @@ class MyKCAuthBackend(KeycloakOIDCAuthenticationBackend):
 </ul>
 <h4>Example: Custom Dashlet for Recent Documents</h4>
 <p>To create a custom dashlet displaying recent documents, first create a template file named recent_documents.html:</p>
-<p>Path: extensions/apps/templates/dashlets/recentdocs/recent_documents.html</p>
+<p><strong>Path:</strong> extensions/apps/templates/dashlets/recentdocs/recent_documents.html</p>
 <pre><code>&lt;section class=&quot;w-full md:w-3/4 p-4 mx-6 bg-white rounded-lg shadow-md outline outline-offset-1 outline-1 outline-gray-200 mt-4&quot;&gt;
   &lt;h3 class=&quot;text-xl font-semibold mb-2&quot;&gt;Recent Documents Dashlet&lt;/h3&gt;
 
@@ -192,7 +214,7 @@ class MyKCAuthBackend(KeycloakOIDCAuthenticationBackend):
     &#123;% for document in documents %&#125;
         &lt;tr&gt;
             &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
-              &#123;&#123; document.name &#125;&#125;
+              &#123;&#123; document.name|truncatechars:30 &#125;&#125;
             &lt;/td&gt;
             &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
               &#123;&#123; document.owner.username &#125;&#125;
@@ -289,7 +311,7 @@ class IndexView(IndexView):
   &lt;/div&gt;
 ...
 </code></pre>
-<p>And further down, in the same file, you'll need to import the modal that you'll create.</p>
+<p>And further down, in the same file, you will need to import the modal that you intend to create.</p>
 <pre><code>...
 &#123;% if can_create %&#125;
   &#123;% include &quot;repo/partials/_add_document_modal.html&quot; %&#125;
@@ -325,7 +347,7 @@ class IndexView(IndexView):
   &lt;/div&gt;
 &lt;/div&gt;
 </code></pre>
-<p>And that's very much it. After a restart, you should see a tooltip icon on the folder list page next to the Create Folder icon. Clicking on it should render a message.</p>
+<p>And that's it. After a restart, you should see a tooltip icon on the folder list page next to the Create Folder icon. Clicking on it should render a message.</p>
 <p><a id="customize-table-sorting"></a></p>
 <h3>Customizing Sortable Table Columns for Folder View</h3>
 <p>The template you will need to overwrite is at apps/repo/templates/repo/element_list.html</p>
@@ -362,7 +384,7 @@ class IndexView(IndexView):
 <li>Modified</li>
 <li>Parent</li>
 </ul>
-<p>See the Folder and Document models for details on what can be used here.</p>
+<p>See the Folder and Document models for details on what more could be used here.</p>
 <p>The _sortable_th.html template below could be used for any named column field name that is supported for the views result object.</p>
 <pre><code>&#123;% load static %&#125;
 

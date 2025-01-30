@@ -1,10 +1,13 @@
 import logging
+
 from django.conf import settings
 from django.db import models
+
 from apps.comments.models import Commentable
 from apps.core.models import Element, HasFolderParent, IsRecyclable
-from .version import Version
+
 from .mimetype import Mimetype
+from .version import Version
 
 
 class Document(Element, HasFolderParent, IsRecyclable, Commentable):

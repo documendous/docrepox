@@ -1,14 +1,13 @@
 from django.conf import settings
+
 from apps.repo.utils.mock import create_testusers
-from apps.repo.utils.system.setup import (
-    create_system_folders,
-)
+from apps.repo.utils.system.mimetype.setup import add_mimetypes
+from apps.repo.utils.system.setup import create_system_folders
 from apps.repo.utils.system.user import (
     create_admin_home_folder,
     create_admin_user,
     create_admin_user_profile,
 )
-from apps.repo.utils.system.mimetype.setup import add_mimetypes
 
 
 def setup_system(apps, schema):

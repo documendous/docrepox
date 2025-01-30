@@ -1,5 +1,7 @@
 from typing import Any
+
 from django.shortcuts import render
+
 from apps.core.views import View
 from apps.dashlets.utils.motd import get_motd
 from apps.projects.querysets import (
@@ -10,6 +12,7 @@ from apps.projects.querysets import (
     get_public_projects,
 )
 from apps.projects.utils.project import get_accessible_project_documents
+
 from ..querysets import get_owned_documents
 from ..utils.system.object import get_system_root_folder
 

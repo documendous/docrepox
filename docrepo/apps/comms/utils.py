@@ -1,5 +1,7 @@
 from django.db.models import QuerySet
+
 from apps.core.models import Element
+
 from .models import Communication
 
 

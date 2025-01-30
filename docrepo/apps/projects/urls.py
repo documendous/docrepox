@@ -11,7 +11,6 @@ from apps.projects.views import (
     RequestProjectJoinView,
 )
 
-
 app_name = "projects"
 
 

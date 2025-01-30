@@ -1,15 +1,16 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
+
 from apps.bookmarks.models import Bookmark
 from apps.repo.models.element.folder import Folder
 from apps.repo.tests.utils import (
     TEST_USER,
     get_test_document,
     get_test_folder,
-    get_test_user,
     get_test_recycle_folder,
+    get_test_user,
 )
 
 User = get_user_model()

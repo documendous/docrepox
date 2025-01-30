@@ -10,6 +10,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import logging as py_logging
+
+from apps.clipboard.settings import *
+from apps.comms.settings import *
+from apps.ddocs.settings import *
+from apps.etags.settings import *
+
+# DocrepoX settings
+from apps.repo.settings import *
+from apps.transformations.settings import *
+from apps.ui.settings import *
+
+from .admin import JAZZMIN_SETTINGS
+from .apps import INSTALLED_APPS
+
+# Expected Django Settings - explicitly loaded
 from .base import (
     ALLOWED_HOSTS,
     ENABLE_EXTENSIONS,
@@ -18,15 +34,28 @@ from .base import (
     VERSION,
     WSGI_APPLICATION,
 )
-from .logging import LOGGING
-from .apps import INSTALLED_APPS
 from .dashlets import *
 from .db import DATABASES
-from .debug import DEBUG, ADD_TEST_OBJECTS, ADD_TEST_PROJECTS, DEBUG_TOOLBAR_CONFIG
+from .debug import ADD_TEST_OBJECTS, ADD_TEST_PROJECTS, DEBUG, DEBUG_TOOLBAR_CONFIG
 from .locale import LANGUAGE_CODE, TIME_ZONE, USE_I18N, USE_TZ
+from .logging import LOGGING
 from .middleware import MIDDLEWARE
+from .security import AUTH_PASSWORD_VALIDATORS, SECRET_KEY, USE_KEYCLOAK
+from .storage import (
+    DEFAULT_AUTO_FIELD,
+    MEDIA_ROOT,
+    MEDIA_URL,
+    STATIC_ROOT,
+    STATIC_URL,
+    STATICFILES_DIRS,
+)
+from .utils import BASE_DIR
+
+# ## Uncomment to use elastic
+# from .elastic import *
 
 # ## Uncomment the following import to use Minio:  # noqa: E266
+# Read the DocrepoX docs MinIO section before using!
 # from .minio import (  # noqa: F811
 #     INSTALLED_APPS,
 #     DEFAULT_FILE_STORAGE,
@@ -41,30 +70,29 @@ from .middleware import MIDDLEWARE
 #     MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET,
 # )
 
-from .security import AUTH_PASSWORD_VALIDATORS, SECRET_KEY, USE_KEYCLOAK
-from .storage import (
-    STATIC_ROOT,
-    STATIC_URL,
-    STATICFILES_DIRS,
-    MEDIA_ROOT,
-    MEDIA_URL,
-    DEFAULT_AUTO_FIELD,
-)
-from .unfold import UNFOLD
-from .utils import BASE_DIR
-from apps.repo.settings import *
-from apps.clipboard.settings import *
-from apps.comms.settings import *
-from apps.ddocs.settings import *
-from apps.etags.settings import *
-from apps.transformations.settings import *
-from apps.ui.settings import *
+
+# ========================================
+# This must remain last:
+# ========================================
+# This loads all settings from docrepo/global_settings.py
+# These settings will override all of the above.
+# If it does not load last, your overrides may not take effect.
+# A git pull style upgrade/update will not overwrite your global_settings.py
+
+log = py_logging.getLogger(__name__)
+try:
+    from global_settings import *
+except ModuleNotFoundError:
+    log.info("Optional global settings module not found.")
 
 if USE_KEYCLOAK:
     from .oidc import *
 
 if ENABLE_EXTENSIONS:
+    _enable_extensions = ENABLE_EXTENSIONS  # Save the local value
+
     from extensions.settings import *
 
-# ## Uncomment to use elastic
-# from .elastic import *
+    ENABLE_EXTENSIONS = _enable_extensions  # Restore the local value
+
+    TEMPLATES[0]["DIRS"].append(BASE_DIR / "extensions/templates")

@@ -1,11 +1,11 @@
 from django.urls import path
+
 from .views import (
     AddElementClipboardView,
     PasteCopyElementsView,
     PasteMoveElementsView,
     RemoveItemView,
 )
-
 
 app_name = "clipboard"
 

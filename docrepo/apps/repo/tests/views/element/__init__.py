@@ -1,3 +1,4 @@
+from .delete import DeleteElementViewTest, EmptyRecycleFolderViewTest
 from .details import ElementDetailsViewTest
 from .recycle import (
     RecycleElementFlowTest,
@@ -5,4 +6,3 @@ from .recycle import (
     RemoveBookmarkFromRecycledElementTest,
 )
 from .update import UpdateElementDetailsViewTest
-from .delete import EmptyRecycleFolderViewTest, DeleteElementViewTest

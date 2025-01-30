@@ -30,6 +30,8 @@
     font-size: smaller;
     margin-bottom: 1rem;
     margin-top: 1rem;
+    background-color: lightgrey;
+    padding: 10px;
   }
   ul {
     margin-bottom: 0.5rem;
@@ -41,25 +43,46 @@
     padding: 1rem;
     list-style-type: decimal;
   }
+  a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+  }
+
+  a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+
+  a:active {
+    color: #003f7f;
+  }
+
+  a:focus {
+    outline: 2px solid #80bdff;
+    outline-offset: 2px;
+  }
 </style>
 <h2>Contributing to Documendous Software Projects</h2>
 <p>Below are some topics to be aware of if you would like to contribute to development with this project.</p>
+<hr>
 <h3>Code of Conduct</h3>
-<p>In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in Documendous Software Projects a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.</p>
-<p>From a technical standpoint, develop in the spirit of the topics on this main subject as best you can.</p>
+<p>In the interest of maintaining an open and welcoming environment, we as contributors and maintainers pledge to making participation in Documendous Software Projects a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.</p>
+<hr>
 <h3>Django Debug Toolbar</h3>
-<p>In the development environment, the Django Debug Toolbar is enabled by default.</p>
+<p>In the development environment, the Django Debug Toolbar is disabled by default.</p>
 <p>To disable it, you have two options:</p>
 <ol>
 <li>
-<p><strong>Modify the .env file:</strong> Set DEBUG to 0 in the .env file used in the development Docker container.</p>
+<p><strong>Modify the .env file:</strong> Set DEBUG to 1 in the .env file used in the development Docker container.</p>
 </li>
 <li>
 <p><strong>Update settings/debug.py:</strong> Change the show_toolbar function to always return False:</p>
 </li>
 </ol>
 <pre><code>def show_toolbar(request):
-    return False
+    return True
 
 DEBUG = env(&quot;DEBUG&quot;)
 
@@ -69,11 +92,13 @@ DEBUG_TOOLBAR_CONFIG = {
 </code></pre>
 <p>These changes should take effect without requiring a restart.</p>
 <h3>Form Rendering</h3>
-<p>Use Django forms to define fields that will be used in your form. On the templating side, use django-widget-tweaks to render them.</p>
+<p>Use Django forms to define fields that will be used in your form. On the templating side, use django-widget-tweaks to render them unless manual rendering is absolutely necessary.</p>
+<hr>
 <h3>Javascript</h3>
-<p>Consider using other libraries like HTMX or Alpine.js to minimize standard Javascript usage where possible.</p>
+<p>Use libraries like HTMX or Alpine.js to minimize standard Javascript usage where possible. Using vanilla Javascript is ok when needed but must be refactored to the appropriate javascript file.</p>
 <h4>HTMX</h4>
 <p>For use of AJAX type calls and functions especially from UI elements, consider using HTMX.</p>
+<hr>
 <h3>Helper scripts</h3>
 <ul>
 <li>dev-up.sh : runs the development docker containers</li>
@@ -86,12 +111,13 @@ DEBUG_TOOLBAR_CONFIG = {
 <ul>
 <li>flake8: a commonly used Python linter to enforce PEP8 guidelines</li>
 <li>mypy: checks for opportunities to add typing where appropriate</li>
+<li>isort: refactors Python imports where appropriate</li>
 <li>coverage: generates coverage and coverage report</li>
 <li>pip-audit: looks for vulnerabilities in the project's dependencies</li>
 <li>Django and Python tests: we only accept 100%</li>
 </ul>
 <p>All tests should complete successfully and touch all parts of code as expected from the coverage script.</p>
-<p>Important: this does not mean all functionality one can imagine should be tested! And obviously we don't want to test 3rd party code.</p>
+<p>Important: this does not mean all functionality one can imagine should be tested! And obviously we don't want to test 3rd party (including Django) code.</p>
 <p>Currently, coverage settings will look at all code except:</p>
 <ul>
 <li>migrations/*</li>
@@ -100,7 +126,7 @@ DEBUG_TOOLBAR_CONFIG = {
 <li>apps/transformations/core.py</li>
 <li>**/__init__.py</li>
 <li>config/settings/*</li>
-<li>venv/</li>
+<li>.venv/</li>
 </ul>
 <p>If a function or method is not deemed needed for testing or if the work to do it is unnecessarily daunting, we can ignore it by placing the '# pragma: no coverage' comment at the end of the line where missing coverage is indicated.</p>
 <h3>Pre-commit</h3>
@@ -159,16 +185,16 @@ TOTAL                   29      0   100%
  Did you add documentation?
 
 </code></pre>
-<p>Note that it will run flake8, mypy, a simple test suite, coverage and pip-audit.</p>
+<p>Note that it will run flake8, mypy, isort, a simple test suite, coverage and pip-audit.</p>
 <p>At the end of the pre-commit run, there is also a reminder for contributing to documentation for any changes made. See section below on creating documentation. </p>
 <h4>Creating Documentation</h4>
 <p>Documentation for DocrepoX is handled by the ddocs app. At this time, there are essentially 3 major areas where documentation should be considered for any change:</p>
 <ul>
-<li>Using DocrepoX (Using-DocrepoX.md) - for end users </li>
+<li>Using DocrepoX (Using-DocrepoX.md) - for end user documentation</li>
 <li>Customizing DocrepoX (Customizing-DocrepoX.md) - for end users who wish to customize a feature (generally light customizations)</li>
-<li>Developing Documendous Software (Developing-Documendous.md) - for developers who would like to either extend or perform main development on Documendous products.</li>
+<li>Developing Documendous Software (Developing-Documendous.md) - general instructions for developers who would like to either extend or perform main development on Documendous products.</li>
 </ul>
-<p>It's possible that a change or feature add will require entries in each of these. Currently, markdown is used for documentation. These files can be found in apps/ddocs/markdown/templates.</p>
+<p>It is possible that a change or feature add will require entries in each of these. Currently, markdown is used for documentation. These files can be found in apps/ddocs/markdown/templates.</p>
 <p>Once written, you can manually create the documention html templates for them. Each one of these will have a corresponding template. These are described in apps/ddocs/utils/chart/ddocs.py:</p>
 <pre><code class="language-python">chart = {
   &quot;markdown_dir&quot;: &quot;markdown/templates&quot;,
@@ -193,6 +219,7 @@ TOTAL                   29      0   100%
 <p>To make use of this chart, you can run at the command line in the apps/ddocs directory:</p>
 <pre><code># python utils/md2html.py
 </code></pre>
+<p>Be aware that pre-commit will run the md2html script.</p>
 <p>This will create the corresponding html template in the ddocs templates directory.</p>
 <h4>CSS</h4>
 <p>Tailwind is used for CSS styling. For Tailwind Docs: see https://tailwindcss.com/docs/installation</p>
@@ -216,7 +243,7 @@ TOTAL                   29      0   100%
 <pre><code>&gt; npm run tw-doc:build  # for single builds
 </code></pre>
 <h4>UI Template Organization</h4>
-<p>In an html page, the best practice is to set a page like so:</p>
+<p>In an html page, the best practice is to set a page like this:</p>
 <pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
@@ -326,3 +353,14 @@ class IndexViewTest(ViewTest):
     url_name = &quot;repo:index&quot;
 
 </code></pre>
+<h4>Refactoring</h4>
+<p>Views should be thin. Make use of functions and methods.</p>
+<p>Ideally, one module (a Python file) or a template should:</p>
+<ul>
+<li>Contain one view for views modules.</li>
+<li>Be viewable without needing to scroll but if your class or set of functions exceed the page view of your editor, then keep it around 100 lines.</li>
+<li>Broken into other logical templates once larger than a page view.</li>
+<li>Contain one model for major models.</li>
+<li>Or ... group smaller models into one logical module.</li>
+</ul>
+<p>Make good use of <code>__init__.py</code> files.</p>

@@ -8,7 +8,7 @@
     <button
       type="submit"
       class="text-gray-500 hover:text-blue-700"
-      title='Place {{ element.type }} "{{ child.name }}" into clipboard for copy/move'
+      title='Place {{ element.type }} "{{ child.name|truncatechars:30 }}" into clipboard for copy/move'
     >
       <span class="material-symbols-outlined">
         move_group

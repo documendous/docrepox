@@ -214,3 +214,46 @@ This project is still in its early stages. Exercise caution and sound judgment w
 
 ---
 
+### Upgrading
+
+Upgrading is simple if you installed via this github repo.
+
+Stop DocrepoX:
+
+```bash
+docker compose stop -f docker-compose.prod.yml 
+```
+
+Get newest version of DocrepoX:
+
+```bash
+git branch
+
+# if not on main do:
+git checkout main
+git pull
+```
+
+Update package changes:
+
+```bash
+source .venv/bin/activate
+poetry export --with dev -f requirements.txt --output requirements.txt
+cp requirements.txt docrepo/requirements.txt
+```
+
+Start up DocrepoX:
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
+Ensure the build and startup complete successfully. Log into DocrepoX. The correct version will show on the footer of the dashboard.
+
+Afterwards, you can stop the containers and run in daemon mode:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+---

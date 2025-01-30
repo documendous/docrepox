@@ -1,4 +1,5 @@
 {% load project_tags %}
+{% load repo_tags %}
 
 {% is_a_project_folder child as is_a_project_folder %}
 {% is_membership_pending request child.folder as is_membership_pending %}
@@ -8,6 +9,7 @@
 {% can_recycle_element request child as can_recycle_element %}
 {% can_restore_element request child as can_restore_element %}
 {% can_delete_element request child as can_delete_element %}
+{% can_bookmark request child as can_bookmark %}
 
 {% if can_move_element %}
   {% include "clipboard/partials/actions/_move_element.html" %}
@@ -15,6 +17,10 @@
 
 {% if can_view_element_details %}
   {% include "repo/partials/actions/_element_details.html" %}
+{% endif %}
+
+{% if not child.is_in_recycle_path and can_bookmark %}
+  {% include "bookmarks/partials/actions/_bookmark_element.html" with element=child %}
 {% endif %}
 
 {% if is_a_project_folder and not has_project_membership and not is_membership_pending %}

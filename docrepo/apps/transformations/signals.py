@@ -1,5 +1,6 @@
-from django.dispatch import receiver
 from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
 from apps.core.utils.storage import delete_content_file
 from apps.transformations.models import Preview
 
