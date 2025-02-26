@@ -12,8 +12,10 @@ class ModifySettingsView(View):
         setting.value = value
         setting.save()
         next = request.GET.get("next", None)
+
         if next:
             url = f"repo:{next}"
         else:
             url = "repo:index"
+
         return HttpResponseRedirect(reverse(url))

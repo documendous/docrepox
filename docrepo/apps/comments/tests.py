@@ -16,12 +16,14 @@ class AddCommentViewTest(TestCase):
         self.test_user = get_test_user()
         self.test_document = get_test_document()
         self.test_folder = get_test_folder()
+
         self.test_project = Project.objects.create(
             name="Test project", owner=self.test_user, visibility="public"
         )
 
     def test_post_document(self):
         self.client.login(username="testuser1", password="testpass")
+
         response = self.client.post(
             reverse(
                 "repo:comments:add_comment",
@@ -34,6 +36,7 @@ class AddCommentViewTest(TestCase):
                 "content": "Example content",
             },
         )
+
         self.assertEqual(response.status_code, 200)
         self.assertTrue(b"testuser1" in response.content)
         self.assertTrue(b"Example content" in response.content)
@@ -42,6 +45,7 @@ class AddCommentViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.post(
             reverse(
                 "repo:comments:add_comment",
@@ -54,6 +58,7 @@ class AddCommentViewTest(TestCase):
                 "content": "Example content",
             },
         )
+
         self.assertEqual(response.status_code, 200)
         self.assertTrue(b"testuser1" in response.content)
         self.assertTrue(b"Example content" in response.content)
@@ -62,6 +67,7 @@ class AddCommentViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.post(
             reverse(
                 "repo:comments:add_comment",
@@ -74,6 +80,7 @@ class AddCommentViewTest(TestCase):
                 "content": "Example content",
             },
         )
+
         self.assertEqual(response.status_code, 200)
         self.assertTrue(b"testuser1" in response.content)
         self.assertTrue(b"Example content" in response.content)
@@ -84,15 +91,18 @@ class DeleteCommentViewTest(TestCase):
         self.test_user = get_test_user()
         self.test_document = get_test_document()
         self.test_folder = get_test_folder()
+
         self.test_project = Project.objects.create(
             name="Test project", owner=self.test_user, visibility="public"
         )
+
         self.client = Client()
 
     def test_post_with_document(self):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         self.client.post(
             reverse(
                 "repo:comments:add_comment",
@@ -105,7 +115,9 @@ class DeleteCommentViewTest(TestCase):
                 "content": "Example content",
             },
         )
+
         comment = Comment.objects.get(content="Example content", author=self.test_user)
+
         self.client.post(
             reverse(
                 "repo:comments:delete_comment",
@@ -116,6 +128,7 @@ class DeleteCommentViewTest(TestCase):
                 ],
             )
         )
+
         with self.assertRaises(Comment.DoesNotExist):
             comment = Comment.objects.get(
                 content="Example content", author=self.test_user
@@ -125,6 +138,7 @@ class DeleteCommentViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         self.client.post(
             reverse(
                 "repo:comments:add_comment",
@@ -137,7 +151,9 @@ class DeleteCommentViewTest(TestCase):
                 "content": "Example content",
             },
         )
+
         comment = Comment.objects.get(content="Example content", author=self.test_user)
+
         self.client.post(
             reverse(
                 "repo:comments:delete_comment",
@@ -148,6 +164,7 @@ class DeleteCommentViewTest(TestCase):
                 ],
             )
         )
+
         with self.assertRaises(Comment.DoesNotExist):
             comment = Comment.objects.get(
                 content="Example content", author=self.test_user
@@ -157,6 +174,7 @@ class DeleteCommentViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         self.client.post(
             reverse(
                 "repo:comments:add_comment",
@@ -169,7 +187,9 @@ class DeleteCommentViewTest(TestCase):
                 "content": "Example content",
             },
         )
+
         comment = Comment.objects.get(content="Example content", author=self.test_user)
+
         self.client.post(
             reverse(
                 "repo:comments:delete_comment",
@@ -180,6 +200,7 @@ class DeleteCommentViewTest(TestCase):
                 ],
             )
         )
+
         with self.assertRaises(Comment.DoesNotExist):
             comment = Comment.objects.get(
                 content="Example content", author=self.test_user

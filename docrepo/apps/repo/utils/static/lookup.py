@@ -12,9 +12,11 @@ def get_model(element_type: str) -> Model:
     """
     log = logging.getLogger(__name__)
     log.debug(f"Attempting to lookup model: {element_type}")
+
     try:
         Model = apps.get_model("repo", element_type)
         log.debug("Model found in 'repo'.")
+
     except LookupError:
         try:
             Model = apps.get_model("projects", element_type)
@@ -23,7 +25,9 @@ def get_model(element_type: str) -> Model:
             log.error(
                 f"Access denied or invalid model lookup: {element_type}", exc_info=True
             )
+
             raise Http404(f"The requested resource '{element_type}' was not found.")
+
     return Model
 
 

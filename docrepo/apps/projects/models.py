@@ -15,12 +15,14 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
     """
 
     name = models.CharField(max_length=255, unique=True)
+
     folder = models.ForeignKey(
         Folder,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
+
     visibility = models.CharField(
         max_length=30,
         choices=(
@@ -30,6 +32,7 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
         ),
         default="public",
     )
+
     managers_group = models.CharField(max_length=355, null=True, blank=True)
     editors_group = models.CharField(max_length=355, null=True, blank=True)
     readers_group = models.CharField(max_length=355, null=True, blank=True)
@@ -40,7 +43,9 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
             ("name", "editors_group"),
             ("name", "readers_group"),
         )
+
         ordering = ["-created"]
+
         indexes = [
             models.Index(fields=["visibility", "is_active"]),  # Compound index
             models.Index(fields=["managers_group", "is_active"]),
@@ -177,6 +182,7 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
             QuerySet: QuerySet of User objects who are members of the project
         """
         User = get_user_model()
+
         return User.objects.filter(
             groups__name__in=[
                 name

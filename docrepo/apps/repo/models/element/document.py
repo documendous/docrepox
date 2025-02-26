@@ -26,12 +26,15 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
         verbose_name = "Document"
         verbose_name_plural = "Documents"
         unique_together = (("name", "parent"),)
+
         indexes = [
             models.Index(fields=["parent"]),
             models.Index(fields=["mimetype"]),
             models.Index(fields=["created"]),
             models.Index(fields=["is_deleted"]),
         ]
+
+        ordering = ("-created",)
 
     def get_full_path(self) -> str:
         """
@@ -42,6 +45,7 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
             if not self.parent
             else f"{self.parent.get_full_path()}/{self.name}"
         )
+
         return path  # pragma: no cover
 
     @property
@@ -50,6 +54,7 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
         Returns latest version tag for document
         """
         versions = self.get_versions()
+
         if versions:
             return versions[0].tag
         else:
@@ -61,6 +66,7 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
         Returns latest version object for document if it exists
         """
         versions = self.get_versions()
+
         if versions:
             return versions[0]
         else:
@@ -80,6 +86,7 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
         """
         log = logging.getLogger(__name__)
         versions = Version.objects.filter(parent=self).order_by("-created")
+
         if versions.exists():
             try:
                 latest_version = versions[0]
@@ -98,6 +105,7 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
         """
         log = logging.getLogger(__name__)
         versions = Version.objects.filter(parent=self).order_by("-created")
+
         if versions.exists():
             try:
                 latest_version = versions[0]

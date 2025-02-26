@@ -10,4 +10,5 @@ def has_duplicate_peers(parent, file_name):
         if file_name == child.name:
             add_msg = DUPLICATE_PEER_MSG.format(file_name)
             return add_msg
+
     return ""

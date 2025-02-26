@@ -1,7 +1,12 @@
 import datetime
 from typing import List
 
+from django.conf import settings
+from django.template.defaultfilters import truncatechars
+from django.urls import reverse
+
 from apps.repo.models.element.document import Document
+from apps.repo.utils.access import has_public_access
 
 
 def user_can_navigate_path(folder, user):
@@ -28,16 +33,20 @@ def order_children_by_filter(children: list, order_by_filter: str) -> List:
 
     def sort_key(x):
         value = getattr(x, field, None)
+
         # Handle None values by returning a fallback
         if value is None:
             return ""
+
         # Handle datetime objects
         if isinstance(value, datetime.datetime):
             return value
+
         # Handle other values, assuming they are strings
         return str(value).lower()
 
     result = sorted(children, key=sort_key, reverse=reverse)
+
     return result
 
 
@@ -47,6 +56,58 @@ def get_current_version_tag(document: Document) -> str:
     """
     current_version_tag = ""
     versions = document.get_versions()
+
     if versions:
         current_version_tag = versions[0]
+
     return current_version_tag
+
+
+def get_path_with_links(element, user) -> str:
+    """
+    Returns the full repository path with links for each individual folder in the path
+    """
+    link_class = "hover:text-blue-700 relative group"
+    title = "Navigate through folders"
+
+    if element.type == "document":  # pragma: no coverage
+        base = element.parent
+    elif element.type == "folder":
+        base = element
+
+    if not base.parent:
+        url = reverse(
+            "repo:folder",
+            args=[
+                base.id,
+            ],
+        )
+
+        return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(base.name, 30)}</a>'
+
+    else:
+        if user_can_navigate_path(base, user):
+            parent_path = get_path_with_links(base.parent, user)
+
+            url = reverse(
+                "repo:folder",
+                args=[
+                    base.id,
+                ],
+            )
+
+            return f'{parent_path} / <a href="{url}" class="{link_class}"  title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(base.name, 30)}</a>'
+
+        else:
+            if has_public_access(base):
+                url = reverse(
+                    "repo:folder",
+                    args=[
+                        base.id,
+                    ],
+                )
+
+                return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(base.name, 30)}</a>'
+
+            else:
+                return ""

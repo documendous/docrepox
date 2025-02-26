@@ -33,6 +33,7 @@ class FolderViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:folder",
@@ -41,6 +42,7 @@ class FolderViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 302)
         self.client.logout()
 
@@ -48,6 +50,7 @@ class FolderViewTest(TestCase):
             username=ADMIN_USERNAME,
             password=ADMIN_PASSWORD,
         )
+
         response = self.client.get(
             reverse(
                 "repo:folder",
@@ -56,6 +59,7 @@ class FolderViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 302)
 
     def test_get(self):
@@ -63,6 +67,7 @@ class FolderViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:folder",
@@ -71,6 +76,7 @@ class FolderViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 200)
 
     def test_get_with_sorting(self):
@@ -81,6 +87,7 @@ class FolderViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:folder",
@@ -90,6 +97,7 @@ class FolderViewTest(TestCase):
             )
             + "?order_by=name"
         )
+
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(
@@ -101,6 +109,7 @@ class FolderViewTest(TestCase):
             )
             + "?order_by=title"
         )
+
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(
@@ -112,6 +121,7 @@ class FolderViewTest(TestCase):
             )
             + "?order_by=created"
         )
+
         self.assertEqual(response.status_code, 200)
 
     # def test_get_system_project_folder_with_admin_user(self):
@@ -134,6 +144,7 @@ class FolderViewTest(TestCase):
             username="shady_user",
             password="shady_pass",
         )
+
         response = self.client.get(
             reverse(
                 "repo:folder",
@@ -142,6 +153,7 @@ class FolderViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_post(self):
@@ -149,6 +161,7 @@ class FolderViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:folder",
@@ -160,6 +173,7 @@ class FolderViewTest(TestCase):
                 "name": "Test Folder 2",
             },
         )
+
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Folder.objects.get(name="Test Folder 2"))
 
@@ -168,6 +182,7 @@ class FolderViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:folder",
@@ -177,4 +192,5 @@ class FolderViewTest(TestCase):
             ),
             data={},
         )
+
         self.assertEqual(response.status_code, 200)

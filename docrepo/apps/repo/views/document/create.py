@@ -15,6 +15,7 @@ class CreateDocumentView(BaseCreateDocumentView):
 
     def _create_content_file_from_content(self, request, content):
         file_name = request.POST.get("name", None)
+
         if file_name:
             content_file = ContentFile(content.encode("utf-8"), name=file_name)
             files_data = request.FILES.copy()
@@ -32,6 +33,7 @@ class CreateDocumentView(BaseCreateDocumentView):
 
     def _set_version_form(self, request):
         content = request.POST.get("content", None)
+
         if content:
             self.version_form = self._create_content_file_from_content(
                 request,

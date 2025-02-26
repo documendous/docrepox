@@ -1,21 +1,30 @@
 {% load static %}
 
 <div class="flex align-items gap-1">
-  <a href="." hx-boost="{{ use_hx_boost_int }}" class="hover:text-blue-700">
+  <a
+    href="."
+    hx-boost="{{ use_hx_boost_int }}"
+    class="hover:text-blue-700"
+    title="Remove sort"
+  >
     {{ column_name }}
   </a>
+
   <a
     href="#"
     x-data="orderByToggle('{{ column_name }}')"
     :href="`?order_by=${nextOrderBy}`"
     hx-boost="{{ use_hx_boost_int }}" {% comment%} Turn this off if having issues on the sort. {% endcomment %}
     class="hover:text-blue-700"
+    title="Sort by {{ column_name }}"
   >
     <span class="material-symbols-outlined" style="font-size: 15px !important;">
       swap_vert
     </span>
   </a>
+
   {% include 'ddocs/customization_tips/_tip.html' with anchor_name="customize-table-sorting" %}
+
 </div>
 
 <script src="{% static 'js/repo/utils/table-sort.js' %}"></script>

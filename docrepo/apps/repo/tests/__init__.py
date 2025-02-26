@@ -1,7 +1,7 @@
 from .bugs import ProjectOwnerCannotAddTest
 from .helpers.validation import DuplicateTopLevelPeerTest
 from .models.document import DocumentModelTest
-from .models.folder import FolderModelTest
+from .models.folder import FolderModelMethodsTest, FolderModelTest
 from .templatetags import ProjectTagsTest
 from .views.document import (
     AddDocumentViewTest,

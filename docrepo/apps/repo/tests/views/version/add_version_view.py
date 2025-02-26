@@ -17,9 +17,11 @@ class AddVersionViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         # Create a document with new file content version
         test_content = b"Hello world"
         test_file = SimpleUploadedFile("TestDocument.txt", test_content)
+
         self.client.post(
             reverse(
                 "repo:create_document",
@@ -32,6 +34,7 @@ class AddVersionViewTest(TestCase):
                 "content_file": test_file,
             },
         )
+
         document = Document.objects.get(name="TestDocument.txt")
 
         # Create a new version (minor: 1.1)
@@ -50,6 +53,7 @@ class AddVersionViewTest(TestCase):
                 "change_type": "Minor",
             },
         )
+
         self.assertEqual(response.status_code, 302)
         document.refresh_from_db()
         self.assertEqual(document.current_version_tag, "1.1")
@@ -70,6 +74,7 @@ class AddVersionViewTest(TestCase):
                 "change_type": "Major",
             },
         )
+
         self.assertEqual(response.status_code, 302)
         document.refresh_from_db()
         self.assertEqual(document.current_version_tag, "2.0")

@@ -1,79 +1,46 @@
 {% load clipboard_tags %}
 {% load format_tags %}
+{% load project_tags %}
 {% load static %}
 
 <tbody class="bg-white divide-y divide-gray-200" id="folder-children-table-data" >
   {% for child in children %}
+    {% can_read_project request child.parent_project.folder as can_read_project %}
     <tr>
       {% if scope == 'full' or scope == 'summary' %}
         <td class="px-6 py-4 whitespace-nowrap text-sm">
-          {% if child.is_folder or child.folder %}
-          <a class="text-gray-600 hover:text-blue-700 flex items-center"
-            {% if child.is_folder %}
-              href="{% url 'repo:folder' child.pk %}"
-            {% elif child.folder %}
-              href="{% url 'repo:folder' child.folder.pk %}"
-            {% endif %}
-            hx-boost="{{ use_hx_boost_ext }}"
-            >
-            <span class="material-icons-outlined mr-2">folder</span>
-            {% include "repo/partials/_folder_children_name.html" %}
-            {% element_in_clipboard request child as in_clipboard %}
-            {% if in_clipboard %}
-              <span
-                id="in_clipboard_icon_{{ child.pk }}"
-                class="material-icons-outlined text-blue-400 h-[20px] ml-2"
-              >content_paste</span>
-            {% endif %}
-          </a>
+          {% if child.is_folder and not child.type == 'project' %}
+            {% include "repo/partials/folder/_folder_name.html" %}
+          {% elif child.type == 'project' %}
+            {% include "projects/partials/_project_name.html" %}
           {% else %}
-            <a class="text-gray-600 hover:text-blue-700 flex items-center"
-              href="{% url 'repo:element_details' child.type child.pk %}"
-              hx-boost="{{ use_hx_boost_ext }}"
-            >
-              <span class="material-icons-outlined mr-2">
-                description
-              </span>
-              {% include "repo/partials/_folder_children_name.html" %}
-              {% element_in_clipboard request child as in_clipboard %}
-              {% if in_clipboard %}
-                <span
-                  id="in_clipboard_icon_{{ child.pk }}"
-                  class="material-icons-outlined text-blue-400 h-[20px] ml-2"
-                >content_paste</span>
-              {% endif %}
-            </a>
+            {% include "repo/partials/document/_document_name.html" %}
           {% endif %}
         </td>
       {% endif %}
       
       {% if is_bookmark_list_view %}
-        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
-          <a
-            {% if child.type == 'project' %}
-              href="{% url 'repo:folder' child.folder.pk %}"
-            {% else %}
-              href="{% url 'repo:folder' child.parent.pk %}"
-            {% endif %}
-            class="text-gray-600 hover:text-blue-700 flex items-center"
-            hx-boost="{{ use_hx_boost_int }}"
-          >
-            {% if child.type == 'project' %}
-              {{ child.folder.get_full_path }}
-            {% else %}
-              {{ child.parent.get_full_path }}
-            {% endif %}
-          </a>
-        </td>
+        {% include "repo/partials/_bookmark_list_view.html" %}
       {% else %}
         {% if scope == 'full' %}
-          <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+          <td
+            class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm"
+            {% if child.title %}
+              title="{{ child.title }}"
+            {% endif %}
+          >
             {{ child.title|default:'--'|truncatechars:30 }}
           </td>
         {% endif %}
       {% endif %}
+
       {% if scope == 'summary' %}
-        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+        <td
+          class="
+            px-6 py-4 whitespace-nowrap text-sm
+            text-gray-{% if child.parent_project.folder and not can_read_project %}400{% else %}700{% endif %}
+          "
+        >
           {% if child.is_document %}
             {% include "repo/partials/document/_document_size.html" %}
           {% else %}
@@ -81,35 +48,51 @@
           {% endif %}
         </td>
       {% endif %}
+
       {% if scope == 'full' or scope == 'summary' %}
-        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+        <td
+          class="
+            px-6 py-4 whitespace-nowrap
+            text-gray-{% if child.parent_project.folder and not can_read_project %}400{% else %}700{% endif %}
+            text-sm
+          "
+        >
           {{ child.owner }}
         </td>
       {% endif %}
       
       {% if scope == 'full' %}
-        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+        <td class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm">
           {{ child.created }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+
+        <td class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm">
           {{ child.modified }}
         </td>
+
       {% endif %}
       
       {% if scope == 'full' or scope == 'summary' %}
         <td
           class="
-            px-6 py-4 whitespace-nowrap text-gray-600 text-sm
-            flex justify-start items-center gap-3
+            px-6 py-4 whitespace-nowrap
+            text-gray-{% if child.parent_project.folder and not can_read_project %}400{% else %}700{% endif %}
+            text-sm flex justify-start items-center gap-3
           "
         >
-          {% include "repo/partials/_element_actions.html" %}
+
+          {% if child.parent_project.folder %}
+            {% include "repo/partials/_element_actions.html" with project=child.parent_project %}
+          {% else %}
+            {% include "repo/partials/_element_actions.html" %}
+          {% endif %}
+        
         </td>
       {% endif %}
     </tr>
   {% empty %}
     <tr>
-      <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+      <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
         No records found
       </td>
     </tr>
@@ -119,3 +102,10 @@
 {% if not pagination_enabled %}
   <script src="{% static 'js/repo/utils/hide-pagination.js' %}"></script>
 {% endif %}
+
+<script>
+  filterSearchTerm = document.getElementById("filter_search_term");
+  if (filterSearchTerm) filterSearchTerm.textContent = "{{ search_term }}";
+</script>
+
+<script src="{% static 'js/repo/utils/element-restore-redirect.js' %}"></script>

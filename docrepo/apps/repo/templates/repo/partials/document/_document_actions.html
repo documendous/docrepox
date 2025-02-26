@@ -1,29 +1,35 @@
-<span class="flex items-center px-4">
-  {% if element.current_version.size %}
-    <a href="{% url 'repo:retrieve_document' element.id %}?action=attachment"
-      class="text-gray-700 hover:text-blue-700 mr-2">
-      <span
-        class="material-icons-outlined"
-        title='Download "{{ element.name|truncatechars:30 }}" file'
+{% load transformation_tags %}
+
+{% is_previewable element as is_previewable %}
+
+<div x-data="{ showPreview: false, fileUrl: '' }">
+  <span class="flex items-center px-4">
+    {% if element.current_version.size %}
+      <a href="{% url 'repo:retrieve_document' element.id %}?action=attachment"
+        class="text-gray-700 hover:text-blue-700 mr-2"
       >
-        cloud_download
+        <span
+          class="material-icons-outlined"
+          title='Download "{{ element.name|truncatechars:30 }}" file'
+        >
+          cloud_download
+        </span>
+      </a>
+
+      {% if is_previewable %}
+        {% include "transformations/preview_link.html" %}
+      {% else %}
+        <span class="italic text-sm">*Preview not available</span>
+      {% endif %}
+
+    {% else %}
+      <span class="italic text-sm">
+        *No preview or download available
       </span>
-    </a>
-    <a
-      href="{% url 'repo:retrieve_document' element.id %}"
-      class="text-gray-700 hover:text-blue-700 mr-2"
-      target="_blank"
-    >
-      <span 
-        class="material-icons-outlined"
-        title='Preview "{{ element.name|truncatechars:30 }}" document'
-      >
-        preview
-      </span>
-    </a>
-  {% else %}
-    <span class="italic text-sm">
-      *No preview or download available
-    </span>
-  {% endif %}
-</span>
+    {% endif %}
+
+  </span>
+
+  {% include "transformations/document_preview.html" %}
+
+</div>

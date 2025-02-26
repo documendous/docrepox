@@ -1,0 +1,27 @@
+<div class="mt-8">
+  <h4 class="block text-sm font-bold text-gray-100 my-2 flex items-center justify-between gap-1">
+    <span>FOLDERS</span>
+    
+    <span
+      class="material-symbols-outlined cursor-pointer"
+      id="remove-folders"
+      title="Remove all folders from clipboard"
+      hx-post="{% url 'repo:clipboard:remove_folders' %}"
+      hx-trigger="click"
+      hx-target="#folder-list"
+      hx-swap="outerHTML"
+    >
+      remove_selection
+    </span>
+  
+  </h4>
+  
+  <hr class="mb-4">
+  
+  {% include "clipboard/partials/_folder_list.html" %}
+  
+  <template x-if="clipboardFolders === 0">
+    <li>N/A</li>
+  </template>
+  
+</div>

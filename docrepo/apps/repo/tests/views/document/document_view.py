@@ -18,8 +18,10 @@ class DocumentViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         test_content = b"Hello world"
         test_file = SimpleUploadedFile("TestDocument.txt", test_content)
+
         response = self.client.post(
             reverse(
                 "repo:add_document",
@@ -32,10 +34,13 @@ class DocumentViewTest(TestCase):
                 "content_file": test_file,
             },
         )
+
         self.assertEqual(response.status_code, 302)
+
         self.test_document = Document.objects.get(
             name="TestDocument.txt",
         )
+
         self.assertTrue(self.test_document)
         self.assertTrue(Version.objects.get(parent=self.test_document))
 
@@ -44,6 +49,7 @@ class DocumentViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:add_document",
@@ -53,7 +59,9 @@ class DocumentViewTest(TestCase):
             ),
             data={},
         )
+
         self.assertEqual(response.status_code, 200)
+
         with self.assertRaises(Document.DoesNotExist):
             Document.objects.get(
                 name="TestDocument.txt",

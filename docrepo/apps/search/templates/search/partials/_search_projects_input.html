@@ -1,3 +1,7 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/htmx-components.css' %}">
+
 <input
   type="text"
   placeholder="Search for Projects ..."
@@ -9,4 +13,9 @@
   hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
   hx-trigger="keyup changed delay:500ms"
   hx-boost="{{ use_hx_boost_ext }}"
+  hx-indicator="#spinner"
 />
+
+{% include "core/_spinner.html" %}
+
+<script src="{% static 'js/core/spinner-effects.js' %}"></script>

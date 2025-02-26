@@ -2,18 +2,15 @@ import logging
 from itertools import chain
 from typing import List
 
-from django.conf import settings
 from django.db import models
 from django.forms import ValidationError
 from django.template.defaultfilters import truncatechars
-from django.urls import reverse
 
 from apps.comments.models import Commentable
 from apps.core.models import Element, HasFolderParent, IsRecyclable
 
 from ...models.element.version import Version
-from ...utils.access import has_public_access
-from ...utils.model import order_children_by_filter, user_can_navigate_path
+from ...utils.model import order_children_by_filter
 from ...utils.static.lookup import is_a_user_home_folder
 from .document import Document
 
@@ -29,11 +26,14 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
         verbose_name = "Folder"
         verbose_name_plural = "Folders"
         unique_together = (("name", "parent"),)
+
         indexes = [
             models.Index(fields=["parent"]),
             models.Index(fields=["created"]),
             models.Index(fields=["is_deleted"]),
         ]
+
+        ordering = ("-created",)
 
     @classmethod
     def has_root_folder(cls):
@@ -48,55 +48,28 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
             if not self.parent
             else f"{self.parent.get_full_path()}/{self.name}"
         )
+
         return truncatechars(path, 60)
 
-    def get_path_with_links(self, user) -> str:
-        """
-        Returns the full repository path with links for each individual folder in the path
-        """
-        link_class = "hover:text-blue-700 relative group"
-        title = "Navigate through folders"
-        if not self.parent:
-            url = reverse(
-                "repo:folder",
-                args=[
-                    self.id,
-                ],
-            )
-            return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(self.name, 30)}</a>'
-        else:
-            if user_can_navigate_path(self, user):
-                parent_path = self.parent.get_path_with_links(user)
-                url = reverse(
-                    "repo:folder",
-                    args=[
-                        self.id,
-                    ],
-                )
-                return f'{parent_path} / <a href="{url}" class="{link_class}"  title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(self.name, 30)}</a>'
-            else:
-                if has_public_access(self):
-                    url = reverse(
-                        "repo:folder",
-                        args=[
-                            self.id,
-                        ],
-                    )
-                    return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(self.name, 30)}</a>'
-                else:
-                    return ""
-
-    def get_children(self, include_hidden=False, order_by_filter=None) -> List[Element]:
+    def get_children(
+        self, include_hidden=False, order_by_filter=None, search_term=None
+    ) -> List[Element]:
         """
         Returns a list of elements (documents & folders) sorted with folders first,
         and optionally sorted by the given field.
         """
         documents = Document.objects.filter(parent=self)
+
         folders = (
             Folder.objects.filter(parent=self)
             if include_hidden
             else Folder.objects.filter(parent=self, is_hidden=False)
         )
+
+        if search_term:
+            documents = documents.filter(name__icontains=search_term)
+            folders = folders.filter(name__icontains=search_term)
+
         children = list(chain(folders, documents))
 
         if order_by_filter:
@@ -110,6 +83,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
         """
         if Folder.objects.filter(parent=self) or Document.objects.filter(parent=self):
             return True
+
         return False
 
     def get_child_documents(self):  # pragma: no coverage
@@ -117,6 +91,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
         Returns a list of child documents for a parent folder
         """
         documents = Document.objects.filter(parent=self)
+
         return documents
 
     def get_child_folders(self):  # pragma: no coverage
@@ -124,6 +99,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
         Returns a list of child folders (subfolders) for a parent folder
         """
         folders = Folder.objects.filter(parent=self)
+
         return folders
 
     def get_descendant_count(self, include_hidden=False) -> int:
@@ -135,9 +111,11 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
 
         while stack:
             current_folder = stack.pop()
+
             documents = Document.objects.filter(
                 parent=current_folder,
             ).count()
+
             folders = (
                 Folder.objects.filter(parent=current_folder)
                 if include_hidden
@@ -146,6 +124,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
                     is_hidden=False,
                 )
             )
+
             count += documents
             count += folders.count()
             stack.extend(folders)
@@ -167,6 +146,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
 
             for document in documents:
                 versions = Version.objects.filter(parent=document).order_by("-created")
+
                 if versions.exists():
                     try:
                         latest_version = versions[0]
@@ -190,12 +170,15 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
         """
         if self.name == "ROOT" and not self.parent:
             return
+
         if not self.parent and Folder.has_root_folder():
             raise ValidationError("All folders must have a parent.")
+
         if self.parent == self:
             raise ValidationError("A folder cannot assign itself as its own parent.")
+
         if is_a_user_home_folder(folder=self):
-            raise ValidationError("User home folder's name cannot be changed.")
+            raise ValidationError("User home folder's details cannot be changed.")
 
     def save(self, *args, **kwargs) -> None:  # pragma: no coverage
         """

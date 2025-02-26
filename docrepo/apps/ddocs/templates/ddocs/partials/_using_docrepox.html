@@ -5,27 +5,35 @@
     margin-top: 2rem;
     font-weight: bold;
   }
+
   h1 {
     font-size: 26px;
   }
+
   h2 {
     font-size: 24px;
   }
+
   h3 {
     font-size: 20px;
   }
+
   h4 {
     font-size: 18px;
   }
+
   h5 {
     font-size: 16px;
   }
+
   h6 {
     font-size: 14px;
   }
+
   p {
     margin-bottom: 1rem;
   }
+
   pre {
     font-size: smaller;
     margin-bottom: 1rem;
@@ -33,16 +41,19 @@
     background-color: lightgrey;
     padding: 10px;
   }
+
   ul {
     margin-bottom: 0.5rem;
     padding: 1rem;
     list-style-type: initial;
   }
+
   ol {
     margin-bottom: 0.5rem;
     padding: 1rem;
     list-style-type: decimal;
   }
+
   a {
     color: #007bff;
     text-decoration: none;
@@ -63,6 +74,7 @@
     outline: 2px solid #80bdff;
     outline-offset: 2px;
   }
+
 </style>
 <h2>Using DocrepoX</h2>
 <h3>Licensing</h3>
@@ -199,13 +211,20 @@ KC_CLIENT_SECRET=my-secret  # Found in the client credentials tab in Keycloak
 <p>For easier setup, import the provided documendous-realm.json file when creating your Keycloak realm. Note that this file must be imported at the time of realm creation, not from the admin interface. Update the client URLs in Keycloak if your hostname or port is different.</p>
 <hr>
 <h3>Minio</h3>
-<p>Some things to consider:</p>
+<p><strong>Important Considerations for Storage Selection</strong></p>
+<p>Choosing between Minio and Django's default storage is a critical architectural decision. Carefully evaluate your requirements before proceeding, as this choice impacts long-term data accessibility.</p>
+<p>See the following for more info on Minio: <a href="https://min.io/product/overview">https://min.io/product/overview</a></p>
+<p><strong>Commit to Your Decision Early</strong></p>
 <ul>
-<li>This is a serious architecture decision. Treat it as such. You either use Minio or the Django default storage.</li>
-<li>This should be decided upon from the beginning. If you start off with default and switch to Minio, you will not be able to access your default stored file for your document. If you use Minio and switch to default storage, you will not be able to access your Minio stored file for your document.</li>
-<li>Switch Minio with AWS S3 and this means pretty much the same.</li>
-<li>If you do not understand Minio or AWS S3, we recommend using default storage. If you do understand Minio or AWS S3 very well, then use that.</li>
+<li>If you begin with Django's default storage and later switch to Minio, previously stored files will become inaccessible.  </li>
+<li>Similarly, if you start with Minio and switch to default storage, files stored in Minio will not be accessible.  </li>
 </ul>
+<p><strong>Storage Recommendation</strong></p>
+<ul>
+<li>If you are unfamiliar with Minio, we recommend using Django's default storage.  </li>
+<li>If you have extensive experience with Minio and fully understand their configurations, consider using Minio instead.</li>
+</ul>
+<p>Make this decision at the start of development to avoid data accessibility issues in the future.</p>
 <h4>Initial Setup</h4>
 <p>Ensure the following settings are in config/settings/storage.py:</p>
 <pre><code>DEFAULT_FILE_STORAGE = &quot;minio_storage.storage.MinioMediaStorage&quot;
@@ -578,6 +597,9 @@ python manage.py diffsettings
 </ul>
 <p>There is a sort icon to the right of the column header. The sort icon toggles between ascending and descending. Clicking on the column head will set the table order back to its default.</p>
 <p>For info on customizing table columns see "Customizing Sortable Table Columns for Folder View" in Customizing DocrepoX.</p>
+<h5>Filtering by Folder and Document Names</h5>
+<p>You can filter the list of folders and documents in a parent folder by typing a name in the search bar at the top of the element list view. The filter updates <strong>500ms after you stop typing</strong> and displays only items that contain the search term in their names.  </p>
+<p><strong>Note:</strong> The filter remains active when using the move/copy icon to add items to the clipboard, allowing you to continue selecting elements from the same filtered list. When you're ready, click the <strong>Clear Filter</strong> button to restore the full list.</p>
 <h4>Actions</h4>
 <ul>
 <li>
@@ -609,6 +631,7 @@ python manage.py diffsettings
 </li>
 </ul>
 <p><strong>Note:</strong> that bookmarks are removed when a document has been recycled or deleted.</p>
+<p><strong>Note:</strong> An admin user cannot update a user's home folder details in either the admin console or the DocrepoX view.</p>
 <h4>Updating Document/Folder/Project Details</h4>
 <p>Only the owner (or project editor and manager if in a project) can update the details of the document or folder.</p>
 <p>You can update the following:</p>

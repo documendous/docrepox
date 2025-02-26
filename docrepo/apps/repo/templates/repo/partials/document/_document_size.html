@@ -3,7 +3,10 @@
 {% if child.current_version.size  %}
   {{ child.current_version.size|human_readable_size|default:'--' }}
 {% else %}
-  <span class="text-red-500" title="This document could also be possibly missing its content file">
+  <span
+    class="text-red-500"
+    title="This document could also be possibly missing its content file"
+  >
     0.0 B
   </span>
 {% endif %}

@@ -11,8 +11,10 @@ def delete_content_file(instance):  # pragma: no coverage
     Deletes content file for types (instance) that has them
     """
     log = logging.getLogger(__name__)
+
     if settings.AUTO_DELETE_CONTENT_FILES:
-        log.debug("  AUTO_DELETE_CONTENT_FILES is set to True")
+        log.debug("AUTO_DELETE_CONTENT_FILES is set to True")
+
         if instance.content_file:
             if os.path.isfile(instance.content_file.path):
                 log.debug(
@@ -21,9 +23,10 @@ def delete_content_file(instance):  # pragma: no coverage
                     )
                 )
                 os.remove(instance.content_file.path)
+
             else:
                 log.warning(
-                    "  Content File: {} does not exist and cannot be deleted.".format(
+                    "Content File: {} does not exist and cannot be deleted.".format(
                         instance.content_file.path
                     )
                 )
@@ -35,6 +38,7 @@ def content_file_name(instance, filename):
     """
     now = timezone.now()
     filename = f"{uuid.uuid4()}"
+
     return (
         f"content/{now.year}/{now.month}/{now.day}/{now.hour}/{now.minute}/{filename}"
     )

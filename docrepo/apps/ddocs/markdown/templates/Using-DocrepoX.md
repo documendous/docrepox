@@ -197,12 +197,23 @@ For easier setup, import the provided documendous-realm.json file when creating 
 
 ### Minio
 
-Some things to consider:
+**Important Considerations for Storage Selection**
 
-* This is a serious architecture decision. Treat it as such. You either use Minio or the Django default storage.
-* This should be decided upon from the beginning. If you start off with default and switch to Minio, you will not be able to access your default stored file for your document. If you use Minio and switch to default storage, you will not be able to access your Minio stored file for your document.
-* Switch Minio with AWS S3 and this means pretty much the same.
-* If you do not understand Minio or AWS S3, we recommend using default storage. If you do understand Minio or AWS S3 very well, then use that.
+Choosing between Minio and Django's default storage is a critical architectural decision. Carefully evaluate your requirements before proceeding, as this choice impacts long-term data accessibility.
+
+See the following for more info on Minio: [https://min.io/product/overview](https://min.io/product/overview)
+
+**Commit to Your Decision Early**
+
+  - If you begin with Django's default storage and later switch to Minio, previously stored files will become inaccessible.  
+  - Similarly, if you start with Minio and switch to default storage, files stored in Minio will not be accessible.  
+
+**Storage Recommendation**
+
+  - If you are unfamiliar with Minio, we recommend using Django's default storage.  
+  - If you have extensive experience with Minio and fully understand their configurations, consider using Minio instead.
+
+Make this decision at the start of development to avoid data accessibility issues in the future.
 
 #### Initial Setup
 
@@ -665,6 +676,12 @@ There is a sort icon to the right of the column header. The sort icon toggles be
 
 For info on customizing table columns see "Customizing Sortable Table Columns for Folder View" in Customizing DocrepoX.
 
+##### Filtering by Folder and Document Names
+
+You can filter the list of folders and documents in a parent folder by typing a name in the search bar at the top of the element list view. The filter updates **500ms after you stop typing** and displays only items that contain the search term in their names.  
+
+**Note:** The filter remains active when using the move/copy icon to add items to the clipboard, allowing you to continue selecting elements from the same filtered list. When you're ready, click the **Clear Filter** button to restore the full list.
+
 #### Actions
 
 * You can move documents and folders by clicking on the move icon. This will place elements in the user's clipboard (see Clipboard in Folder Actions section).
@@ -686,6 +703,8 @@ For info on customizing table columns see "Customizing Sortable Table Columns fo
 * If you need to find the content file path (on the file system) for a document, you can see this in the document details page if you are the admin user. Note that the admin user can also find this information in the admin console.
 
 **Note:** that bookmarks are removed when a document has been recycled or deleted.
+
+**Note:** An admin user cannot update a user's home folder details in either the admin console or the DocrepoX view.
 
 #### Updating Document/Folder/Project Details
 

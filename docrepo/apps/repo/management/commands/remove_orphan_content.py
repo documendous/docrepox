@@ -37,10 +37,13 @@ class Command(BaseCommand):
 
     def _process_file(self, root, file):
         full_file_path = os.path.join(root, file)
+
         relative_path = os.path.normpath(
             os.path.relpath(full_file_path, self.media_root)
         )
+
         self.stdout.write(f"Checking file: {relative_path}")
+
         if any(self._get_matches(relative_path)):
             self.stdout.write(self.style.SUCCESS(f"Found in DB: {relative_path}"))
         else:
@@ -56,6 +59,7 @@ class Command(BaseCommand):
 
         if not os.path.exists(self.deleted_orphan_folder):
             os.makedirs(self.deleted_orphan_folder)
+
             self.stdout.write(
                 self.style.SUCCESS(f"Created folder: {self.deleted_orphan_folder}")
             )

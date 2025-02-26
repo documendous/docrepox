@@ -37,6 +37,7 @@ class RequestProjectJoinView(View):
             messages.INFO,
             f"Request to join project: {project.name} sent.",
         )
+
         return HttpResponseRedirect(
             reverse("repo:folder", args=[project.folder.parent.pk])
         )
@@ -61,11 +62,15 @@ class AddRequesterToProjectGroupView(View):
             raise Http404
 
         user.groups.add(group)
-        communications = Communication.objects.filter(
-            content_type__model="project", object_id=project.id
+
+        communication = Communication.objects.get(
+            content_type__model="project",
+            object_id=project.id,
+            msg_from=user,
         )
-        for each in communications:
-            each.delete()
+
+        communication.delete()
+
         return HttpResponseRedirect(
             reverse(
                 "repo:projects:project_details",
@@ -85,6 +90,7 @@ class RejectRequestJoinView(View):
         comm = Communication.objects.get(pk=req_join_id)
         project = comm.related_element
         comm.delete()
+
         return HttpResponseRedirect(
             reverse(
                 "repo:projects:project_details",

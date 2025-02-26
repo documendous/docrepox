@@ -17,6 +17,7 @@ class PastedDocument(models.Model):
         on_delete=models.CASCADE,
         blank=True,
     )
+
     pasted_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

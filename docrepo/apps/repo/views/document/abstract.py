@@ -50,12 +50,15 @@ class BaseCreateDocumentView(DocumentCreator, View):
                 title=title,
                 description=description,
             )
+
         if new_document:
             self._create_version(new_document, version_form)
+
             messages.info(
                 request,
                 f'Document "{truncatechars(name, 30)}" was successfully created.',
             )
+
             return new_document
 
     def get(self, request, folder_id):
@@ -66,6 +69,7 @@ class BaseCreateDocumentView(DocumentCreator, View):
         rules.can_create_document(request, parent)
         self.context = self._get_common_context(parent, request)
         self._set_extra_context()
+
         return render(request, "repo/create_document.html", self.context)
 
     def post(self, request, folder_id):
@@ -100,4 +104,5 @@ class BaseCreateDocumentView(DocumentCreator, View):
 
         self.context = self._get_common_context(parent, request)
         self._set_extra_context()
+
         return render(request, self.template_name, self.context)

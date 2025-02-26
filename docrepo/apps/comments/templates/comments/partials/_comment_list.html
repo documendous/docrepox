@@ -1,45 +1,56 @@
 {% load repo_tags %}
 
-<div id="comment-list" class="space-y-4 mt-4">
+<div id="comment-list" class="space-y-4 mt-8">
+  <p class="text-xl px-2">Comments</p>
   {% for comment in element.comments.all %}
     {% can_delete_comment request comment.pk element.type element.pk as can_delete_comment %}
-    <div class="p-4 bg-gray-100 rounded-lg shadow-md border border-gray-200 w-1/2">
-      <div class="text-sm text-gray-500 flex items-center justify-between">
-        <span class="font-semibold text-gray-700">
-          {{ comment.author }}
-        </span>
+
+    <div class="border border-blue-200 rounded-lg shadow-md w-1/2">
+      <div
+        class="
+          px-3 py-2 flex items-start space-x-3 border-b
+          border-blue-200 bg-blue-100 rounded-t-lg
+        ">
+        {% comment %} <img src="{{ comment.author.profile.image_url }}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-300"> {% endcomment %}
+
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-gray-800">{{ comment.author }}</span>
+
+            <span class="text-xs text-gray-700"
+              x-data="localeString({dateTime: '{{ comment.created|date:"c"}}'})"
+              x-text="localDateTime">
+            </span>
+
+          </div>
+        </div>
+
         {% if can_delete_comment %}
-          <form method="POST" action="{% url 'repo:comments:delete_comment' comment.pk element.type element.pk %}">
+          <form
+            method="POST"
+            action="{% url 'repo:comments:delete_comment' comment.pk element.type element.pk %}"
+          >
             {% csrf_token %}
+
             <button 
-              type="submit" 
+              type="submit"
               onclick="return confirm('This action will permanently delete this comment. Ok?');"
-              class="bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 pt-1"
+              class="text-gray-400 hover:text-red-600"
             >
-              <span 
-                class="material-symbols-outlined" 
-                style="font-size: 18px !important;"
-              >
+              <span class="material-symbols-outlined pt-1" style="font-size: 18px !important;">
                 delete
               </span>
             </button>
           </form>
         {% endif %}
       </div>
-      <div
-        class="text-xs text-gray-500"
-        x-data="localeString({dateTime: '{{ comment.created|date:"c"}}'})"
-        x-text="localDateTime"
-      ></div>
-      <div class="mt-2 text-gray-800 text-sm">
-        <span>
-          {{ comment.content|linebreaksbr }}
-        </span>
+
+      <div class="p-3 pb-6 text-gray-800 text-sm">
+        {{ comment.content|linebreaksbr }}
       </div>
     </div>
+
   {% empty %}
-    <div class="text-gray-500 text-sm italic">
-      No comments yet.
-    </div>
+    <div class="text-gray-700 text-sm italic px-2">No comments yet.</div>
   {% endfor %}
 </div>

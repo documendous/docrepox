@@ -9,10 +9,12 @@
       {{ project.name }}
     </a>
   </li>
+
 {% elif is_membership_pending %}
     <li class="text-gray-500">
       {{ project.name }} (Membership Pending)
     </li>
+
 {% else %}
   <li>
     <span>

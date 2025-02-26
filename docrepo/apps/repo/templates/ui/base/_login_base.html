@@ -4,13 +4,16 @@
 <!DOCTYPE html>
 <html lang="en" class="bg-gray-100">
 {% include "ui/base/_default_head.html" %}
+
 <body class="container mx-auto my-4 p-4 bg-gray-100">
   <header class="text-3xl font-bold text-center border-b-2 pb-2">
     <span>
       DocrepoX <span class="text-xs">by Documendous</span>
     </span>
   </header>
+
   {% block main %}{% endblock main %}
   {% include "ui/base/_footer.html" %}
+
 </body>
 </html>

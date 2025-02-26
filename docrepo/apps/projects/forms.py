@@ -14,6 +14,7 @@ class UpdateProjectForm(UpdateElementForm):
 
     class Meta:
         model = Project
+
         exclude = (
             "owner",
             "parent",
@@ -32,6 +33,7 @@ class AddProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
+
         exclude = [
             "folder",
             "owner",
@@ -52,5 +54,6 @@ class MultipleUserSelectForm(forms.Form):
 
     def __init__(self, *args, group=None, **kwargs):
         super().__init__(*args, **kwargs)
+
         if group:
             self.fields["users"].queryset = User.objects.exclude(groups=group)

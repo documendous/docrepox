@@ -13,50 +13,44 @@
               {{ path_with_links|safe }} &nbsp;
             </span>
           </span>
+
           {% include "search/partials/_search_projects_input.html" %}
-        </div>             
+
+        </div>
+          
         <div class="flex items-end mx-1 py-2">
           <a href="#"
             class="hover:text-blue-700 relative group mr-2"
             onclick="showModal('addProjectModal')"
             title="Create a new project">
             <span class="material-symbols-outlined">
-              post_add
+              library_add
             </span>
           </a>
         </div>
+
       </caption>
+
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Name
-          </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Title
-          </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Created
-          </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Modified
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Visibility
-          </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Actions
-          </th>
+          <th class="fl-th">Name</th>
+          <th class="fl-th">Title</th>
+          <th class="fl-th">Created</th>
+          <th class="fl-th">Modified</th>
+          <th class="fl-th">Visibility</th>
+          <th class="fl-th">Actions</th>
         </tr>
       </thead>
-        {% include "projects/partials/_project_children_table_data.html" %}
+
+      {% include "projects/partials/_project_children_table_data.html" %}
+
     </table>
   </div>
 
   {% include "projects/partials/_add_project_modal.html" %}
 
-<script src="{% static 'js/repo/utils/modals.js' %}"></script>
+  <script src="{% static 'js/repo/utils/modals.js' %}"></script>
 
 </main>
+
 {% endblock main %}

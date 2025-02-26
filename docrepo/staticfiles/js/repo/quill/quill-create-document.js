@@ -21,9 +21,80 @@ const options = {
   },
   theme: 'snow'
 };
+
 document.addEventListener('DOMContentLoaded', function() {
   const quill = new Quill('#editor', options);
-  const contentInput = document.querySelector('#content');        
+
+  quill.container.previousSibling
+    .querySelector('button.ql-bold')
+    .setAttribute('title', 'Bold text');
+  
+  quill.container.previousSibling
+    .querySelector('button.ql-italic')
+    .setAttribute('title', 'Italicize text');
+  
+  quill.container.previousSibling
+    .querySelector('button.ql-strike')
+    .setAttribute('title', 'Strike through text');
+  
+  quill.container.previousSibling
+    .querySelector('button.ql-blockquote')
+    .setAttribute('title', 'Blockquote text');
+  
+  quill.container.previousSibling
+    .querySelector('button.ql-code-block')
+    .setAttribute('title', 'Code block text');
+
+  quill.container.previousSibling
+    .querySelector('button.ql-link')
+    .setAttribute('title', 'Insert hyperlink');
+
+  quill.container.previousSibling
+    .querySelector('button.ql-list')
+    .setAttribute('title', 'Order list');
+
+  quill.container.previousSibling
+    .querySelector('button.ql-list[value="bullet"]')
+    .setAttribute('title', 'Unorder list');
+
+  quill.container.previousSibling
+    .querySelector('button.ql-indent[value="-1"]')
+    .setAttribute('title', 'De-indent text');
+
+  quill.container.previousSibling
+    .querySelector('button.ql-indent[value="+1"]')
+    .setAttribute('title', 'Indent text');
+  
+  quill.container.previousSibling
+    .querySelector('button.ql-direction[value="rtl"]')
+    .setAttribute('title', 'Text direction');
+
+  quill.container.previousSibling
+    .querySelector('span.ql-size')
+    .setAttribute('title', 'Resize text');
+
+  quill.container.previousSibling
+    .querySelector('span.ql-header')
+    .setAttribute('title', 'Resize header');
+
+  quill.container.previousSibling
+    .querySelector('span.ql-color')
+    .setAttribute('title', 'Foreground color');
+
+  quill.container.previousSibling
+    .querySelector('span.ql-background')
+    .setAttribute('title', 'Background color');
+  
+  quill.container.previousSibling
+    .querySelector('span.ql-font')
+    .setAttribute('title', 'Select font');
+  
+  quill.container.previousSibling
+    .querySelector('span.ql-align')
+    .setAttribute('title', 'Select alignment');
+
+  const contentInput = document.querySelector('#content');
+    
   quill.on('text-change', function() {
     contentInput.value = quill.root.innerHTML.trim();
   });

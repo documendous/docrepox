@@ -1,23 +1,22 @@
-<h4 class="block text-sm font-bold text-gray-100 mt-6 mb-2">FOLDERS:</h4>
-<hr class="mb-4">
+<div id="folder-list">
+  {% for item in clipboard_folders %}
+    <li id="cbf-{{ item.pk }}" class="mb-4">
+      <div class="flex items-center justify-between gap-2" title="{{ item.folder.name }}">
+        <span>
+          - {{ item.folder.name|truncatechars:30 }}
+        </span>
+        
+        <span
+          class="material-symbols-outlined cursor-pointer"
+          hx-post="{% url 'repo:clipboard:remove_item' 'folder' item.pk %}"
+          hx-trigger="click"
+          hx-target="#cbf-{{ item.pk }}"
+          hx-swap="outerHTML"
+          title="Remove folder from list"
+          onclick="removeClipboardIcon('{{ item.folder.pk }}', 'folder');" {# staticfiles/js/clipboard/utils/modals.js #}
+        >remove_selection</span>
 
-{% for item in clipboard_folders %}
-  <li id="cbf-{{ item.pk }}" class="mb-4">
-    <div class="flex items-center gap-2">
-      - {{ item.folder.name|truncatechars:30 }}
-      <span
-        class="material-symbols-outlined cursor-pointer"
-        hx-post="{% url 'repo:clipboard:remove_item' 'folder' item.pk %}"
-        hx-trigger="click"
-        hx-target="#cbf-{{ item.pk }}"
-        hx-swap="outerHTML"
-        title="Remove folder from list"
-        onclick="removeClipboardIcon('{{ item.folder.pk }}');" {# staticfiles/js/clipboard/utils/modals.js #}
-      >remove_selection</span>
-    </div>
-  </li>
-{% endfor %}
-
-<template x-if="clipboardFolders === 0">
-  <li>N/A</li>
-</template>
+      </div>
+    </li>
+  {% endfor %}
+</div>

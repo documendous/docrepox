@@ -256,4 +256,13 @@ Afterwards, you can stop the containers and run in daemon mode:
 docker compose -f docker-compose.prod.yml up -d
 ```
 
+**Note:** You may need to recreate the static volume in some cases especially if some css files are not being picked up.
+
+```bash
+docker container rm docrepox-web-1 
+docker volume rm docrepox_prod_static_volume
+```
+
+**Note:** do not remove the media volume or the database volume if these are not backed up and you understand how to restore them.
+
 ---

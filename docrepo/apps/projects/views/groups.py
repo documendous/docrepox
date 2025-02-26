@@ -39,6 +39,7 @@ class AddUserToProjectView(View):
                     args=[project.pk],
                 )
             )
+
         raise Http404  # pragma: no coverage
 
 

@@ -42,14 +42,17 @@ def copy_content_file(version, new_version):
         copy_content_file(old_version_instance, new_version_instance)
     """
     log = logging.getLogger(__name__)
+
     if version.content_file:
         source_file_path = os.path.join(settings.MEDIA_ROOT, version.content_file.name)
+
         new_file_path = os.path.join(
             settings.MEDIA_ROOT,
             content_file_name(new_version, version.content_file.name),
         )
 
         destination_dir = os.path.dirname(new_file_path)
+
         if not os.path.exists(destination_dir):  # pragma: no coverage
             os.makedirs(destination_dir)
 

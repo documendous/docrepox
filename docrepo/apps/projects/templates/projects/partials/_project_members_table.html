@@ -13,47 +13,62 @@
         '{{ group.name }}',
         '{% url "repo:projects:add_user_to_project" project_id=project.pk group_id=group.pk %}'
       )"
-      title="Add a user to this project">
-    <span class="material-icons-outlined">person_add</span>
+      title="Add a user to this project"
+    >
+      <span class="material-icons-outlined">person_add</span>
     </a>
   {% endif %}
 
   <table class="min-w-full rounded-sm">
-    <legend class="py-2 px-4 font-bold text-lg">{{ table_name }}</legend>
+    <legend class="py-2 px-4 font-bold text-lg">{{ table_name }} Group</legend>
     <thead>
       <tr>
-        <th class="py-2 px-4 text-left">Full Name</th>
-        <th class="py-2 px-4 text-left">Username</th>
-        <th class="py-2 px-4 text-left">Email</th>
-        <th class="py-2 px-4 text-left">Actions</th>
+        <th class="py-2 px-4 text-left text-xs font-semibold text-gray-700 uppercase">
+          Full Name
+        </th>
+        <th class="py-2 px-4 text-left text-xs font-semibold text-gray-700 uppercase">
+          Username
+        </th>
+        <th class="py-2 px-4 text-left text-xs font-semibold text-gray-700 uppercase">
+          Email
+        </th>
+        <th class="py-2 px-4 text-left text-xs font-semibold text-gray-700 uppercase">
+          Actions
+        </th>
       </tr>
     </thead>
+
     <tbody class="border">
       {% for user in group.user_set.all %}
         <tr>
-          <td class="py-2 px-4 text-left border">
+          <td class="py-2 px-4 text-left border text-gray-700">
             {% if user.first_name and user.last_name %}
               {{ user.first_name }} {{ user.last_name }}
             {% else %}
               --
             {% endif %}
           </td>
-          <td class="py-2 px-4 text-left border">{{ user.username }}</td>
-          <td class="py-2 px-4 text-left border">{{ user.email }}</td>
-          <td class="py-2 px-4 text-center border">
+
+          <td class="py-2 px-4 text-left border text-gray-700">{{ user.username }}</td>
+          <td class="py-2 px-4 text-left border text-gray-700">{{ user.email }}</td>
+
+          <td class="py-2 px-4 text-center border text-gray-700">
             {% include 'projects/partials/_project_group_actions.html' %}
           </td>
+
         </tr>
       {% empty %}
         <tr>
-          <td class="py-2 px-4 text-center border" colspan=4>
+          <td class="py-2 px-4 text-center border text-gray-700" colspan=4>
             --
           </td>
         </tr>
       {% endfor %}
     </tbody>
+
   </table>
 </div>
 
-{% include "projects/partials/_add_user_to_project_modal.html" with form=form %}
+{% include "projects/partials/_add_user_to_project_modal.html" with form=form table_name=table_name %}
+
 <script src="{% static 'js/repo/utils/modals.js' %}"></script>

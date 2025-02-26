@@ -1,8 +1,12 @@
 {% extends "ui/base/_base.html" %}
 {% load project_tags %}
+{% load repo_tags %}
 {% load widget_tweaks %}
 
 {% block main %}
+
+{% can_bookmark request project.folder as can_bookmark %}
+
 <main>
   <div class="mt-8">
     <table class="min-w-full divide-y divide-gray-200 border shadow">
@@ -12,28 +16,40 @@
             {{ path_with_links|safe }}
           </span>
         </div>
+
         <div class="flex items-center">
           <h2 class="text-xl font-bold mr-4 py-2">
             Project Details
           </h2>
+
           {% can_update_project request project as can_update_project %}
+
           {% if can_update_project %}
             <a
               href="{% url 'repo:update_element' 'project' project.pk %}"
-              class="text-blue-500 hover:text-blue-700"
+              class="text-gray-700 hover:text-blue-700"
             >
               <span class="material-icons-outlined" title="Update project '{{ project.name }}' details">
                 edit
               </span>
             </a>
           {% endif %}
+
+          {% if not project.folder.is_in_recycle_path and can_bookmark %}
+            {% include "bookmarks/partials/actions/_bookmark_element.html" with element=project.folder %}
+          {% endif %}
+
         </div>
+
       </caption>
+
       {% include "projects/partials/_project_table_data.html" %}
+
     </table>
   </div>
 
   {% can_view_project_members request project as can_view_project_members %}
+
   {% if can_view_project_members %}
     {% include "projects/partials/_project_members.html" %}
   {% endif %}
@@ -43,8 +59,11 @@
   {% endif %}
 
   {% can_deactivate_project request project.folder as can_deactivate_project %}
+  
   {% if can_deactivate_project %}
     {% include 'projects/partials/actions/_project_deactivation.html' %}
   {% endif %}
+
 </main>
+
 {% endblock main %}

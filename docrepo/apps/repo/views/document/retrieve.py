@@ -65,6 +65,9 @@ class DocumentRetrieverView(DocumentRetriever, View):
         response = FileResponse(open(file_path, "rb"), content_type=content_type)
         quoted_file_name = quote(file_name)
         response["Content-Disposition"] = f'{action}filename="{quoted_file_name}"'
+        response["X-Frame-Options"] = "SAMEORIGIN"
+        response["Content-Security-Policy"] = "frame-ancestors 'self';"
+
         return response
 
     def get_action_type(self, request: HttpRequest) -> str | None:
@@ -73,6 +76,7 @@ class DocumentRetrieverView(DocumentRetriever, View):
         """
         if request.GET.get("action", None) == "attachment":
             return "attachment; "
+
         return None
 
     def _get_preview(self, version_tag):
@@ -114,7 +118,6 @@ class DocumentRetrieverView(DocumentRetriever, View):
 
         if not action:
             """We are expecting a preview and not an attachment"""
-
             current_version_tag = get_current_version_tag(document)
 
             if not current_version_tag:  # pragma: no coverage
@@ -162,6 +165,7 @@ class DocumentRetrieverView(DocumentRetriever, View):
             )
 
             log.debug("Downloading as attachment")
+
             return self.file_response(
                 file_path=file_path,
                 content_type=content_type,
@@ -173,4 +177,5 @@ class DocumentRetrieverView(DocumentRetriever, View):
             """All IO type errors will end here"""
             err_msg = ("Error accessing file: {}".format(e),)
             log.error(err_msg)
+
             return HttpResponseServerError(err_msg)

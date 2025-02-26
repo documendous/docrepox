@@ -23,6 +23,7 @@ class LoginRequiredMiddleware:
             return redirect(f"{login_url}?next={request.path}")
 
         response = self.get_response(request)
+
         if response.status_code == 403 and self._is_csrf_failure(
             request
         ):  # pragma: no coverage

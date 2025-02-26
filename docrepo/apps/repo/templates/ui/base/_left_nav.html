@@ -10,11 +10,12 @@
     hx-boost="{{ use_hx_boost_int }}"
   >
     <span
-      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700" style="font-size: 24px !important;"
+      class="material-icons-outlined nav-icon" style="font-size: 24px !important;"
     >
       home
     </span>
   </a>
+
   <a
     href="{% url 'repo:folder' home_folder_id %}"
     class="tooltip"
@@ -22,12 +23,13 @@
     hx-boost="{{ use_hx_boost_int }}"
   >
     <span
-      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700" 
+      class="material-icons-outlined nav-icon" 
       style="font-size: 24px !important;"
     >
       folder
     </span>
   </a>
+
   <a
     href="{% url 'repo:projects:index' %}"
     class="tooltip"
@@ -35,12 +37,13 @@
     hx-boost="{{ use_hx_boost_ext }}"
   >
     <span
-      class="material-symbols-outlined nav-link text-gray-700 hover:text-blue-700" 
+      class="material-symbols-outlined nav-icon" 
       style="font-size: 20px !important;"
     >
-      full_coverage
+      library_books
     </span>
   </a>
+
   {% if user_is_admin %}
     <a
       href="{% url 'repo:folder' root_folder_id %}"
@@ -56,6 +59,7 @@
       </span>
     </a>
   {% endif %}
+
   <a
     href="{% url 'ddocs:index' %}"
     class="tooltip"
@@ -63,10 +67,11 @@
     hx-boost="{{ use_hx_boost_ext }}"
   >
     <span
-      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700" 
+      class="material-icons-outlined nav-icon" 
       style="font-size: 20px !important;"
     >
       book_4
     </span>
   </a>
+
 </nav>

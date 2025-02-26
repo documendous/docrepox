@@ -28,6 +28,7 @@ class SearchProjectsView(View):
                 projects = Project.objects.filter(
                     name__icontains=search_term, is_active=True
                 )
+
             else:
                 projects = Project.objects.filter(
                     Q(name__icontains=search_term)
@@ -47,6 +48,7 @@ class SearchProjectsView(View):
                     ),
                     is_active=True,
                 )
+
         else:
             projects = get_viewable_project_list(request)
 
@@ -67,6 +69,7 @@ class SearchElementsView(View):
     def _get_default_children(self, parent):
         documents = Document.objects.filter(parent=parent)
         folders = Folder.objects.filter(parent=parent, is_hidden=False)
+
         return (
             documents,
             folders,
@@ -100,19 +103,23 @@ class SearchElementsView(View):
                     documents = Document.objects.filter(
                         parent=parent, name__icontains=search_term
                     )
+
                     folders = Folder.objects.filter(
                         parent=parent, name__icontains=search_term, is_hidden=False
                     )
+
                 else:
                     documents = Document.objects.filter(
                         Q(name__icontains=search_term) & (Q(owner=request.user)),
                         parent=parent,
                     )
+
                     folders = Folder.objects.filter(
                         Q(name__icontains=search_term) & (Q(owner=request.user)),
                         parent=parent,
                         is_hidden=False,
                     )
+
             else:
                 documents, folders = self._get_default_children(parent)
                 pagination_enabled = True
@@ -126,6 +133,7 @@ class SearchElementsView(View):
                     folder_id,
                 ],
             )
+
             return htmx_redirect(url)
 
         return render(
@@ -135,5 +143,6 @@ class SearchElementsView(View):
                 "children": children,
                 "scope": "full",
                 "pagination_enabled": pagination_enabled,
+                "search_term": search_term,
             },
         )

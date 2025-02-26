@@ -17,15 +17,18 @@ def get_immutable_folders():
         get_system_home_folder(),
         get_system_sys_folder(),
     )
+
     return immutable_folders
 
 
 def response_handler(accessible, from_tag):
     if accessible:
         return True
+
     else:
         if from_tag:
             return False
+
         if settings.DEBUG:
             raise PermissionDenied
         else:
@@ -38,4 +41,5 @@ def admin_override(request, accessible):
     """
     if settings.ADMIN_ALLOW_ALL and request.user.profile.is_admin_user():
         return True
+
     return accessible

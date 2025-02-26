@@ -1,0 +1,22 @@
+{% load clipboard_tags %}
+
+<a class="text-gray-700 hover:text-blue-700 flex items-center font-semibold"
+  href="{% url 'repo:element_details' child.type child.pk %}"
+  hx-boost="{{ use_hx_boost_ext }}"
+>
+  <span class="material-icons-outlined mr-2">
+    description
+  </span>
+
+  {% include "repo/partials/_folder_children_name.html" %}
+
+  {% element_in_clipboard request child as in_clipboard %}
+
+  {% if in_clipboard %}
+    <span
+      id="in_clipboard_icon_doc_{{ child.pk }}"
+      class="material-icons-outlined text-blue-400 h-[20px] ml-2"
+    >content_paste</span>
+  {% endif %}
+
+</a>

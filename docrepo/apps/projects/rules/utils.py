@@ -10,6 +10,8 @@ def get_project_for_element(element):
         return getattr(parent, "parent_project", None) or getattr(
             orig_parent, "parent_project", None
         )
+
     elif element.type == "project":
         return element
+
     return None

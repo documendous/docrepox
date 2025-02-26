@@ -1,3 +1,3 @@
-from .create_bookmarks import AddBookmarkViewTest
-from .list_bookmarks import BookmarkListViewTest
-from .remove_bookmarks import RemoveBookmarkViewTest
+from .create import AddBookmarkViewTest
+from .list import BookmarkListViewTest
+from .remove import RemoveBookmarkViewTest

@@ -12,12 +12,14 @@ class Motd(models.Model):
 
     title = models.CharField(max_length=100)
     content = models.TextField()
+
     owner = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
+
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)

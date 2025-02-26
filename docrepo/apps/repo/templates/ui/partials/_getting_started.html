@@ -6,6 +6,7 @@
     <h3 class="text-xl font-semibold mb-2">Getting Started</h3>
     {% include "ui/widgets/_close_ui_section.html" with setting="show_getting_started" %}
   </header>
+
   <div class="flex justify-between gap-4">
     <div class="mb-4 leading-relaxed text-gray-700 w-1/2">
       <a
@@ -15,18 +16,23 @@
       >
         How to use DocrepoX
       </a>
+
       <p class="mt-2">
         All features listed in the "Using DocrepoX" and "Customizing DocrepoX" sections are fully supported and should function as described. If you experience any issues, please report them by creating an issue.
       </p>
 
         <a
-          href="{% url 'ddocs:index' %}#developing-docrepox"
+          href="{% url 'ddocs:index' %}#developing-documendous"
           class="text-blue-600 underline font-semibold"
           target="_blank"
         >
           Contributing to Documendous Software
         </a>
-        <p>Topics of concern if you would like to contribute to the development of Documendous Software.</p>
+
+        <p>
+          Topics of concern if you would like to contribute to the development of Documendous Software.
+        </p>
+
     </div>
     
     <div class="mb-4 leading-relaxed text-gray-700 w-1/2">
@@ -37,6 +43,7 @@
       >
         Customizing DocrepoX
       </a>
+
       <p>
         DocrepoX has three levels of customization:
       </p>
@@ -45,13 +52,17 @@
         <li class="mt-1">
           <b>Configuration:</b> Involves adjusting configuration variables, usually without the need to write any code.
         </li>
+
         <li class="mt-1">
           <b>Extending:</b> Requires extending templates and modules. Documendous Software provides structured ways to override or subclass components of its products.
         </li>
+
         <li class="mt-1">
           <b>Deep customizations:</b> Involves changing applications and modules within the apps directory. For guidance, refer to the “Contributing to Documendous” section.
         </li>
+
       </ol>
+
     </div>
   </div>
 </section>

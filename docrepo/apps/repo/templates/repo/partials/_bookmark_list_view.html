@@ -1,0 +1,17 @@
+<td class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm">
+  <a
+    {% if child.type == 'project' %}
+      href="{% url 'repo:folder' child.folder.pk %}"
+    {% else %}
+      href="{% url 'repo:folder' child.parent.pk %}"
+    {% endif %}
+    class="text-gray-700 hover:text-blue-700 flex items-center"
+    hx-boost="{{ use_hx_boost_int }}"
+  >
+    {% if child.type == 'project' %}
+      {{ child.folder.get_full_path }}
+    {% else %}
+      {{ child.parent.get_full_path }}
+    {% endif %}
+  </a>
+</td>

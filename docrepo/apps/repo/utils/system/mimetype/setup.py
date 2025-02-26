@@ -7,4 +7,5 @@ def add_mimetypes():
         Mimetype(name=mt["name"], extension_list=", ".join(mt["extensions"]))
         for mt in mimetypes
     ]
+
     Mimetype.objects.bulk_create(mimetype_instances)

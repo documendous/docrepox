@@ -1,0 +1,24 @@
+{% load clipboard_tags %}
+{% load project_tags %}
+
+{% can_read_project request child.parent_project.folder as can_read_project %}
+
+{% if can_read_project %}
+<a
+  href="{% url 'repo:folder' child.parent_project.folder.pk %}"
+  class="text-gray-700 hover:text-blue-700 flex items-center font-semibold"
+>
+{% endif %}
+  <span class="flex items-center">
+    <span class="material-icons-outlined mr-2">
+      library_books
+    </span>
+    
+    {% include "repo/partials/_folder_children_name.html" %}
+    
+    {% element_in_clipboard request child as in_clipboard %}
+
+  </span>
+{% if can_read_project %}
+</a>
+{% endif %}

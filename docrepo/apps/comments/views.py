@@ -22,6 +22,7 @@ class AddCommentView(View):
         content = request.POST.get("content", None)
 
         if content:
+            content = content.strip()
             instance.comments.add(Comment.objects.create(author=user, content=content))
             instance.save()
 
@@ -40,4 +41,5 @@ class DeleteCommentView(View):
         comment = Comment.objects.get(pk=comment_id)
         comment.delete()
         url = get_details_url(element_type=element_type, element_id=element_id)
+
         return HttpResponseRedirect(url + "#comments")

@@ -48,6 +48,7 @@ class RetrieveDocumentViewTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+
         self.assertEqual(
             response["Content-Disposition"], 'attachment; filename="TestDocument.dll"'
         )

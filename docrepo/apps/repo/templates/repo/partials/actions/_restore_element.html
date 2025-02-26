@@ -1,8 +1,12 @@
+{% load static %}
+
 <form
-  action="{% url 'repo:restore_element' child.type child.pk %}"
+  x-data
+  @submit.prevent="restoreElementAndRedirect($event, '{% url 'repo:restore_element' child.type child.pk %}')"
   method="POST"
 >
   {% csrf_token %}
+
   <button
     type="submit"
     title='Restore {{ element.type }} "{{ child.name|truncatechars:30 }}" to original parent folder'
@@ -11,4 +15,5 @@
       restore_from_trash
     </span>
   </button>
+
 </form>

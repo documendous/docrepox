@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
@@ -11,6 +12,7 @@ from apps.projects.forms import UpdateProjectForm
 from apps.projects.utils.project import is_a_project_folder
 from apps.repo import rules as repo_rules
 from apps.repo.forms.element import UpdateElementForm
+from apps.repo.utils.model import get_path_with_links
 from apps.repo.utils.static.lookup import get_model
 from apps.repo.utils.system.object import get_system_root_folder
 
@@ -25,6 +27,7 @@ class UpdateElementDetailsView(View):
     def get_element_and_parent(self, element_id, element_type):  # pragma: no coverage
         Model = get_model(element_type)
         instance = Model.objects.get(pk=element_id)
+
         if element_type == "document":
             parent = instance.parent
         elif element_type == "folder":
@@ -33,10 +36,12 @@ class UpdateElementDetailsView(View):
             parent = instance.folder
         else:
             raise Http404("Element type is not found")
+
         return instance, parent
 
     def render_form(self, request, form, element, parent):
-        path_with_links = parent.get_path_with_links(request.user)
+        path_with_links = get_path_with_links(parent, request.user)
+
         return render(
             request,
             self.template_name,
@@ -46,15 +51,18 @@ class UpdateElementDetailsView(View):
                 "home_folder_id": request.user.profile.home_folder.id,
                 "path_with_links": path_with_links,
                 "root_folder_id": get_system_root_folder().id,
+                "max_tag_count": settings.MAX_TAG_COUNT,
             },
         )
 
     def get(self, request, element_id, element_type):
         element, parent = self.get_element_and_parent(element_id, element_type)
+
         if element.type == "project":
             project_rules.can_update_project(request, element)
         else:
             repo_rules.can_update_element(request, element)
+
         if element_type == "folder" and is_a_project_folder(element):
             return HttpResponseRedirect(
                 reverse(
@@ -92,9 +100,11 @@ class UpdateElementDetailsView(View):
 
     def post(self, request, element_id, element_type):
         element, parent = self.get_element_and_parent(element_id, element_type)
+
         if element.type == "project":
             project_rules.can_update_project(request, element)
             form = UpdateProjectForm(request.POST, instance=element)
+
         else:
             repo_rules.can_update_element(request, element)
             form = UpdateElementForm(request.POST, instance=element)
@@ -108,6 +118,7 @@ class UpdateElementDetailsView(View):
             messages.info(
                 request, f'"{truncatechars(element.name, 30)}" details updated.'
             )
+
             return HttpResponseRedirect(
                 reverse("repo:update_element", args=[element.type, element.id])
             )

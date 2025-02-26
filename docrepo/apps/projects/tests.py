@@ -23,9 +23,9 @@ class ProjectsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(reverse("repo:projects:index"))
         self.assertEqual(response.status_code, 200)
-
         self.client.logout()
         self.client.login(username="admin", password="admin")
 
@@ -38,6 +38,7 @@ class ProjectsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse("repo:projects:index"),
             data={
@@ -45,6 +46,7 @@ class ProjectsViewTest(TestCase):
                 "visibility": "public",
             },
         )
+
         self.assertEqual(response.status_code, 302)
         project = Project.objects.get(name="Example project")
         self.assertTrue(project)
@@ -55,12 +57,14 @@ class ProjectsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse("repo:projects:index"),
             data={
                 "name": "Example project",
             },
         )
+
         self.assertEqual(response.status_code, 200)
 
 
@@ -69,18 +73,22 @@ class ProjectDetailsViewTest(TestCase):
         self.test_user = get_test_user()
         self.non_manager = get_test_user(username="testuser2")
         self.client = Client()
+
         self.test_project = Project.objects.create(
             name="Test project", owner=self.test_user, visibility="public"
         )
+
         self.test_private_project = Project.objects.create(
             name="Test private project 2", owner=self.test_user, visibility="private"
         )
+
         self.non_member = get_test_user(username="nonmember")
 
     def test_get(self):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.get(
             reverse(
                 "repo:projects:project_details",
@@ -89,6 +97,7 @@ class ProjectDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 200)
 
     def test_get_non_manager(self):
@@ -101,11 +110,13 @@ class ProjectDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 200)
 
     def test_get_non_member(self):
         # This should return a 404 if a user is not a member (Issue #672)
         self.client.login(username="nonmember", password="testpass")
+
         response = self.client.get(
             reverse(
                 "repo:projects:project_details",
@@ -114,6 +125,7 @@ class ProjectDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
 
@@ -121,6 +133,7 @@ class UpdateProjectViewTest(TestCase):
     def setUp(self):
         self.test_user = get_test_user()
         self.client = Client()
+
         self.test_project = Project.objects.create(
             name="Test project",
             visibility="public",
@@ -131,6 +144,7 @@ class UpdateProjectViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.get(
             reverse(
                 "repo:update_element",
@@ -140,12 +154,14 @@ class UpdateProjectViewTest(TestCase):
                 ],
             )
         )
+
         self.assertTrue(response.status_code, 200)
 
     def test_post(self):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.post(
             reverse(
                 "repo:update_element",
@@ -161,12 +177,14 @@ class UpdateProjectViewTest(TestCase):
                 "visibility": "private",
             },
         )
+
         self.assertTrue(response.status_code, 200)
 
     def test_post_invalid_data(self):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.post(
             reverse(
                 "repo:update_element",
@@ -181,12 +199,14 @@ class UpdateProjectViewTest(TestCase):
                 "visibility": "private",
             },
         )
+
         self.assertTrue(response.status_code, 200)
 
     def test_with_folder_as_project(self):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.get(
             reverse(
                 "repo:update_element",
@@ -196,6 +216,7 @@ class UpdateProjectViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 302)
 
 
@@ -206,23 +227,28 @@ class AccessPublicProjectTest(TestCase):
             visibility="public",
             owner=User.objects.get(username=TEST_USER["username"]),
         )
+
         self.non_member = User.objects.create(
             username="nonmember", email="nonmember@localhost"
         )
+
         self.non_member.set_password("testpass")
         self.non_member.save()
         self.client = Client()
 
     def test_get(self):
         self.client.login(username="nonmember", password="testpass")
+
         response = self.client.get(
             reverse("repo:folder", args=[self.project.folder.pk])
         )
+
         self.assertEqual(response.status_code, 200)
 
     def test_post_add_document_in_project(self):
         self.client.login(username="nonmember", password="testpass")
         test_content = b"Hello world"
+
         response = self.client.post(
             reverse(
                 "repo:add_document",
@@ -236,11 +262,13 @@ class AccessPublicProjectTest(TestCase):
                 "content": test_content,
             },
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_post_create_document_in_project(self):
         self.client.login(username="nonmember", password="testpass")
         test_content = b"Hello world"
+
         response = self.client.post(
             reverse(
                 "repo:create_document",
@@ -254,10 +282,12 @@ class AccessPublicProjectTest(TestCase):
                 "content": test_content,
             },
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_post_add_folder_in_project(self):
         self.client.login(username="nonmember", password="testpass")
+
         response = self.client.post(
             reverse(
                 "repo:folder",
@@ -269,6 +299,7 @@ class AccessPublicProjectTest(TestCase):
                 "name": "Test Folder",
             },
         )
+
         self.assertEqual(response.status_code, 404)
 
 
@@ -277,20 +308,25 @@ class AddUserToProjectViewTest(TestCase):
         self.test_user = get_test_user()
         self.test_manager = get_test_user(username="testmanager2")
         self.client = Client()
+
         self.test_project = Project.objects.create(
             name="Test project",
             owner=self.test_user,
         )
+
         self.test_manager.groups.add(
             Group.objects.get(name="project_test-project_managers")
         )
 
     def test_post(self):
         group = Group.objects.get(name="project_test-project_readers")
+
         login_successful = self.client.login(
             username="testmanager2", password="testpass"
         )
+
         self.assertTrue(login_successful)
+
         response = self.client.post(
             reverse(
                 "repo:projects:add_user_to_project",
@@ -301,6 +337,7 @@ class AddUserToProjectViewTest(TestCase):
             ),
             data={"users": [self.test_user.pk]},
         )
+
         self.assertEqual(response.status_code, 302)
         self.assertTrue(self.test_project.in_readers_group(self.test_user))
 
@@ -311,16 +348,20 @@ class RemoveUserFromProjectGroupViewTest(TestCase):
         self.test_manager = get_test_user(username="testmanager2")
         self.test_editor = get_test_user(username="testeditor2")
         self.client = Client()
+
         self.test_project = Project.objects.create(
             name="Test project",
             owner=self.test_user,
         )
+
         self.test_manager.groups.add(
             Group.objects.get(name="project_test-project_managers")
         )
+
         self.test_editor.groups.add(
             Group.objects.get(name="project_test-project_editors")
         )
+
         self.test_editor.groups.add(
             Group.objects.get(name="project_test-project_editors")
         )
@@ -330,7 +371,9 @@ class RemoveUserFromProjectGroupViewTest(TestCase):
         login_successful = self.client.login(
             username="testmanager2", password="testpass"
         )
+
         self.assertTrue(login_successful)
+
         response = self.client.post(
             reverse(
                 "repo:projects:add_user_to_project",
@@ -341,6 +384,7 @@ class RemoveUserFromProjectGroupViewTest(TestCase):
             ),
             data={"users": [self.test_user.pk]},
         )
+
         self.assertEqual(response.status_code, 302)
         self.assertTrue(self.test_project.in_readers_group(self.test_user))
 
@@ -414,73 +458,41 @@ class AddRequesterToProjectGroupViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
-        response = self.client.post(
-            reverse(
-                "repo:projects:request_join",
-                args=[
-                    self.project.pk,
-                ],
-            )
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(Communication.objects.filter(msg_from=self.test_user))
 
-        self.client.login(
-            username=TEST_USER["username"], password=TEST_USER["password"]
-        )
-        response = self.client.post(
-            reverse(
-                "repo:projects:add_requester_to_project_group",
-                args=[
-                    self.project.pk,
-                    self.test_user.pk,
-                    "readers",
-                ],
+        roles = ["readers", "editors", "managers"]
+        group_check_methods = {
+            "readers": self.project.in_readers_group,
+            "editors": self.project.in_editors_group,
+            "managers": self.project.in_managers_group,
+        }
+
+        for role in roles:
+            response = self.client.post(
+                reverse("repo:projects:request_join", args=[self.project.pk])
             )
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(self.project.in_readers_group(self.test_user))
+            self.assertEqual(response.status_code, 302)
+            self.assertTrue(Communication.objects.filter(msg_from=self.test_user))
+
+            response = self.client.post(
+                reverse(
+                    "repo:projects:add_requester_to_project_group",
+                    args=[self.project.pk, self.test_user.pk, role],
+                )
+            )
+            self.assertEqual(response.status_code, 302)
+            self.assertTrue(group_check_methods[role](self.test_user))
 
         response = self.client.post(
             reverse(
                 "repo:projects:add_requester_to_project_group",
-                args=[
-                    self.project.pk,
-                    self.test_user.pk,
-                    "editors",
-                ],
-            )
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(self.project.in_editors_group(self.test_user))
-
-        response = self.client.post(
-            reverse(
-                "repo:projects:add_requester_to_project_group",
-                args=[
-                    self.project.pk,
-                    self.test_user.pk,
-                    "managers",
-                ],
-            )
-        )
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(self.project.in_managers_group(self.test_user))
-
-        response = self.client.post(
-            reverse(
-                "repo:projects:add_requester_to_project_group",
-                args=[
-                    self.project.pk,
-                    self.test_user.pk,
-                    "unknown",
-                ],
+                args=[self.project.pk, self.test_user.pk, "unknown"],
             )
         )
         self.assertEqual(response.status_code, 404)
 
-        comm = Communication.objects.filter(msg_from=self.test_user)
-        self.assertTrue(comm.count() < 1)
+        self.assertTrue(
+            Communication.objects.filter(msg_from=self.test_user).count() < 1
+        )
 
 
 class RejectRequestJoinViewTest(TestCase):

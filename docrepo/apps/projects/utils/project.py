@@ -27,11 +27,13 @@ def create_project_groups(instance: Project) -> None:
     """
     log = logging.getLogger(__name__)
     groups = ["managers", "editors", "readers"]
+
     for group in groups:
         group_name = f"project_{slugify(instance.name)}_{group}"
         setattr(instance, f"{group}_group", group_name)
         g = Group.objects.create(name=group_name)
         log.debug(f"Group: {group_name} created.")
+
         if group == "managers":
             add_owner_to_managers_group(instance, managers_group=g)
 
@@ -45,6 +47,7 @@ def create_project_folder(instance: Project) -> None:
         owner=instance.owner,
         parent=get_system_projects_folder(),
     )
+
     instance.folder = folder
     instance.save()
 
@@ -54,6 +57,7 @@ def change_project_folder_name(instance: Project) -> None:
     Changes profile folder's name. As part of the create project folder signal.
     """
     folder = getattr(instance, "folder", None)
+
     if folder:
         folder.name = instance.name
         folder.save()
@@ -92,6 +96,7 @@ def get_accessible_projects(request: HttpRequest) -> QuerySet:  # pragma: no cov
             ),
             is_active=True,
         )
+
     return projects
 
 

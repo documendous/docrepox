@@ -15,6 +15,7 @@ from apps.repo import rules
 from apps.repo.forms.element import AddDocumentForm, AddFolderForm, AddVersionForm
 from apps.repo.models.element.folder import Folder
 from apps.repo.utils.helpers import create_with_new_name
+from apps.repo.utils.model import get_path_with_links
 from apps.repo.utils.system.object import (
     get_system_projects_folder,
     get_system_root_folder,
@@ -39,10 +40,12 @@ class FolderView(View):
         add_version_form = AddVersionForm()
         home_folder = request.user.profile.home_folder
         root_folder = get_system_root_folder()
-        path_with_links = parent.get_path_with_links(request.user)
+        path_with_links = get_path_with_links(parent, request.user)
+
         children = parent.get_children(
             include_hidden=self._include_hidden(), order_by_filter=order_by_filter
         )
+
         clipboard, _ = Clipboard.objects.get_or_create(user=request.user)
 
         self.context = {
@@ -75,10 +78,12 @@ class FolderView(View):
 
         self._set_common_context(parent, request)
         order_by_filter = request.GET.get("order_by", None)
+        search_term = request.GET.get("search_term", None)
 
         children = parent.get_children(
             include_hidden=self._include_hidden(),
             order_by_filter=order_by_filter,
+            search_term=search_term,
         )
 
         paginator = Paginator(children, self.paginate_by)
@@ -93,6 +98,9 @@ class FolderView(View):
 
         self._set_common_context(parent, request, order_by_filter=order_by_filter)
         self.context["children"] = paginated_children
+
+        if search_term:  # pragma: no coverage
+            self.context["search_term"] = search_term
 
         return render(request, self.template_name, self.context)
 
@@ -133,12 +141,14 @@ class FolderView(View):
                 create_with_new_name(
                     "folder", name, request.user, parent, title, description
                 )
+
                 return HttpResponseRedirect(
                     reverse(
                         "repo:folder",
                         args=[parent.id],
                     )
                 )
+
             except Exception as e:  # pragma: no coverage
                 self.log.exception("Error creating folder")
                 add_folder_form.add_error(None, str(e))

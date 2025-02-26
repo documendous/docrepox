@@ -6,13 +6,14 @@ from django.forms import ValidationError
 from django.http import HttpRequest
 from django.template.defaultfilters import truncatechars
 
-from apps.clipboard.models import Clipboard
 from apps.repo import rules
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
 from apps.repo.models.element.version import Version
 from apps.repo.utils.helpers import create_with_new_name
 from apps.repo.utils.storage import copy_content_file
+
+from ..models import Clipboard, PastedDocument, PastedFolder
 
 
 def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) -> None:
@@ -22,10 +23,12 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
     for p_document in clipboard.documents.all():
         rules.can_move_element(request, p_document.document)
         p_document.document.parent = parent
+
         try:
             p_document.document.save()
         except IntegrityError:  # pragma: no coverage
             versions = Version.objects.filter(parent=p_document.document)
+
             new_document = create_with_new_name(
                 "document",
                 p_document.document.name,
@@ -48,8 +51,10 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
     for p_folder in clipboard.folders.all():
         rules.can_move_element(request, p_folder.folder)
         p_folder.folder.parent = parent
+
         try:
             p_folder.folder.save()
+
         except ValidationError:
             messages.error(
                 request,
@@ -64,6 +69,7 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
                 parent,
                 set_pk_none=True,
             )
+
         p_folder.delete()
 
     messages.info(request, "Item(s) moved to new parent folder")
@@ -100,10 +106,12 @@ def add_to_folders(
     rules.can_add_element_to_clipboard(request, pasted_element.folder)
     if not clipboard.folders.filter(pk=pasted_element.pk).exists():
         clipboard.folders.add(pasted_element)
+
         messages.info(
             request,
             f'Folder "{truncatechars(pasted_element.folder.name, 30)}" was added to your clipboard.',
         )
+
     else:
         messages.warning(
             request,
@@ -118,6 +126,7 @@ def add_to_documents(
     Add a document to a user's clipboard
     """
     rules.can_add_element_to_clipboard(request, pasted_element.document)
+
     if not clipboard.documents.filter(pk=pasted_element.pk).exists():
         clipboard.documents.add(pasted_element)
         messages.info(
@@ -129,6 +138,35 @@ def add_to_documents(
             request,
             "This item already exists in your clipboard.",
         )
+
+
+def add_to_clipboard(request, clipboard, element):
+    log = logging.getLogger(__name__)
+
+    if element.type == "folder":
+        element = Folder.objects.get(pk=element.id)
+
+        pasted_element, _ = PastedFolder.objects.get_or_create(
+            folder=element,
+        )
+
+        add_to_folders(request, clipboard, pasted_element)
+
+    elif element.type == "document":
+        element = Document.objects.get(pk=element.id)
+
+        pasted_element, _ = PastedDocument.objects.get_or_create(
+            document=element,
+        )
+
+        add_to_documents(request, clipboard, pasted_element)
+
+    else:  # pragma: no coverage
+        log.error(f"Invalid element type: {element.type}")
+
+        return False
+
+    return True
 
 
 def _copy_document(document: Document, parent: Folder) -> None:
@@ -155,7 +193,6 @@ def _copy_document(document: Document, parent: Folder) -> None:
         new_version = version
         new_version.pk = None
         new_version.parent = new_document
-
         copy_content_file(version, new_version)
 
 

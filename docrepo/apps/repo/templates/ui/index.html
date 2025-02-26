@@ -9,16 +9,21 @@
   {% if show_welcome %}
     {% include "ui/partials/_enhanced_description.html" %}
   {% endif %}
+
   {% if use_motd %}
     <div class="py-2">
       {% include "motd/message.html" %}
     </div>
   {% endif %}
+
   <div class="py-8">
     {% if show_getting_started %}
       {% include "ui/partials/_getting_started.html" %}
     {% endif %}
+
     {% include "ui/partials/_activity_info.html" %}
+
   </div>
+
 </main>
 {% endblock main %}

@@ -14,5 +14,6 @@ class IndexViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(reverse("repo:index"))
         self.assertTrue(response.status_code, 200)

@@ -42,17 +42,19 @@ def generate_pdf_file(version: Version) -> None:
         - Skips the transformation if the file extension is not in `ALLOWED_PREVIEW_TYPES`.
     """
     log = logging.getLogger(__name__)
-
     log.debug("Checking for SOFFICE_EXE install ...")
+
     if not os.path.isfile(settings.SOFFICE_EXE):
         log.error(f"LibreOffice executable not found at {settings.SOFFICE_EXE}.")
         raise FileNotFoundError(
             f"LibreOffice executable not found at {settings.SOFFICE_EXE}. Transformation with soffice aborted."
         )
+
     else:
         log.debug(f"{settings.SOFFICE_EXE} found.")
 
     extension = pathlib.Path(version.parent.name).suffix
+
     log.debug("File to be used for PDF generation: {}".format(version.content_file))
     log.debug("Document name is: {}".format(version.parent.name))
     log.debug("Logical path: {}".format(version.parent.get_full_path()))
@@ -99,6 +101,7 @@ def generate_pdf_file(version: Version) -> None:
             version.content_file, extension
         )
     )
+
     process = subprocess.Popen(
         [
             settings.SOFFICE_EXE,
@@ -116,6 +119,7 @@ def generate_pdf_file(version: Version) -> None:
         if isinstance(process.args, (list, tuple))
         else str(process.args)
     )
+
     log.debug("Using command for transform: {}".format(full_command))
     process.communicate()
 
@@ -125,6 +129,7 @@ def generate_pdf_file(version: Version) -> None:
         + str(version.content_file).split("/")[-1].split(".")[0]
         + ".pdf"
     )
+
     log.debug("Temp file for upload is {}".format(tmp_file))
     generate_preview_file(version, tmp_file)
 
@@ -150,8 +155,10 @@ def generate_preview_file(
         FileNotFoundError: If the temporary file does not exist.
     """
     log = logging.getLogger(__name__)
+
     try:
         log.debug("Generating preview file from {}".format(tmp_file))
+
         with open(tmp_file, "rb") as local_file:
             djangofile = File(local_file)
             preview_content_file = str(uuid.uuid4()) + ".bin"
@@ -167,9 +174,12 @@ def generate_preview_file(
         log.debug(
             "Preview file creation successful. Removing temp file: {}".format(tmp_file)
         )
+
         if not src_is_content_file:
             os.remove(tmp_file)
+
         return True
+
     except FileNotFoundError as err:
         log.error(repr(err))
         log.error("Logging error to content file: {}".format(version.id))

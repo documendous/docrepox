@@ -35,9 +35,11 @@ class UpdateProfileView(MultipleFormView):
         profile = get_object_or_404(Profile, pk=request.user.profile.pk)
         update_profile_form = UpdateProfileForm(instance=profile)
         update_user_form = UpdateUserForm(instance=profile.user)
+
         context = self._get_common_context(
             profile, request, update_profile_form, update_user_form
         )
+
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -51,11 +53,13 @@ class UpdateProfileView(MultipleFormView):
                 success_msg=UPDATE_MODEL_SUCCESS_MSG,
                 error_msg=UPDATE_MODEL_ERROR_MSG,
             )
+
             return HttpResponseRedirect(reverse("repo:update_profile"))
 
         context = self._get_common_context(  # pragma: no coverage
             profile, request, update_profile_form, update_user_form
         )
+
         return render(
             request,
             self.template_name,

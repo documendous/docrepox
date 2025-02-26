@@ -10,6 +10,7 @@ class ProjectTagsTest(TestCase):
         self.test_user = get_test_user()
         self.test_folder = get_test_folder()
         self.test_document = get_test_document()
+
         self.test_project = Project.objects.create(
             name="test project",
             visibility="public",

@@ -17,6 +17,7 @@ class AddDocumentViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:add_document",
@@ -25,6 +26,7 @@ class AddDocumentViewTest(TestCase):
                 ],
             ),
         )
+
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
@@ -32,7 +34,9 @@ class AddDocumentViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         test_content = b"Hello world"
+
         response = self.client.post(
             reverse(
                 "repo:create_document",
@@ -46,10 +50,13 @@ class AddDocumentViewTest(TestCase):
                 "content": test_content,
             },
         )
+
         self.assertEqual(response.status_code, 302)
+
         self.test_document = Document.objects.get(
             name="TestDocument.txt",
         )
+
         self.assertTrue(self.test_document)
         self.assertTrue(Version.objects.get(parent=self.test_document))
 
@@ -65,6 +72,7 @@ class CreateDocumentViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:create_document",
@@ -73,6 +81,7 @@ class CreateDocumentViewTest(TestCase):
                 ],
             ),
         )
+
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
@@ -80,7 +89,9 @@ class CreateDocumentViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         test_content = b"Hello world"
+
         response = self.client.post(
             reverse(
                 "repo:create_document",
@@ -94,10 +105,13 @@ class CreateDocumentViewTest(TestCase):
                 "content": test_content,
             },
         )
+
         self.assertEqual(response.status_code, 302)
+
         self.test_document = Document.objects.get(
             name="TestDocument.txt",
         )
+
         self.assertTrue(self.test_document)
         self.assertTrue(Version.objects.get(parent=self.test_document))
 
@@ -106,7 +120,9 @@ class CreateDocumentViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         test_content = b"Hello world"
+
         response = self.client.post(
             reverse(
                 "repo:create_document",
@@ -120,7 +136,9 @@ class CreateDocumentViewTest(TestCase):
                 "content": test_content,
             },
         )
+
         self.assertEqual(response.status_code, 200)
+
         with self.assertRaises(Document.DoesNotExist):
             self.test_document = Document.objects.get(
                 name="TestDocument.txt",

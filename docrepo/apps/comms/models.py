@@ -17,15 +17,19 @@ class Communication(TimestampedModel):
     msg_from = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="comm_msg_from"
     )
+
     msg_to = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="comm_msg_to"
     )
+
     category = models.CharField(max_length=24, choices=settings.COMMS_CATEGORY_CHOICES)
     subject = models.CharField(max_length=200)
     content = models.TextField()
+
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, null=True, blank=True
     )
+
     object_id = models.UUIDField(null=True, blank=True)
     related_element = GenericForeignKey()
 

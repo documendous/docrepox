@@ -1,11 +1,10 @@
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from apps.bookmarks.templatetags.bookmark_tags import is_bookmarked
 from apps.bookmarks.utils import remove_bookmark
 from apps.clipboard.utils.clipboard import is_in_clipboard, remove_from_clipboard
-from apps.core.views import View
+from apps.core.views import View, redirect_to_referer_or_default
 from apps.repo import rules
 from apps.repo.utils.helpers import update_with_new_name
 from apps.repo.utils.static.lookup import get_model
@@ -13,7 +12,8 @@ from apps.repo.utils.static.lookup import get_model
 
 class RecycleElementView(View):
     """
-    View handline soft deletes of documents and folders, places element in recycling folder, removes bookmarks
+    View handling soft deletes of documents and folders,
+    places element in recycling folder, removes bookmarks
     """
 
     def post(self, request, element_type, element_id):
@@ -36,9 +36,11 @@ class RecycleElementView(View):
             element.save()
         except IntegrityError:  # pragma: no coverage
             update_with_new_name(element)
-        return HttpResponseRedirect(
-            reverse(
+
+        return redirect_to_referer_or_default(
+            request,
+            default_url=reverse(
                 "repo:folder",
                 args=[element.orig_parent.pk],
-            )
+            ),
         )

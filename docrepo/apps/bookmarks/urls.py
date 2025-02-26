@@ -14,7 +14,7 @@ urlpatterns = [
     path(
         "<str:element_type>/<uuid:element_pk>/add/",
         AddBookmarkView.as_view(),
-        name="set_bookmark",
+        name="add_bookmark",
     ),
     path(
         "<str:element_type>/<uuid:element_pk>/remove/",

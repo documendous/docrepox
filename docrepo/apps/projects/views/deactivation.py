@@ -14,7 +14,9 @@ class DeactivateProjectView(View):
         project = Project.objects.get(pk=project_id)
         deactivate = request.POST.get("deactivate", None)
         rules.can_deactivate_project(request, project.folder)
+
         if deactivate:
             project.is_active = False
             project.save()
+
         return HttpResponseRedirect(reverse("repo:projects:index"))

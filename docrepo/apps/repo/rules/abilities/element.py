@@ -80,7 +80,11 @@ def can_update_element(request, element, from_tag=False):
             accessible = True
 
     else:
-        if request.user == element.owner and not project:
+        if (
+            request.user == element.owner
+            and not project
+            and element != request.user.profile.home_folder
+        ):
             accessible = True
 
     # Explicit inclusions
@@ -260,6 +264,7 @@ def can_copy_element(request, element, from_tag=False):
     if project:
         if is_editor(request, project):
             accessible = True
+
     else:
         if request.user == element.owner:
             accessible = True
@@ -283,6 +288,7 @@ def can_bookmark(request, element, from_tag=False):
             accessible = False
         else:
             accessible = True
+
     else:
         if element.owner != request.user:
             accessible = False

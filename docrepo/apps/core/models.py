@@ -4,10 +4,11 @@ from functools import cached_property
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
+from django.db import IntegrityError, models
 
 from apps.core.utils.storage import content_file_name
 from apps.etags.models import Taggable
+from apps.repo.utils.helpers import update_with_new_name
 
 User = get_user_model()
 
@@ -70,6 +71,7 @@ class Generic(models.Model):
         null=True,
         blank=True,
     )
+
     object_id = models.UUIDField(null=True, blank=True)
 
     class Meta:
@@ -93,6 +95,7 @@ class Element(
         """
         if self.type == "folder" and self.name == "Recycle":
             return True
+
         return False
 
     def get_ancestors(self) -> list:
@@ -105,6 +108,7 @@ class Element(
         while hasattr(current_folder, "parent") and current_folder.parent:
             ancestors.append(current_folder.parent.id)
             current_folder = current_folder.parent
+
         return ancestors
 
     def is_in_recycle_path(self) -> bool:  # pragma: no coverage
@@ -121,6 +125,7 @@ class Element(
         """
         recycle_folder_name = "Recycle"
         current_folder = self
+
         if hasattr(current_folder, "parent"):
             while current_folder.parent:
                 if (
@@ -128,7 +133,9 @@ class Element(
                     or current_folder.name == recycle_folder_name
                 ):
                     return True
+
                 current_folder = current_folder.parent
+
         return False
 
     @cached_property
@@ -139,10 +146,12 @@ class Element(
         Project = apps.get_model("projects", "Project")
         ancestors = self.get_ancestors()
         projects = Project.objects.all()
+
         for folder_id in ancestors:
             for project in projects:
                 if project.folder.id == folder_id:
                     return project
+
         return None
 
     @cached_property
@@ -169,8 +178,20 @@ class IsRecyclable(models.Model):
         blank=True,
         related_name="%(app_label)s_%(class)s_orig_parent",
     )
+
     orig_name = models.CharField(max_length=255, null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
+
+    def reset_to_orig_parent(self):
+        self.parent = self.orig_parent
+        self.name = self.orig_name
+        self.is_deleted = False
+        self.orig_parent = None
+
+        try:
+            self.save()
+        except IntegrityError:  # pragma: no coverage
+            update_with_new_name(self)
 
     class Meta:
         abstract = True
