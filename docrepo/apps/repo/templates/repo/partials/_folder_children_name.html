@@ -1,13 +1,26 @@
 {% load bookmark_tags %}
+{% load project_tags %}
 
-<span class="mt-1 flex items-center">
+{% can_read_project request child.parent_project.folder as can_read_project %}
+
+<span
+  class="
+    mt-1 flex items-center
+    {% if child.parent_project.folder and not can_read_project %}text-gray-400{% endif %}
+  "
+  title="{{ child.name }}"
+>
   {{ child.name|truncatechars:30 }}
+
   {% if child|is_bookmarked:request.user %}
     <span
-      class="material-icons-outlined nav-link ml-2 pt-0.5"
+      class="
+        material-icons-outlined nav-link ml-2 pt-0.5
+      "
       style="font-size: 18px !important;"
     >
       star
     </span>
   {% endif %}
+
 </span>

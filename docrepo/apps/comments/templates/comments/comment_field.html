@@ -47,7 +47,7 @@
   >
     {% csrf_token %}
     <div class="w-1/2">
-      <label for="comment" class="block text-sm font-medium text-gray-600 mb-4">
+      <label for="comment" class="block text-sm font-medium text-gray-700 mb-4">
         Comment
       </label>
       <textarea
@@ -56,7 +56,11 @@
         name="content"
         id="content"
         rows="4"
-        class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500" placeholder="Write your comment..."></textarea>
+        class="
+          w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500
+        "
+        placeholder="Write your comment..."
+      ></textarea>
       <p
         class="text-red-500 text-sm mt-2"
         x-show="errorMessage"
@@ -65,7 +69,7 @@
     </div>
     <div class="flex items-center justify-end w-1/2">
       <button
-        class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
+        class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
         type="button"
         @click="validateAndSubmit"
       >
@@ -73,6 +77,9 @@
       </button>
     </div>
   </form>
+
+  <hr class="my-8 w-1/2">
+
   {% include 'comments/partials/_comment_list.html' %}
 </div>
 {% endif %}

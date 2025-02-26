@@ -9,6 +9,7 @@ from apps.repo.forms.element import AddFolderForm
 from apps.repo.models.element.mimetype import Mimetype
 from apps.repo.models.element.version import Version
 from apps.repo.settings import DEFAULT_MIMETYPE
+from apps.repo.utils.model import get_path_with_links
 from apps.repo.utils.system.object import get_system_root_folder
 
 
@@ -48,7 +49,7 @@ class DocumentCreator:
             "home_folder_id": request.user.profile.home_folder.id,
             "root_folder_id": get_system_root_folder().id,
             "children": parent.get_children(),
-            "path_with_links": parent.get_path_with_links(request.user),
+            "path_with_links": get_path_with_links(parent, request.user),
             "has_document_errors": self.has_document_errors,
             "has_multi_document_errors": 0,
             "has_create_document_errors": 0,
@@ -91,6 +92,7 @@ class DocumentRetriever:
             .order_by("-created")
             .first()
         )
+
         if version and hasattr(version, "content_file"):
             file_path = version.content_file.path
         else:

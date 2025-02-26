@@ -23,10 +23,12 @@ class EmptyRecycleFolderViewTest(TestCase):
     def test_delete(self):
         self.assertEqual(self.recycle_folder.name, "Recycle")
         self.assertEqual(len(self.recycle_folder.get_children()), 1)
+
         self.client.login(
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:empty_recycle_folder",
@@ -35,6 +37,7 @@ class EmptyRecycleFolderViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.recycle_folder.get_children(), [])
 
@@ -43,6 +46,7 @@ class EmptyRecycleFolderViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:empty_recycle_folder",
@@ -51,6 +55,7 @@ class EmptyRecycleFolderViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
 
@@ -70,8 +75,10 @@ class DeleteElementViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse("repo:delete_element", args=["folder", self.test_folder.pk])
         )
+
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.recycle_folder.get_children(), [])

@@ -2,7 +2,7 @@
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 from .utils import env
 
-VERSION = "24.4.1"
+VERSION = "24.4.2"
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost"])
 

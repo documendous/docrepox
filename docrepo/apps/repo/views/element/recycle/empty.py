@@ -16,9 +16,11 @@ class EmptyRecycleFolderView(View):
 
     def post(self, request, folder_id):
         log = logging.getLogger(__name__)
-        trashcan_folder = Folder.objects.get(pk=folder_id, owner=request.user)
+        trashcan_folder = Folder.objects.get(pk=folder_id)
+
         if trashcan_folder.name == "Recycle":
             children = trashcan_folder.get_children()
+
             if children:
                 for each in children:
                     try:
@@ -30,14 +32,18 @@ class EmptyRecycleFolderView(View):
                             request,
                             f"Unable to delete {each.type}: {each.name}",
                         )
+
                 messages.info(
                     request,
                     "Item(s) permanently deleted.",
                 )
+
             else:
                 messages.info(request, "Trashcan empty.")  # pragma: no coverage
+
         else:
             raise Http404
+
         return HttpResponseRedirect(
             reverse(
                 "repo:folder",

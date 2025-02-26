@@ -22,11 +22,13 @@ def create_admin_user_profile(apps, schema):
 def create_admin_home_folder(apps, schema):
     admin_user = get_admin_user()
     system_home_folder = get_system_home_folder()
+
     admin_home_folder = Folder.objects.create(
         name=admin_user.username,
         owner=admin_user,
         parent=system_home_folder,
     )
+
     admin_user.profile.home_folder = admin_home_folder
     admin_user.profile.save()
     create_recycle_folder(admin_user)  # must be last
@@ -34,6 +36,7 @@ def create_admin_home_folder(apps, schema):
 
 def create_user_home_folder(user):
     home_folder = get_system_home_folder()
+
     user_home_folder = Folder.objects.create(
         name=user.username,
         title=f"{user.username} personal folder",
@@ -41,6 +44,7 @@ def create_user_home_folder(user):
         parent=home_folder,
         owner=user,
     )
+
     user.profile.home_folder = user_home_folder
     user.profile.save()
     create_recycle_folder(user)  # must be last
@@ -48,6 +52,7 @@ def create_user_home_folder(user):
 
 def update_user_home_folder(user):  # pragma: no coverage
     user_home_folder = user.profile.home_folder
+
     if user_home_folder.name != user.username:
         user_home_folder.name = user.username
         user_home_folder.save()

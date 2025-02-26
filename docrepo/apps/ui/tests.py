@@ -15,10 +15,13 @@ class ModifySettingsViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.get(
             reverse("ui:modify_setting", args=["show_welcome", "true"]),
         )
+
         self.assertEqual(response.status_code, 302)
+
         self.assertTrue(
             Setting.objects.get(key="show_welcome", user=self.test_user, value="true")
         )
@@ -27,10 +30,13 @@ class ModifySettingsViewTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.get(
             reverse("ui:modify_setting", args=["show_welcome", "true"]) + "?next=index",
         )
+
         self.assertEqual(response.status_code, 302)
+
         self.assertTrue(
             Setting.objects.get(key="show_welcome", user=self.test_user, value="true")
         )

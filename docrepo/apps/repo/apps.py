@@ -18,6 +18,7 @@ class RepoConfig(AppConfig):
             auto_delete_file_on_delete,
             create_user_profile,
             save_user_profile,
+            touch_document_on_new_version,
         )
 
         # Connect post_migrate signal

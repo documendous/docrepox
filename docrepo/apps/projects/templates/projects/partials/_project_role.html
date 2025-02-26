@@ -14,10 +14,12 @@
     {% else %}
       Project {{ role|title }}
     {% endif %}
+
     {% if can_view_project_details %}
       <span class="flex items-center pt-2">
         {% include "projects/partials/_view_project_details.html" with element=folder %}
       </span>
     {% endif %}
+
   </span>
 </div>

@@ -21,11 +21,13 @@ class UpdateProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
+
         fields = [
             "bio",
             "location",
             "birth_date",
         ]
+
         widgets = {
             "birth_date": DateInput,
         }
@@ -38,9 +40,11 @@ class UpdateUserForm(forms.ModelForm):
 
     class Meta:
         model = User
+
         fields = [
             "email",
         ]
+
         widgets = {
             "email": EmailInput,
         }

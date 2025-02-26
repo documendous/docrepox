@@ -47,9 +47,7 @@ class AddMultiDocumentsView(BaseCreateDocumentView):  # pragma: no coverage
 
     def post(self, request, folder_id) -> HttpResponseRedirect:
         parent = get_object_or_404(Folder, pk=folder_id)
-
         rules.can_create_document(request, parent)
-
         uploaded_files = request.FILES.getlist("content_file")
 
         info_message_list, error_message_list = self._process_files(
@@ -84,4 +82,5 @@ class AddMultiDocumentsView(BaseCreateDocumentView):  # pragma: no coverage
             f"{''.join(f'<li>{name}</li>' for name in file_names)}"
             f"</ul>"
         )
+
         messages.error(request, message_content)

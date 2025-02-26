@@ -29,6 +29,7 @@ class RecycleElementFlowTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:recycle_element",
@@ -38,8 +39,8 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
-        self.assertEqual(response.status_code, 302)
 
+        self.assertEqual(response.status_code, 302)
         self.test_folder.refresh_from_db()
         self.assertEqual(self.test_folder.parent.name, "Recycle")
 
@@ -75,6 +76,7 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
+
         with self.assertRaises(self.test_folder.DoesNotExist):
             self.test_folder.refresh_from_db()
 
@@ -93,6 +95,7 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
         response = self.client.post(
@@ -104,6 +107,7 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_restore_without_recycle(self):
@@ -121,6 +125,7 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
         response = self.client.post(
@@ -132,6 +137,7 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_post_recycle_element_document(self):
@@ -139,6 +145,7 @@ class RecycleElementFlowTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:recycle_element",
@@ -148,8 +155,8 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
-        self.assertEqual(response.status_code, 302)
 
+        self.assertEqual(response.status_code, 302)
         self.test_document.refresh_from_db()
         self.assertEqual(self.test_document.parent.name, "Recycle")
 
@@ -185,6 +192,7 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
+
         with self.assertRaises(self.test_document.DoesNotExist):
             self.test_document.refresh_from_db()
 
@@ -193,6 +201,7 @@ class RecycleElementFlowTest(TestCase):
             username="testuser2",
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:recycle_element",
@@ -202,6 +211,7 @@ class RecycleElementFlowTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
 
@@ -215,6 +225,7 @@ class RecycleFolderActionTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.post(
             reverse(
                 "repo:restore_element",
@@ -224,12 +235,14 @@ class RecycleFolderActionTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_delete(self):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.post(
             reverse(
                 "repo:recycle_element",
@@ -239,12 +252,14 @@ class RecycleFolderActionTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_perma_delete(self):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
+
         response = self.client.post(
             reverse(
                 "repo:delete_element",
@@ -254,6 +269,7 @@ class RecycleFolderActionTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
 
@@ -263,6 +279,7 @@ class RemoveBookmarkFromRecycledElementTest(TestCase):
         self.test_user = User.objects.create(username="testuser")
         self.test_user.set_password("testpass")
         self.test_user.save()
+
         self.folder = Folder.objects.create(
             name="Test Folder",
             parent=self.test_user.profile.home_folder,
@@ -271,17 +288,20 @@ class RemoveBookmarkFromRecycledElementTest(TestCase):
 
     def test_post(self):
         self.client.login(username="testuser", password="testpass")
+
         response = self.client.post(
             reverse(
-                "repo:bookmarks:set_bookmark",
+                "repo:bookmarks:add_bookmark",
                 args=[
                     self.folder.type,
                     self.folder.pk,
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 302)
         content_type = ContentType.objects.get_for_model(self.folder)
+
         self.assertTrue(
             Bookmark.objects.get(
                 owner=self.test_user,

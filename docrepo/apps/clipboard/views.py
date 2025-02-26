@@ -1,22 +1,18 @@
-import logging
-
-from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.urls import reverse
 
-from apps.clipboard.utils.paste import (
-    add_to_documents,
-    add_to_folders,
-    change_parent,
-    copy_documents,
-    copy_folders,
-)
+from apps.clipboard.utils.paste import add_to_clipboard
 from apps.core.views import View
-from apps.repo.models.element.document import Document
-from apps.repo.models.element.folder import Folder
+from apps.repo.utils.static.lookup import get_model
 
-from .models import Clipboard, PastedDocument, PastedFolder
+from .models import Clipboard
+from .services import (
+    copy_clipboard_elements_to_parent,
+    delete_clipboard_documents,
+    delete_clipboard_folders,
+    move_clipboard_elements_to_parent,
+    remove_clipboard_item,
+)
 
 
 class PasteMoveElementsView(View):
@@ -25,16 +21,12 @@ class PasteMoveElementsView(View):
         """
         View that moves a folder or document to another parent folder
         """
-        parent = Folder.objects.get(pk=folder_id)
-        clipboard = get_object_or_404(Clipboard, user=request.user)
-        change_parent(request, clipboard, parent)
+        move_clipboard_elements_to_parent(request, folder_id)
 
         return HttpResponseRedirect(
             reverse(
                 "repo:folder",
-                args=[
-                    parent.pk,
-                ],
+                args=[folder_id],
             )
         )
 
@@ -44,55 +36,18 @@ class PasteCopyElementsView(View):
         """
         View that deep copies (sub folders and documents including version but not renditions) a folder or document to another parent folder
         """
-        log = logging.getLogger(__name__)
-        parent = Folder.objects.get(pk=folder_id)
-        clipboard = get_object_or_404(Clipboard, user=request.user)
-
-        try:
-            copy_documents(request, clipboard, parent)
-            copy_folders(request, clipboard, parent)
-            messages.info(request, "Item(s) copied to new parent folder")
-        except Exception as err:
-            messages.error(request, "Unable to copy item(s) to new parent folder")
-            log.error(err)
+        copy_clipboard_elements_to_parent(request, folder_id)
 
         return HttpResponseRedirect(
             reverse(
                 "repo:folder",
-                args=[
-                    parent.pk,
-                ],
+                args=[folder_id],
             )
         )
 
 
 class AddElementClipboardView(View):
-    def post(self, request, element_type, element_id):
-        """
-        View that puts folder or document into user's clipboard
-        """
-        log = logging.getLogger(__name__)
-        clipboard, _ = Clipboard.objects.get_or_create(user=request.user)
-        page_number = int(request.GET.get("page", 1))
-
-        if element_type == "folder":
-            element = Folder.objects.get(pk=element_id)
-            pasted_element, _ = PastedFolder.objects.get_or_create(
-                folder=element,
-            )
-            add_to_folders(request, clipboard, pasted_element)
-
-        elif element_type == "document":
-            element = Document.objects.get(pk=element_id)
-            pasted_element, _ = PastedDocument.objects.get_or_create(
-                document=element,
-            )
-            add_to_documents(request, clipboard, pasted_element)
-
-        else:  # pragma: no coverage
-            log.error(f"Invalid element type: {element_type}")
-            raise Http404
-
+    def _get_url_with_args(self, element, page_number=1, search_term=None):
         url = reverse(
             "repo:folder",
             args=[element.parent.pk],
@@ -101,7 +56,45 @@ class AddElementClipboardView(View):
         if page_number > 1:  # pragma: no coverage
             url += f"?page={page_number}"
 
-        return HttpResponseRedirect(url)
+        if search_term:  # pragma: no coverage
+            if page_number > 1:
+                url += "&"
+            else:
+                url += "?"
+
+            url += f"search_term={search_term}"
+
+        return url
+
+    def post(self, request, element_type, element_id):
+        """
+        View that puts folder or document into user's clipboard
+        """
+        clipboard, _ = Clipboard.objects.get_or_create(user=request.user)
+        page_number = int(request.GET.get("page", 1))
+        search_term = request.POST.get("search_term", None)
+        is_summary = request.POST.get("scope", None)
+        Model = get_model(element_type)
+        element = Model.objects.get(pk=element_id)
+        success = add_to_clipboard(request, clipboard, element)
+
+        if not success:  # pragma: no coverage
+            raise Http404
+
+        if is_summary:  # pragma: no coverage
+            return HttpResponseRedirect(
+                reverse(
+                    "repo:element_details",
+                    args=[
+                        element.parent.type,
+                        element.parent.pk,
+                    ],
+                )
+            )
+        else:
+            return HttpResponseRedirect(
+                self._get_url_with_args(element, page_number, search_term)
+            )
 
 
 class RemoveItemView(View):
@@ -113,13 +106,33 @@ class RemoveItemView(View):
         """
         View to remove document or folder from clipboard
         """
-        if item_type == "document":
-            Model = PastedDocument
-        elif item_type == "folder":
-            Model = PastedFolder
-        else:
-            raise Http404
-
-        item = Model.objects.get(pk=item_id)
-        item.delete()
+        remove_clipboard_item(item_type, item_id)
         return HttpResponse("")
+
+
+class RemoveDocumentsView(View):
+    def post(self, request):
+        try:
+            delete_clipboard_documents(user=request.user)
+
+            return HttpResponse("", status=200)
+
+        except Clipboard.DoesNotExist:
+            return HttpResponse("Clipboard not found", status=404)
+
+        except Exception as e:  # pragma: no coverage
+            return HttpResponse(f"Error: {str(e)}", status=500)
+
+
+class RemoveFoldersView(View):
+    def post(self, request):
+        try:
+            delete_clipboard_folders(user=request.user)
+
+            return HttpResponse("", status=200)
+
+        except Clipboard.DoesNotExist:
+            return HttpResponse("Clipboard not found", status=404)
+
+        except Exception as e:  # pragma: no coverage
+            return HttpResponse(f"Error: {str(e)}", status=500)

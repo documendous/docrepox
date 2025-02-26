@@ -4,11 +4,12 @@ function showModal(modalId) {
 }
 
 function showProjectGroupModal(modalId, groupName, formActionUrl) {
-  document.getElementById('modalGroupName').textContent = `"${groupName}"`;
   const form = document.getElementById(`addUserForm_${groupName}`);
+
   if (form) {
     form.setAttribute('action', formActionUrl);
   }
+
   showModal(modalId);
 }
 

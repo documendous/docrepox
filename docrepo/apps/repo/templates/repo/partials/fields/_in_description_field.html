@@ -1,0 +1,38 @@
+<tr x-data="{ expanded: false }">
+  <th class="in-th">Description</th>
+
+  <td class="px-6 py-4 text-gray-700">
+    {% with description|default:'--' as desc %}
+      {% with desc|wordcount as word_count %}
+        {% if word_count > 200 %}
+          <span x-show="!expanded">
+            {{ desc|linebreaksbr|truncatewords:200 }}
+          </span>
+
+          <span x-show="expanded" x-cloak>
+            {{ desc|linebreaksbr }}
+          </span>
+
+          <a
+            href="javascript:void(0);"
+            class="text-gray-700 ml-2" 
+            @click="expanded = !expanded"
+          >
+            <span
+              class="font-semibold text-xs uppercase"
+              x-show="!expanded"
+            >More</span>
+
+            <span
+              class="font-semibold text-xs uppercase"
+              x-show="expanded"
+            >Less</span>
+
+          </a>
+        {% else %}
+          {{ desc|linebreaksbr }}
+        {% endif %}
+      {% endwith %}
+    {% endwith %}
+  </td>
+</tr>

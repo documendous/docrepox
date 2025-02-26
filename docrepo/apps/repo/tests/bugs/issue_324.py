@@ -21,6 +21,7 @@ class ProjectOwnerCannotAddTest(TestCase):
                 "visibility": "public",
             },
         )
+
         project = Project.objects.get(name="Test Project")
         self.assertTrue(project)
 
@@ -57,6 +58,7 @@ class ProjectOwnerCannotAddTest(TestCase):
 
         # Expect non-member cannot create a document here
         self.client.login(username="testuser2", password="testpass")
+
         response = response = self.client.post(
             reverse(
                 "repo:create_document",
@@ -71,5 +73,6 @@ class ProjectOwnerCannotAddTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
         with self.assertRaises(Document.DoesNotExist):
             Document.objects.get(name="Test2.txt")

@@ -5,9 +5,11 @@
   <h2 class="text-lg font-bold text-red-700 mb-4">
     Deactivate Project
   </h2>
+
   <p class="text-sm italic my-4">
     After deactivating this project, this project will no longer show in search results or in the Projects folder. In order to reactivate this project, you will need to contact the admin user for assistance.
   </p>
+
   <form
     action="{% url 'repo:projects:deactivate_project' project.pk %}"
     method="POST"
@@ -22,10 +24,13 @@
         class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
         x-model="confirmed"
       >
+
       <label for="deactivate" class="ml-2 block text-sm font-medium text-gray-700">
         Confirm inactivation
       </label>
+
     </div>
+
     <div class="flex justify-end">
       <button 
         type="submit"

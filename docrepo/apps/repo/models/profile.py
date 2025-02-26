@@ -16,6 +16,7 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
+
     home_folder = models.ForeignKey(
         Folder, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -29,6 +30,7 @@ class Profile(models.Model):
             name="Recycle",  # Hard-coded purposely
             parent=self.home_folder,
         )
+
         return recycle_folder
 
     def is_admin_user(self) -> bool:

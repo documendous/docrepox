@@ -1,7 +1,7 @@
 <form
   action="{% url 'repo:projects:request_join' child.id %}"
   method="post"
-  onclick="confirm('This will send a join request to the managers of this project. Proceed?')"
+  onclick="return confirm('This will send a join request to the managers of this project. Proceed?')"
 >
   {% csrf_token %}
   <button type="submit" title="Request to join this project">

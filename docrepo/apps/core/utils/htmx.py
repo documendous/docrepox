@@ -20,6 +20,7 @@ ALLOWED_HEADERS = {
 def hx_response(status_code: int = 200, content: str = "", **kwargs) -> HttpResponse:
     """General HTMX response."""
     response = HttpResponse(content=content, status=status_code)
+
     for k, v in kwargs.items():
         if k in ALLOWED_HEADERS:
             response[k] = v
@@ -36,6 +37,8 @@ def htmx_redirect(
 ) -> HttpResponse:
     """Performs an HTMX redirect using response headers."""
     kwargs["HX-Redirect"] = url
+
     if "Content-Type" not in kwargs:
         kwargs["Content-Type"] = "text/html"
+
     return hx_response(status_code=status_code, content=content, **kwargs)

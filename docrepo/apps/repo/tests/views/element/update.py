@@ -25,6 +25,7 @@ class UpdateElementDetailsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:update_element",
@@ -34,7 +35,9 @@ class UpdateElementDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 200)
+
         response = self.client.get(
             reverse(
                 "repo:update_element",
@@ -44,6 +47,7 @@ class UpdateElementDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 200)
 
     def test_get_non_project_member(self):
@@ -51,6 +55,7 @@ class UpdateElementDetailsViewTest(TestCase):
             username="Nonmember",
             password="testpass",
         )
+
         response = self.client.get(
             reverse(
                 "repo:update_element",
@@ -60,7 +65,9 @@ class UpdateElementDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
+
         response = self.client.get(
             reverse(
                 "repo:update_element",
@@ -70,6 +77,7 @@ class UpdateElementDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_get_with_project(self):
@@ -77,6 +85,7 @@ class UpdateElementDetailsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:update_element",
@@ -86,6 +95,7 @@ class UpdateElementDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertEqual(response.status_code, 302)
 
     def test_post(self):
@@ -93,6 +103,7 @@ class UpdateElementDetailsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:update_element",
@@ -107,7 +118,9 @@ class UpdateElementDetailsViewTest(TestCase):
                 "description": "Example description",
             },
         )
+
         self.assertEqual(response.status_code, 302)
+
         response = self.client.post(
             reverse(
                 "repo:update_element",
@@ -122,6 +135,7 @@ class UpdateElementDetailsViewTest(TestCase):
                 "description": "Example description",
             },
         )
+
         self.assertEqual(response.status_code, 302)
 
     def test_post_in_recycle_folder(self):
@@ -133,6 +147,7 @@ class UpdateElementDetailsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:update_element",
@@ -147,6 +162,7 @@ class UpdateElementDetailsViewTest(TestCase):
                 "description": "Example description",
             },
         )
+
         self.assertEqual(response.status_code, 404)
 
     def test_post_with_form_errors(self):
@@ -154,6 +170,7 @@ class UpdateElementDetailsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.post(
             reverse(
                 "repo:update_element",
@@ -167,7 +184,9 @@ class UpdateElementDetailsViewTest(TestCase):
                 "description": "Example description",
             },
         )
+
         self.assertEqual(response.status_code, 200)
+
         response = self.client.post(
             reverse(
                 "repo:update_element",
@@ -181,4 +200,5 @@ class UpdateElementDetailsViewTest(TestCase):
                 "description": "Example description",
             },
         )
+
         self.assertEqual(response.status_code, 200)

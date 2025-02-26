@@ -9,5 +9,6 @@ def create_testusers(apps, schema):
             username=f"testuser{i}",
             email=f"testuser{i}@localhost",
         )
+
         test_user.set_password("testpass")
         test_user.save()

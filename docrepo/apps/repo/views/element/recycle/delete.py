@@ -16,6 +16,7 @@ class DeleteElementView(View):
         element = Model.objects.get(pk=element_id)
         rules.can_delete_element(request, element)
         element.delete()
+
         return HttpResponseRedirect(
             reverse(
                 "repo:folder",

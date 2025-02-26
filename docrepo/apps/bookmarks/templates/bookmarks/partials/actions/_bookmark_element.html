@@ -1,7 +1,9 @@
 {% load bookmark_tags %}
 
 {% if element|is_bookmarked:request.user %}
-  {% include 'bookmarks/partials/actions/_show_bookmarked.html' %}
+  {% url 'repo:bookmarks:remove_bookmark' element.type element.pk as url %}
+  {% include 'bookmarks/partials/actions/_bookmarking.html' with action="remove" icon="star" url=url %}
 {% else %}
-  {% include 'bookmarks/partials/actions/_show_unbookmarked.html' %}
+  {% url 'repo:bookmarks:add_bookmark' element.type element.pk as url %}
+  {% include 'bookmarks/partials/actions/_bookmarking.html' with action="add" icon="bookmark" url=url %}
 {% endif %}

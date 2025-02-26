@@ -51,6 +51,7 @@ def delete_project_objects(sender, instance, **kwargs):
     Deletes associated folder and groups when a project is deleted.
     """
     log = logging.getLogger(__name__)
+
     # Delete the associated folder if it exists
     if instance.folder:
         try:
@@ -61,5 +62,6 @@ def delete_project_objects(sender, instance, **kwargs):
     log.warning(
         f"Deleting project {instance.name} and its associated folder and groups."
     )
+
     delete_project_groups(instance)
     log.info(f"Project {instance.name} and its associated groups have been deleted.")

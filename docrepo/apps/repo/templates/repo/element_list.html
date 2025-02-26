@@ -6,41 +6,61 @@
   <div class="mt-8">
     <table class="min-w-full divide-y divide-gray-200 border shadow">
       <caption class="text-left px-2 py-2 relative border">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-start">
           <span class="mr-2 font-bold p-0.5">
             <span>
               {{ path_with_links|safe }} &nbsp;
             </span>
           </span>
-          {% include "search/partials/_search_elements_input.html" %}
+          <span class="w-2/5">
+            {% include "search/partials/_search_elements_input.html" %}
+
+            {% if search_term %}
+              {% include "search/partials/_filter_notifier.html" %}
+            {% endif %}
+
+          </span>
         </div>
+
         {% if folder.parent_project  %}
           {% include "projects/partials/_project_role.html" %}
         {% endif %}
+
         {% include "repo/partials/actions/_folder_actions.html" %}
+
       </caption>
+
       <thead class="bg-gray-50">
         <tr>
           <th class="fl-th">
             {% include "repo/partials/_sortable_th.html" with column_name="name" %}
           </th>
+
           <th class="fl-th">
             {% include "repo/partials/_sortable_th.html" with column_name="title" %}
           </th>
+
           <th class="fl-th">Owner</th>
+
           <th class="fl-th">
             {% include "repo/partials/_sortable_th.html" with column_name="created" %}
           </th>
+
           <th class="fl-th">
             {% include "repo/partials/_sortable_th.html" with column_name="modified" %}
           </th>
+
           <th class="fl-th">Actions</th>
+
         </tr>
       </thead>
+
       {% include "repo/partials/_folder_children_table_data.html" with pagination_enabled=True scope="full" %}
+
     </table>
   </div>
 </main>
+
 {% include "repo/partials/_pagination.html" %}
 
 {% endblock main %}

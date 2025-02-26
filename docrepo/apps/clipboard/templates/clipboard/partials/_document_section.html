@@ -1,0 +1,27 @@
+<div class="mt-8">
+  <h4 class="block text-sm font-bold text-gray-100 my-2 flex items-center justify-between gap-1">
+    <span>DOCUMENTS</span>
+  
+    <span
+      class="material-symbols-outlined cursor-pointer"
+      id="remove-documents"
+      title="Remove all documents from clipboard"
+      hx-post="{% url 'repo:clipboard:remove_documents' %}"
+      hx-trigger="click"
+      hx-target="#document-list"
+      hx-swap="outerHTML"
+    >
+      remove_selection
+    </span>
+  
+  </h4>
+  
+  <hr class="mb-4">
+  
+  {% include "clipboard/partials/_document_list.html" %}
+  
+  <template x-if="clipboardDocuments === 0">
+    <li>N/A</li>
+  </template>
+
+</div>

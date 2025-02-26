@@ -12,8 +12,10 @@ def get_accessible_by_project_or_owner(request, parent):
     - False otherwise.
     """
     project = getattr(parent, "parent_project", None)
+
     if project:
         return project.is_member(request.user)
+
     return request.user == parent.owner
 
 
@@ -25,6 +27,7 @@ def can_view_folder(request, parent, from_tag=False):
 
     # Additional rules for public visibility and system folders
     project = getattr(parent, "parent_project", None)
+
     if project and project.visibility == "public":
         accessible = True
 
@@ -32,6 +35,7 @@ def can_view_folder(request, parent, from_tag=False):
         accessible = True
 
     accessible = admin_override(request, accessible)
+
     return response_handler(accessible, from_tag)
 
 
@@ -40,6 +44,7 @@ def can_create_folder_children(request, parent, from_tag=False):
     Determines if a user can create child folders within a parent folder.
     """
     project = getattr(parent, "parent_project", None)
+
     accessible = (
         project
         and is_editor(request, project)
@@ -48,4 +53,5 @@ def can_create_folder_children(request, parent, from_tag=False):
     )
 
     accessible = admin_override(request, accessible)
+
     return response_handler(accessible, from_tag)

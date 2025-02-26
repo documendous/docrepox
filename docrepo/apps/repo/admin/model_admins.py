@@ -53,6 +53,7 @@ class BaseElementAdmin(ModelAdmin):  # pragma: no coverage
         "full_path",
         "owner",
     )
+
     readonly_fields = ("id", "full_path")
 
     def full_path(self, obj):
@@ -80,6 +81,7 @@ class VersionAdmin(ModelAdmin):
         "tag",
         "parent",
     )
+
     readonly_fields = ("id",)
 
 

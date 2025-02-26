@@ -4,6 +4,8 @@ from .views import (
     AddElementClipboardView,
     PasteCopyElementsView,
     PasteMoveElementsView,
+    RemoveDocumentsView,
+    RemoveFoldersView,
     RemoveItemView,
 )
 
@@ -30,5 +32,15 @@ urlpatterns = [
         "item/<str:item_type>/<int:item_id>/remove/",
         RemoveItemView.as_view(),
         name="remove_item",
+    ),
+    path(
+        "documents/remove/",
+        RemoveDocumentsView.as_view(),
+        name="remove_documents",
+    ),
+    path(
+        "folders/remove/",
+        RemoveFoldersView.as_view(),
+        name="remove_folders",
     ),
 ]

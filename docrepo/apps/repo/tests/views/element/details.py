@@ -21,6 +21,7 @@ class ElementDetailsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:element_details",
@@ -30,6 +31,7 @@ class ElementDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertTrue(response.status_code, 200)
 
     def test_get_document(self):
@@ -37,6 +39,7 @@ class ElementDetailsViewTest(TestCase):
             username=TEST_USER["username"],
             password=TEST_USER["password"],
         )
+
         response = self.client.get(
             reverse(
                 "repo:element_details",
@@ -46,4 +49,5 @@ class ElementDetailsViewTest(TestCase):
                 ],
             )
         )
+
         self.assertTrue(response.status_code, 200)

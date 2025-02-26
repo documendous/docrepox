@@ -8,6 +8,46 @@ For definition purposes, all Documendous software has three levels of customizat
 
 3. **Deep Customizations**: This involves changing applications and modules within the apps directory. Deep customizations are strongly discouraged, as they make your server instance unsupported until restored to a supported configuration. For guidance on this level, refer to the “Contributing to Documendous” section.
 
+---
+
+### Customization Tips
+
+DocrepoX provides **Customization Tips**, which are optional links that can be enabled in your global_settings.py file. These links appear in various sections of DocrepoX and direct users to relevant documentation explaining how to customize that specific section.
+
+#### Enabling Customization Tips
+
+To enable customization tips, add the following setting to global_settings.py:
+
+```python
+ENABLE_CUSTOMIZATION_TIPS = True
+```
+
+#### Adding a Customization Tip
+
+To add a customization tip to a specific section, include the following code next to the relevant section:
+
+```html
+<h2 class="text-xl font-semibold mb-4 flex items-center justify-center">
+  Login {% include 'ddocs/customization_tips/_tip.html' with anchor_name="customize-login-page" %}          
+</h2>
+```
+
+- Replace `"customize-login-page"` with the **anchor name** that corresponds to the relevant section in your documentation.
+
+#### Adding Documentation and Anchor Links
+
+If you need to create or update documentation for customization tips, modify the `Customizing-DocrepoX.md` file.
+
+To define an **anchor link** within the documentation, use the following format:
+
+```html
+<a id="customize-login-page"></a>
+```
+
+This anchor allows the customization tip link to navigate directly to the relevant documentation section.
+
+---
+
 ### Extending DocrepoX
 
 For extension customizations, use the extensions subdirectory. The basic structure is as follows:
@@ -166,13 +206,13 @@ To create a custom dashlet displaying recent documents, first create a template 
     <tbody class="bg-white divide-y divide-gray-200">
     {% for document in documents %}
         <tr>
-            <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+            <td class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm">
               {{ document.name|truncatechars:30 }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+            <td class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm">
               {{ document.owner.username }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-gray-600 text-sm">
+            <td class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm">
               {{ document.created }}
             </td>
         </tr>

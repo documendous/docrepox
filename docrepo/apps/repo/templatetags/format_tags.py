@@ -16,6 +16,7 @@ def human_readable_size(size):  # pragma: no coverage
     for unit in units:
         if size < 1024.0:
             return f"{size:.2f} {unit}"
+
         size /= 1024.0
 
     return f"{size:.2f} PB"  # In case size is very large

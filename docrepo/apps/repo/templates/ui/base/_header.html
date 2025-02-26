@@ -1,9 +1,31 @@
-<header class="header flex justify-between">
+{% load repo_tags %}
+
+{% is_admin_user request as user_is_admin  %}
+
+<header class="header grid grid-cols-3 items-center">
   <div class="header-left-wrapper flex items-center">
     {% include "ui/base/_branding.html" %}
     {% include "ui/base/_left_nav.html" %}
   </div>
-  <div class="ml-auto">
+
+  {% if admin_allow_all and user_is_admin  %}
+    <div class="flex justify-center text-red-500 items-center gap-2 font-semibold text-xs">
+      <span class="material-symbols-outlined pb-1" style="font-size: 15px !important">
+        warning
+      </span>
+
+      <span>
+        ADMIN_ALLOW_ALL is set to True
+      </span>
+      
+      <span class="material-symbols-outlined pb-1" style="font-size: 15px !important">
+        warning
+      </span>
+
+    </div>
+  {% endif %}
+
+  <div class="flex justify-end">
     {% if request.user.is_authenticated %}
       {% include "ui/base/_right_nav.html" %}
     {% endif %}

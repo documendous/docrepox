@@ -8,6 +8,7 @@ from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 
 from apps.core.views import View
+from apps.repo.utils.model import get_path_with_links
 from apps.repo.utils.system.object import (
     get_system_projects_folder,
     get_system_root_folder,
@@ -31,9 +32,10 @@ class ProjectsView(View):
         parent = get_system_projects_folder()
         home_folder = request.user.profile.home_folder
         root_folder = get_system_root_folder()
-        path_with_links = parent.get_path_with_links(
-            request.user
-        ) or home_folder.get_path_with_links(request.user)
+
+        path_with_links = get_path_with_links(
+            parent, request.user
+        ) or get_path_with_links(home_folder, request.user)
 
         projects = get_viewable_project_list(request)
 
@@ -50,11 +52,13 @@ class ProjectsView(View):
     def get(self, request):
         add_project_form = AddProjectForm()
         context = self._get_common_context(request, add_project_form)
+
         return render(request, self.template_name, context)
 
     def post(self, request):
         log = logging.getLogger(__name__)
         add_project_form = AddProjectForm(request.POST)
+
         if add_project_form.is_valid():
             project = add_project_form.save(commit=False)
             project.owner = request.user
@@ -72,4 +76,5 @@ class ProjectsView(View):
 
         context = self._get_common_context(request, add_project_form)
         context["has_project_errors"] = 1
+
         return render(request, self.template_name, context)

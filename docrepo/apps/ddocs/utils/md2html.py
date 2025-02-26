@@ -34,7 +34,8 @@ def run():
         template_file = f"{templates_dir}/{template_file}"
 
         print(f"Reading from: {markdown_file}")
-        with open(markdown_file, "r", encoding='utf-8') as f:
+
+        with open(markdown_file, "r", encoding="utf-8") as f:
             text = f.read()
             html = styles_html
             html += markdown.markdown(
@@ -45,7 +46,8 @@ def run():
         html = escape_django_tags(html)
 
         print(f"Writing to {template_file}")
-        with open(template_file, "w", encoding='utf-8') as f:
+
+        with open(template_file, "w", encoding="utf-8") as f:
             f.write(html)
 
 

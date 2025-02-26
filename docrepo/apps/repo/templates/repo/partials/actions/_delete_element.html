@@ -6,6 +6,7 @@
     onsubmit="return confirm('Are you sure you want to permanently delete this item? This action is unrecoverable.');"
   >
     {% csrf_token %}
+
     <button type="submit"
       title='Permanently Delete {{ element.type }} "{{ child.name|truncatechars:30 }}" (Unrecoverable)'
       class="text-gray-700 hover:text-blue-700"
@@ -14,5 +15,6 @@
         delete_forever
       </span>
     </button>
+
   </form>
 {% endif %}

@@ -14,6 +14,7 @@ class Version(
     parent = models.ForeignKey(
         "Document", on_delete=models.CASCADE, null=True, blank=True
     )
+
     tag = models.CharField(
         "Version number", max_length=20, default=DEFAULT_DOCUMENT_VERSION
     )

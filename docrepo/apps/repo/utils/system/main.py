@@ -15,6 +15,8 @@ def setup_system(apps, schema):
     create_admin_user_profile(apps, schema)
     create_system_folders(apps, schema)
     create_admin_home_folder(apps, schema)
+
     if settings.ADD_TEST_OBJECTS:
         create_testusers(apps, schema)
+
     add_mimetypes()

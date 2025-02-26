@@ -15,6 +15,7 @@ class AddFolderForm(forms.ModelForm):
 
     class Meta:
         model = Folder
+
         exclude = (
             "owner",
             "parent",
@@ -33,6 +34,7 @@ class UpdateElementForm(forms.ModelForm):
 
     class Meta:
         model = Folder
+
         exclude = (
             "owner",
             "parent",
@@ -41,6 +43,7 @@ class UpdateElementForm(forms.ModelForm):
     def clean_tags(self):  # pragma: no coverage
         """This is called when the form is submitted."""
         tags_input = self.cleaned_data.get("tags", "")
+
         # Remove the '#' from each tag before saving to the database
         clean_tags = [
             tag.strip().lstrip("#") for tag in tags_input.split(",") if tag.strip()
@@ -49,7 +52,7 @@ class UpdateElementForm(forms.ModelForm):
         # Check if there are more than 5 tags
         if len(clean_tags) > settings.MAX_TAG_COUNT:
             raise ValidationError(
-                f"You cannot assign more than {settings.MAX_TAG_COUNT} tags."
+                f"Too many tags. Enter {settings.MAX_TAG_COUNT} or fewer and try again."
             )
 
         return ", ".join(clean_tags)
@@ -62,6 +65,7 @@ class AddDocumentForm(forms.ModelForm):
 
     class Meta:
         model = Document
+
         exclude = (
             "owner",
             "parent",
@@ -77,6 +81,7 @@ class AddVersionForm(forms.ModelForm):
 
     class Meta:
         model = Version
+
         exclude = (
             "parent",
             "tag",
@@ -92,6 +97,7 @@ class UpdateVersionForm(forms.ModelForm):
         ("Major", "Major"),  # major version
         ("Minor", "Minor"),  # minor version
     ]
+
     change_type = forms.ChoiceField(
         widget=forms.RadioSelect,
         choices=CHOICES,

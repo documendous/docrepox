@@ -12,6 +12,7 @@
     </span>
   </button>
 </form>
+
 <form
   action="{% url "repo:projects:add_requester_to_project_group" project.pk req.msg_from.pk "editors" %}" 
   method="post">
@@ -22,6 +23,7 @@
     </span>
   </button>
 </form>
+
 <form
   action="{% url "repo:projects:add_requester_to_project_group" project.pk req.msg_from.pk "managers" %}" 
   method="post"
@@ -33,6 +35,7 @@
     </span>
   </button>
 </form>
+
 <form 
   action="{% url "repo:projects:reject_join_request" req.pk %}" 
   method="post"

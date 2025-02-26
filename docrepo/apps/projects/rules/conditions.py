@@ -11,6 +11,7 @@ def has_project_membership(request, parent, from_tag=False):
     if project:
         if project.is_member(request.user):
             accessible = True
+
         if settings.ADMIN_ALLOW_ALL and request.user.profile.is_admin_user():
             accessible = True
 
@@ -32,4 +33,5 @@ def is_membership_pending(request, parent):
     )
 
     result = pending_requests.exists()
+
     return result

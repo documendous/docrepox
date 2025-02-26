@@ -1,18 +1,19 @@
 {% load format_tags %}
 
 <tr>
-  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-    Total Child Count
-  </th>
-  <td class="px-6 py-4 whitespace-nowrap">
+  <th class="in-th">Total Child Count</th>
+
+  <td class="px-6 py-4 whitespace-nowrap text-gray-700">
     {{ element.get_descendant_count|default:'--' }}
   </td>
+
 </tr>
+
 <tr>
-  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-    Folder Size
-  </th>
-  <td class="px-6 py-4 whitespace-nowrap">
+  <th class="in-th">Folder Size</th>
+
+  <td class="px-6 py-4 whitespace-nowrap text-gray-700">
     {{ element.folder_size|human_readable_size|default:'--' }}
   </td>
+
 </tr>

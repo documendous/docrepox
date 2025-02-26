@@ -4,11 +4,13 @@
   <div id="addProjectModal"
     x-ref="addProjectModal"
     class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
-    x-bind:class="{hidden: !hasErrors}">
+    x-bind:class="{hidden: !hasErrors}"
+  >
     <div class="relative top-20 mx-auto border border-gray-700 w-96 shadow-lg rounded bg-white">
       <h3 class="text-lg font-medium leading-6 rounded-t text-white bg-blue-500 px-5 py-3">
         Create A Project
       </h3>
+
       <div class="p-5">
         <form action='{% url "repo:projects:index" %}'
           method="post"
@@ -18,7 +20,9 @@
             <label for="name" class="block text-sm font-medium text-gray-700">
               Name: <span class="text-red-500">*</span>
             </label>
+
             {% render_field add_project_form.name class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
             <div
               class="text-red-500 text-sm mt-1"
               x-bind:class="{hidden: !hasErrors}"
@@ -26,28 +30,39 @@
               {{ add_project_form.name.errors }}
             </div>
           </div>
+
           <div class="mt-2">
             <label for="visibility" class="block text-sm font-medium text-gray-700">
               Visibility:
             </label>
+
             {% render_field add_project_form.visibility class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
           </div>
+
           <div class="mt-2">
             <label for="title" class="block text-sm font-medium text-gray-700">
               Title:
             </label>
+
             {% render_field add_project_form.title class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
           </div>
+
           <div class="mt-2">
             <label for="Description" class="block text-sm font-medium text-gray-700">
               Description:
             </label>
+
             {% render_field add_project_form.description class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
           </div>
+
           <div class="flex justify-end mt-4 space-x-2">
             <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded" type="submit">
               Save
             </button>
+
             <button
               class="bg-gray-500 text-white font-semibold py-2 px-4 rounded"
               type="button"
@@ -55,6 +70,7 @@
             >
               Cancel
             </button>
+
           </div>
         </form>
       </div>

@@ -10,6 +10,7 @@ from apps.repo.utils.validation import has_duplicate_peers
 class DuplicateTopLevelPeerTest(TestCase):
     def setUp(self):
         self.test_user = get_test_user()
+
         self.test_folder = Folder.objects.create(
             name="Folder 1",
             owner=self.test_user,
@@ -38,12 +39,14 @@ class DuplicateTopLevelPeerTest(TestCase):
             owner=self.test_user,
             parent=self.test_user.profile.home_folder,
         )
+
         self.assertTrue(
             has_duplicate_peers(
                 self.test_user.profile.home_folder,
                 "Folder 2",
             )
         )
+
         self.assertFalse(
             has_duplicate_peers(
                 self.test_user.profile.home_folder,

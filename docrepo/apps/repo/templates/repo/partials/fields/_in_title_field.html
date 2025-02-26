@@ -1,0 +1,13 @@
+<tr>
+  <th class="in-th">Title</th>
+  <td
+    class="
+      px-6 py-4 whitespace-nowrap text-gray-700
+    "
+    {% if title %}
+      title="{{ title }}"
+    {% endif %}
+  >
+    {{ title|default:'--'|truncatechars:60 }}
+  </td>
+</tr>

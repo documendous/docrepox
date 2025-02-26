@@ -6,6 +6,7 @@ from django.shortcuts import render
 from apps.comms.models import Communication
 from apps.core.views import View
 from apps.projects import rules
+from apps.repo.utils.model import get_path_with_links
 from apps.repo.utils.system.object import get_system_root_folder
 
 from ..forms import MultipleUserSelectForm
@@ -24,14 +25,16 @@ class ProjectDetailsView(View):
 
         rules.can_view_project_details(request, element=project.folder)
 
-        path_with_links = project.folder.get_path_with_links(request.user)
+        path_with_links = get_path_with_links(project.folder, request.user)
 
         managers_group = Group.objects.filter(
             name=project.managers_group,
         ).first()
+
         editors_group = Group.objects.filter(
             name=project.editors_group,
         ).first()
+
         readers_group = Group.objects.filter(
             name=project.readers_group,
         ).first()

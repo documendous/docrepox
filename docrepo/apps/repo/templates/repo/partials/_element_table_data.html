@@ -3,43 +3,66 @@
 
 <tbody class="bg-white divide-y divide-gray-200">
   <tr>
-    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-    <td class="px-6 py-4 whitespace-nowrap flex items-center">
-      <span class="mr-2">
+    <th class="in-th">Name</th>
+
+    <td
+      class="
+        px-6 py-4 whitespace-nowrap flex items-center text-gray-700
+      "
+    >
+      <span class="mr-2" title="{{ element.name }}">
         {{ element.name|truncatechars:30 }}
       </span>
+
       {% if element.is_document %}
         {% include "repo/partials/document/_document_actions.html" %}
       {% endif %}
+
     </td>
   </tr>
+
   <tr>
-    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-    <td class="px-6 py-4 whitespace-nowrap">{{ element.id }}</td>
+    <th class="in-th">ID</th>
+
+    <td
+      class="px-6 py-4 whitespace-nowrap text-gray-700"
+    >{{ element.id }}</td>
+
   </tr>
+
   <tr>
-    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Full Path</th>
-    <td class="px-6 py-4 whitespace-nowrap">{{ element.get_full_path|truncatechars:60 }}</td>
-  </tr>
-  <tr>
-    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-    <td class="px-6 py-4 whitespace-nowrap">
-      {{ element.title|default:'--'|truncatechars:30 }}
+    <th class="in-th">Full Path</th>
+
+    <td
+      class="
+        px-6 py-4 whitespace-nowrap text-gray-700
+      "
+      title="{{ element.get_full_path }}"
+    >
+      {{ element.get_full_path|truncatechars:60 }}
     </td>
+
   </tr>
-  <tr>
-    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-    <td class="px-6 py-4 whitespace-nowrap">{{ element.description|default:'--' }}</td>
-  </tr>
+
+  {% include "repo/partials/fields/_in_title_field.html" with title=element.title %}
+  {% include "repo/partials/fields/_in_description_field.html" with description=element.description %}
   {% include "repo/partials/_tags_display_row.html" with element=element %}
+
   <tr>
-    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
-    <td class="px-6 py-4 whitespace-nowrap">{{ element.owner.username }}</td>
+    <th class="in-th">Owner</th>
+
+    <td class="px-6 py-4 whitespace-nowrap text-gray-700">
+      {{ element.owner.username }}
+    </td>
+
   </tr>
+
   {% if element.is_document %}
     {% include "repo/partials/document/_document_details.html" %}
   {% endif %}
+
   {% if element.is_folder %}
     {% include "repo/partials/folder/_folder_details.html" %}
   {% endif %}
+
 </tbody>

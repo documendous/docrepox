@@ -18,17 +18,22 @@
           <span class="mr-2 font-bold">
             {{ path_with_links|safe }}
           </span>
+
           {% if can_view_project_details %}
             {% include "projects/partials/_view_project_details.html" with element=element %}
           {% endif %}
+
           {% if not element.is_in_recycle_path and can_bookmark %}
             {% include "bookmarks/partials/actions/_bookmark_element.html" %}
           {% endif %}
+
         </div>
+
         <div class="flex items-center">
           <h2 class="text-xl font-bold mr-4 py-2">
             {{ element.type|title }} Details
           </h2>
+
           {% if can_update_element %}
             <a
               href="{% url 'repo:update_element' element.type element.id %}" 
@@ -42,9 +47,12 @@
               </span>
             </a>
           {% endif %}
+
         </div>
       </caption>
+
       {% include "repo/partials/_element_table_data.html" %}
+
     </table>
   </div>
 
@@ -59,5 +67,7 @@
 </main>
 
 {% include "repo/partials/_add_version_modal.html" %}
+
 <script src="{% static 'js/repo/utils/modals.js' %}"></script>
+
 {% endblock main %}

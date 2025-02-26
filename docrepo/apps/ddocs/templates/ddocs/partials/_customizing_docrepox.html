@@ -5,27 +5,35 @@
     margin-top: 2rem;
     font-weight: bold;
   }
+
   h1 {
     font-size: 26px;
   }
+
   h2 {
     font-size: 24px;
   }
+
   h3 {
     font-size: 20px;
   }
+
   h4 {
     font-size: 18px;
   }
+
   h5 {
     font-size: 16px;
   }
+
   h6 {
     font-size: 14px;
   }
+
   p {
     margin-bottom: 1rem;
   }
+
   pre {
     font-size: smaller;
     margin-bottom: 1rem;
@@ -33,16 +41,19 @@
     background-color: lightgrey;
     padding: 10px;
   }
+
   ul {
     margin-bottom: 0.5rem;
     padding: 1rem;
     list-style-type: initial;
   }
+
   ol {
     margin-bottom: 0.5rem;
     padding: 1rem;
     list-style-type: decimal;
   }
+
   a {
     color: #007bff;
     text-decoration: none;
@@ -63,6 +74,7 @@
     outline: 2px solid #80bdff;
     outline-offset: 2px;
   }
+
 </style>
 <h2>Customizing DocrepoX</h2>
 <p>For definition purposes, all Documendous software has three levels of customization:</p>
@@ -77,6 +89,29 @@
 <p><strong>Deep Customizations</strong>: This involves changing applications and modules within the apps directory. Deep customizations are strongly discouraged, as they make your server instance unsupported until restored to a supported configuration. For guidance on this level, refer to the “Contributing to Documendous” section.</p>
 </li>
 </ol>
+<hr>
+<h3>Customization Tips</h3>
+<p>DocrepoX provides <strong>Customization Tips</strong>, which are optional links that can be enabled in your global_settings.py file. These links appear in various sections of DocrepoX and direct users to relevant documentation explaining how to customize that specific section.</p>
+<h4>Enabling Customization Tips</h4>
+<p>To enable customization tips, add the following setting to global_settings.py:</p>
+<pre><code class="language-python">ENABLE_CUSTOMIZATION_TIPS = True
+</code></pre>
+<h4>Adding a Customization Tip</h4>
+<p>To add a customization tip to a specific section, include the following code next to the relevant section:</p>
+<pre><code class="language-html">&lt;h2 class=&quot;text-xl font-semibold mb-4 flex items-center justify-center&quot;&gt;
+  Login &#123;% include 'ddocs/customization_tips/_tip.html' with anchor_name=&quot;customize-login-page&quot; %&#125;          
+&lt;/h2&gt;
+</code></pre>
+<ul>
+<li>Replace <code>"customize-login-page"</code> with the <strong>anchor name</strong> that corresponds to the relevant section in your documentation.</li>
+</ul>
+<h4>Adding Documentation and Anchor Links</h4>
+<p>If you need to create or update documentation for customization tips, modify the <code>Customizing-DocrepoX.md</code> file.</p>
+<p>To define an <strong>anchor link</strong> within the documentation, use the following format:</p>
+<pre><code class="language-html">&lt;a id=&quot;customize-login-page&quot;&gt;&lt;/a&gt;
+</code></pre>
+<p>This anchor allows the customization tip link to navigate directly to the relevant documentation section.</p>
+<hr>
 <h3>Extending DocrepoX</h3>
 <p>For extension customizations, use the extensions subdirectory. The basic structure is as follows:</p>
 <pre><code>extensions/
@@ -213,13 +248,13 @@ class MyKCAuthBackend(KeycloakOIDCAuthenticationBackend):
     &lt;tbody class=&quot;bg-white divide-y divide-gray-200&quot;&gt;
     &#123;% for document in documents %&#125;
         &lt;tr&gt;
-            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
+            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-700 text-sm&quot;&gt;
               &#123;&#123; document.name|truncatechars:30 &#125;&#125;
             &lt;/td&gt;
-            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
+            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-700 text-sm&quot;&gt;
               &#123;&#123; document.owner.username &#125;&#125;
             &lt;/td&gt;
-            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-600 text-sm&quot;&gt;
+            &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-gray-700 text-sm&quot;&gt;
               &#123;&#123; document.created &#125;&#125;
             &lt;/td&gt;
         &lt;/tr&gt;

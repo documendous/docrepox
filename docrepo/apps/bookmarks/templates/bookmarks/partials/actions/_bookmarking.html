@@ -1,0 +1,21 @@
+<form
+  action="{{ url }}"
+  method="post"
+  class="tooltip inline"
+>
+  {% csrf_token %}
+  <button
+    type="submit"
+    class="tooltip"
+    title="{{ action|title }} bookmark"
+    class="bg-none border-none p-0"
+  >
+    <span
+      class="
+        material-icons-outlined nav-icon
+      "
+    >
+      {{ icon }}
+    </span>
+  </button>
+</form>

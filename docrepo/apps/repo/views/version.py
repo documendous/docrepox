@@ -34,10 +34,12 @@ class AddVersionView(View):
         if update_version_form.is_valid():
             change_type = request.POST.get("change_type", "Minor")
             new_version = update_version_form.save(commit=False)
+
             new_version.tag = self._update_tag(
                 change_type=change_type,
                 document=document,
             )
+
             new_version.parent = document
             new_version.save()
 

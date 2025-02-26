@@ -2,6 +2,7 @@
   <a
     href="{% url 'repo:element_details' document.type document.pk %}"
     class="hover:text-blue-700"
+    title="{{ document.name }}"
   > 
     <u>"{{ document.name|truncatechars:30 }}"</u>
   </a> created by {{ document.owner.username }}
