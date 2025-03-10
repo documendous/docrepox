@@ -9,7 +9,6 @@ tmp/
 venv/
 .venv/
 node_modules/
-requirements.txt
 reset_db.py
 db.sqlite3
 deleted/
