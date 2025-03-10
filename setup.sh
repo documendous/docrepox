@@ -47,7 +47,7 @@ log_message "Python environment set up successfully"
 
 log_message "Installing dependencies"
 pip install poetry
-poetry export --with dev -f requirements.txt --output requirements.txt
+poetry run pip freeze > requirements.txt
 cp requirements.txt docrepo/requirements.txt
 mkdir -p docrepo/mediafiles
 touch docrepo/global_settings.py
