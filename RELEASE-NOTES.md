@@ -1,4 +1,32 @@
-# Release Notes  
+# Release Notes
+
+## March 29, 2025 – v25.1.0
+
+### New Features
+- Document Sharing: Share any document externally using a secure proxy link.
+- Encrypted File System (Experimental): Early access to our new encrypted content storage.
+- Bulk Upload Tool: Upload multiple documents at once for faster onboarding.
+- Indexing Tool: Converts documents to pdf and then to text storage for quick search.
+- Versioned Metadata: Documents now include additional metadata sections, including version history.
+- Profile Avatars: Users can now upload avatars to personalize their profiles.
+- Custom Properties: Easily add custom metadata fields to documents and folders.
+- Advanced Search: Improved search with powerful filtering and keyword support.
+- Internal Messaging
+
+### Enhancements
+- Expanded and improved documentation, including troubleshooting and logging guides.
+- Streamlined UI for metadata views across documents, folders, and projects.
+- Removed outdated single-document upload feature.
+- Added indexes to table creation scripts for better performance.
+- Enhanced security for document access and retrieval.
+- Improved sorting and pagination for a smoother browsing experience.
+
+### Bug Fixes
+- Fixed issues with zero-byte document uploads.
+- Resolved edge case errors in document indexing.
+- Addressed Jazzmin integration inconsistencies.
+
+---
 
 ## Feb 28, 2025 - v24.4.2
 
