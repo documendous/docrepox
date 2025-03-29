@@ -1,0 +1,35 @@
+{% if not folder.is_recycle_folder %}
+<span>
+  <form
+    action="{% url 'repo:clipboard:add_elements_to_clipboard' folder.pk %}{% if children.number %}?page={{ children.number }}{% endif %}"
+    method="POST"
+    onsubmit="
+      return confirm(
+        'This action will place all child elements in your clipboard for copy/move.'
+      );
+    "
+  >
+    {% csrf_token %}
+    <button
+      type="submit"
+      class="
+        {% if folder.get_children|length == 0 %}
+          opacity-50 cursor-not-allowed
+        {% endif %}
+      "
+      title="
+        {% if folder.get_children|length == 0 %}
+          This folder has no child elements that can be copied or moved.
+        {% else %}
+          Place all elements in this folder into clipboard for copy/move.
+        {% endif %}
+      "
+      {% if folder.get_children|length == 0 %}disabled{% endif %}
+    >
+      <span class="material-symbols-outlined text-gray-700 hover:text-blue-700">
+        move_group
+      </span>
+    </button>
+  </form>
+</span>
+{% endif %}

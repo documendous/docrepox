@@ -1,6 +1,8 @@
 {% load format_tags %}
 {% load repo_tags %}
 
+{% can_update_content request.user element as can_update_content %}
+
 <tr>
   <th class="in-th">Version</th>
 
@@ -8,9 +10,9 @@
     <span class="mr-2">
       {{ element.current_version_tag }}
     </span>
-    {% if not element.is_in_recycle_path %}
+    {% if not element.is_in_recycle_path and can_update_content %}
       <a href="#" onclick="showModal('addVersionModal')"
-        title="Create a new document in this space">
+        title="Upload a new version of this document">
         <span class="material-symbols-outlined text-gray-700 hover:text-blue-700">
           upload
         </span>
@@ -29,7 +31,7 @@
 
 </tr>
 
-{% is_admin_user request as user_is_admin  %}
+{% is_admin_user request.user as user_is_admin  %}
 
 {% if user_is_admin %}
   <tr>

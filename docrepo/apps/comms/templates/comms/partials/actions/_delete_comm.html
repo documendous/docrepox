@@ -1,0 +1,17 @@
+<span>
+  <form
+    action="{% url 'repo:comms:delete' comm.pk %}"
+    method="POST"
+  >
+    {% csrf_token %}
+    <button
+      type="submit"
+      class="text-gray-500 hover:text-blue-700"
+      title='Delete message'
+    >
+      <span class="material-symbols-outlined">
+        delete_forever
+      </span>
+    </button>
+  </form>
+</span>

@@ -215,6 +215,62 @@ class RecycleElementFlowTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+class RestoreElementsViewTest(TestCase):
+    def setUp(self):
+        self.test_user = get_test_user()
+        self.user_home_folder = self.test_user.profile.home_folder
+        self.recycle_folder = self.test_user.profile.recycle_folder
+        self.test_document = get_test_document(parent=self.user_home_folder)
+        self.test_folder = get_test_folder(parent=self.user_home_folder)
+
+    def test_post(self):
+        self.client.login(
+            username=TEST_USER["username"], password=TEST_USER["password"]
+        )
+        self.client.post(
+            reverse("repo:recycle_elements", args=[self.user_home_folder.pk])
+        )
+        self.test_folder.refresh_from_db()
+        self.assertEqual(self.test_folder.parent.name, "Recycle")
+        self.test_document.refresh_from_db()
+        self.assertEqual(self.test_document.parent.name, "Recycle")
+
+        response = self.client.post(
+            reverse("repo:restore_elements", args=[self.recycle_folder.pk])
+        )
+        self.assertEqual(response.status_code, 302)
+
+        self.test_folder.refresh_from_db()
+        self.assertEqual(self.test_folder.parent.name, "testuser1")
+        self.test_document.refresh_from_db()
+        self.assertEqual(self.test_document.parent.name, "testuser1")
+
+
+class RecycleElementsViewTest(TestCase):
+    def setUp(self):
+        self.test_user = get_test_user()
+        self.home_folder = self.test_user.profile.home_folder
+        self.test_folder = get_test_folder(
+            name="Example Folder", parent=self.home_folder
+        )
+        self.test_document = get_test_document(
+            name="Example.txt", parent=self.home_folder
+        )
+
+    def test_post(self):
+        self.client.login(
+            username=TEST_USER["username"], password=TEST_USER["password"]
+        )
+        response = self.client.post(
+            reverse("repo:recycle_elements", args=[self.home_folder.id])
+        )
+        self.assertEqual(response.status_code, 302)
+        self.test_folder.refresh_from_db()
+        self.assertEqual(self.test_folder.parent.name, "Recycle")
+        self.test_document.refresh_from_db()
+        self.assertEqual(self.test_document.parent.name, "Recycle")
+
+
 class RecycleFolderActionTest(TestCase):
     def setUp(self):
         self.test_user = get_test_user()

@@ -36,7 +36,7 @@ class AddBookmarkView(View):
         """
         Add bookmark view
         """
-        add_bookmark(request, element_type, element_pk)
+        add_bookmark(request.user, element_type, element_pk)
 
         return redirect_to_referer_or_default(
             request,
@@ -51,7 +51,7 @@ class RemoveBookmarkView(View):
         """
         Remove bookmark view
         """
-        remove_bookmark(request, element_type, element_pk)
+        remove_bookmark(request.user, element_type, element_pk)
 
         return redirect_to_referer_or_default(
             request,

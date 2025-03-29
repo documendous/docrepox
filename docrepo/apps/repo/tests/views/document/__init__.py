@@ -1,3 +1,4 @@
 from .create_document_view import AddDocumentViewTest, CreateDocumentViewTest
 from .document_view import DocumentViewTest
 from .download_view import RetrieveDocumentViewTest
+from .update_content_view import UpdateDocumentContentViewTest

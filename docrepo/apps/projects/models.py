@@ -47,15 +47,14 @@ class Project(Element, ActivatedModel, Commentable):  # pragma: no coverage
         ordering = ["-created"]
 
         indexes = [
-            models.Index(fields=["visibility", "is_active"]),  # Compound index
+            models.Index(fields=["name", "is_active"]),
+            models.Index(fields=["visibility", "is_active"]),
             models.Index(fields=["managers_group", "is_active"]),
             models.Index(fields=["editors_group", "is_active"]),
             models.Index(fields=["readers_group", "is_active"]),
             models.Index(fields=["owner"]),
-            models.Index(
-                fields=["created"]
-            ),  # Retain if sorting by created date is frequent
-            models.Index(fields=["folder"]),  # Retain for folder-based queries
+            models.Index(fields=["created"]),
+            models.Index(fields=["folder"]),
         ]
 
     @property

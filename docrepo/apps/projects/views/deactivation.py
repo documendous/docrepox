@@ -13,7 +13,7 @@ class DeactivateProjectView(View):
     def post(self, request, project_id):
         project = Project.objects.get(pk=project_id)
         deactivate = request.POST.get("deactivate", None)
-        rules.can_deactivate_project(request, project.folder)
+        rules.can_deactivate_project(request.user, project.folder)
 
         if deactivate:
             project.is_active = False

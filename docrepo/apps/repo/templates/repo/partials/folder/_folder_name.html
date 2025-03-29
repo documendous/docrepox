@@ -6,12 +6,11 @@
   {% elif child.folder %}
     href="{% url 'repo:folder' child.folder.pk %}"
   {% endif %}
-  hx-boost="{{ use_hx_boost_ext }}"
 >
   <span class="material-icons-outlined mr-2">folder</span>
   {% include "repo/partials/_folder_children_name.html" %}
 
-  {% element_in_clipboard request child as in_clipboard %}
+  {% element_in_clipboard request.user child as in_clipboard %}
 
   {% if in_clipboard %}
     <span

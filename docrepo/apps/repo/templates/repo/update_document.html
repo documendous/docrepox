@@ -1,0 +1,146 @@
+{% extends "ui/base/_base.html" %}
+{% load widget_tweaks %}
+
+{% block main %}
+<main>
+  <section class="py-8">
+    <div class="flex justify-center my-16">
+      <form action="" method="post"
+        class="w-full max-w-4xl bg-white p-8 shadow rounded-lg"
+      >
+        {% csrf_token %}
+        <div class="flex py-2 mb-4">
+          {% include "repo/partials/_path_with_links.html" %}
+        </div>
+
+        <legend class="mb-4">
+          <h2 class="text-2xl font-semibold flex align-items gap-1">
+            <div
+              class="material-icons-outlined pt-0.5"
+              style="font-size: 24px !important"
+            >
+              description
+            </div>
+            Update Document Content
+          </h2>
+          {% if create_doc_as_rtf %}
+            <span class="text-sm">
+              (Rich Text -- 
+              <span class="italic">
+                Content is html when using editor below
+              </span>)
+            </span>
+          {% endif %}
+        </legend>
+
+        <div class="mb-4">
+          <label for="name" class="block text-xs font-semibold text-gray-700 uppercase">
+            Name
+          </label>
+
+          {{ update_document_form.name.errors }}
+
+          {% render_field update_document_form.name class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
+        </div>
+
+        <div class="mb-4">
+          <label for="title" class="block text-xs font-semibold text-gray-700 uppercase">
+            Title
+          </label>
+
+          {{ update_document_form.title.errors }}
+
+          {% render_field update_document_form.title class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
+        </div>
+
+        <div class="mb-4">
+          <label for="description" class="block text-xs font-semibold text-gray-700 uppercase">
+            Description
+          </label>
+
+          {{ update_document_form.description.errors }}
+
+          {% render_field update_document_form.description class="mt-1 block w-full h-20 rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
+        </div>
+
+        {% if create_doc_as_rtf %}
+          {% include "repo/partials/_quill_editor.html" %}
+        {% else %}
+          <div class="mb-4">
+            <label for="content" class="block text-xs font-semibold text-gray-700 uppercase">
+              Content
+            </label>
+
+            {% render_field update_content_form.content class="mt-1 block w-full h-80 rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+
+          </div>
+        {% endif %}
+
+        <div class="mb-4">
+          <label
+            for="tag"
+            class="block text-xs font-semibold text-gray-700 uppercase px-1"
+          >
+            Version Change:
+          </label>
+
+          <div id="id_change_type"
+            class="
+              mt-2 px-3 py-2 w-1/2 flex items-center gap-1
+            "
+          >
+            <div class="flex items-center gap-2">
+              <label class="mt-2" for="id_change_type_0">
+                <span class="text-sm">Major</span>
+              </label>
+
+              <input type="radio" name="change_type" value="Major"
+                class="
+                  mt-1 block w-full rounded-md border border-gray-300
+                  shadow-sm p-2
+                "
+                required
+                id="id_change_type_0"
+              />
+
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label class="mt-2" for="id_change_type_1">
+                <span class="text-sm">Minor</span>
+              </label>
+
+              <input type="radio" name="change_type" value="Minor"
+                class="
+                  mt-1 block w-full rounded-md border border-gray-300
+                  shadow-sm p-2"
+                required
+                checked="checked"
+                id="id_change_type_1"
+              />
+
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-4 mt-4">
+          <button type="submit" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded">
+            Save
+          </button>
+
+          <a
+            href="{% url 'repo:folder' folder.pk %}"
+            class="bg-gray-500 text-white font-semibold py-2 px-4 rounded"
+          >
+            Cancel
+          </a>
+
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+{% endblock main %}

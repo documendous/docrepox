@@ -1,0 +1,47 @@
+{% extends "ui/base/_base.html" %}
+{% load static %}
+
+{% block main %}
+<main>
+  <div class="mt-8">
+    <table class="min-w-full divide-y divide-gray-200 border shadow">
+      <caption class="text-left px-2 py-2 relative border">
+        <div class="flex justify-between items-center">
+          <span class="mr-2 font-bold p-0.5">
+            <p class="text-xl p-4 flex items-center gap-1">
+              <span class="material-symbols-outlined">
+                mark_email_unread
+              </span>
+              
+              Unread Messages for {{ request.user.username }}
+            
+            </p>
+          </span>
+        </div>
+      </caption>
+      {% include "comms/partials/_comms_table.html" with condition="unread" comms=unread_comms %}
+    </table>
+  </div>
+
+  <div class="mt-8">
+    <table class="min-w-full divide-y divide-gray-200 border shadow">
+      <caption class="text-left px-2 py-2 relative border">
+        <div class="flex justify-between items-center">
+          <span class="mr-2 font-bold p-0.5">
+            <p class="text-xl p-4 flex items-center gap-1">
+              <span class="material-symbols-outlined">
+                mark_email_read
+              </span>
+
+              Read Messages
+            
+            </p>
+          </span>
+        </div>
+      </caption>
+      {% include "comms/partials/_comms_table.html" with condition="read" comms=read_comms %}
+    </table>
+  </div>
+</main>
+
+{% endblock main %}

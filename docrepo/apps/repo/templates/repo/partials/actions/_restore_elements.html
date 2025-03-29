@@ -1,0 +1,20 @@
+<form
+  action="{% url 'repo:restore_elements' folder.pk %}"
+  method="POST"
+>
+  {% csrf_token %}
+  <button
+    type="submit"
+    title="
+      Restore all elements in this folder to their original parent folder{% if not folder.is_recycle_folder %} (can only be restored from the Recycle folder).{% endif %}
+    "
+    class="
+      {% if not folder.is_recycle_folder %}opacity-50 cursor-not-allowed{% endif %}
+    "
+    {% if not folder.is_recycle_folder %}disabled{% endif %}
+  >
+    <span class="material-icons-outlined">
+      restore_from_trash
+    </span>
+  </button>
+</form>

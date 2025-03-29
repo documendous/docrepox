@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db.models import Q, QuerySet
-from django.http import HttpRequest
 
 from .models import Project
 
@@ -37,26 +36,26 @@ def get_public_projects() -> QuerySet:
     ]
 
 
-def get_owned_projects(request: HttpRequest) -> QuerySet:
+def get_owned_projects(user) -> QuerySet:
     """
     Returns a list of projects owned by the current user.
     """
-    return active_project_qs.filter(owner=request.user).order_by("-created")[
+    return active_project_qs.filter(owner=user).order_by("-created")[
         : settings.MAX_CONTENT_ITEM_SIZE
     ]
 
 
-def get_associated_projects(request: HttpRequest) -> QuerySet:
+def get_associated_projects(user) -> QuerySet:
     """
     Returns a list of projects the current user is a member of but not any the user owns.
     """
     return (
         active_project_qs.filter(
-            Q(managers_group__in=request.user.groups.values_list("name", flat=True))
-            | Q(editors_group__in=request.user.groups.values_list("name", flat=True))
-            | Q(readers_group__in=request.user.groups.values_list("name", flat=True))
+            Q(managers_group__in=user.groups.values_list("name", flat=True))
+            | Q(editors_group__in=user.groups.values_list("name", flat=True))
+            | Q(readers_group__in=user.groups.values_list("name", flat=True))
         )
         .distinct()
-        .exclude(owner=request.user)
+        .exclude(owner=user)
         .order_by("-created")[: settings.MAX_CONTENT_ITEM_SIZE]
     )

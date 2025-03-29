@@ -1,0 +1,17 @@
+{% if not child.is_recycle_folder %}
+  {% comment %} No Recycle folder should be recycled or deleted {% endcomment %}
+  <form
+    action="{% url 'repo:properties:delete_property' property.pk %}"
+    method="POST"
+    onsubmit="return confirm('Are you sure you want to permanently delete this item? This action is unrecoverable.');"
+  >
+    {% csrf_token %}
+    <button type="submit"
+      title='Permanently Delete property "{{ property.key }}" (Unrecoverable)'
+    >
+      <span class="material-icons-outlined">
+        delete_forever
+      </span>
+    </button>
+  </form>
+{% endif %}

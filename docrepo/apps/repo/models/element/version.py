@@ -24,6 +24,12 @@ class Version(
         verbose_name = "Document Version"
         verbose_name_plural = "Document Versions"
 
+        indexes = [
+            models.Index(fields=["parent"]),
+            models.Index(fields=["tag"]),
+            models.Index(fields=["content_file"]),
+        ]
+
     def __str__(self):
         return f"{self.content_file.name}|{self.tag}"
 

@@ -24,7 +24,7 @@ class EmptyRecycleFolderView(View):
             if children:
                 for each in children:
                     try:
-                        rules.can_delete_element(request, each)
+                        rules.can_delete_element(request.user, each)
                         each.delete()
                     except Exception as err:  # pragma: no coverage
                         log.error(repr(err))

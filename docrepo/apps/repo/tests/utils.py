@@ -54,10 +54,11 @@ def get_test_document(name=None, parent=None, owner=None, ext="txt"):
     return test_document
 
 
-def get_test_project(name=None, visibility="public"):
-    test_project = Project.objects.create(
-        name="Test Project", visibility=visibility, owner=get_test_user()
-    )
+def get_test_project(name="Test Project", visibility="public", owner=None):
+    if not owner:
+        owner = get_test_user()
+
+    test_project = Project.objects.create(name=name, visibility=visibility, owner=owner)
 
     return test_project
 

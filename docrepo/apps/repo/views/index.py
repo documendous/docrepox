@@ -28,11 +28,11 @@ class IndexView(View):
     def get(self, request):
         managed_projects = get_managed_projects()
         project_list = get_accessible_project_list()
-        user_owned_documents = get_owned_documents(request)
-        user_project_documents = get_accessible_project_documents(request)
+        user_owned_documents = get_owned_documents(request.user)
+        user_project_documents = get_accessible_project_documents(request.user)
         public_projects = get_public_projects()
-        owned_projects = get_owned_projects(request)
-        associated_projects = get_associated_projects(request)
+        owned_projects = get_owned_projects(request.user)
+        associated_projects = get_associated_projects(request.user)
 
         use_motd, motd = get_motd()
 

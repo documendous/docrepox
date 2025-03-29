@@ -1,13 +1,12 @@
 {% load repo_tags %}
 
-{% is_admin_user request as user_is_admin  %}
+{% is_admin_user request.user as user_is_admin  %}
 
-<nav class="left-nav gap-0.5">
+<nav class="left-nav">
   <a
     href="{% url 'repo:index' %}"
-    class="tooltip"
+    class="tooltip px-2"
     title="Dashboard"
-    hx-boost="{{ use_hx_boost_int }}"
   >
     <span
       class="material-icons-outlined nav-icon" style="font-size: 24px !important;"
@@ -18,9 +17,8 @@
 
   <a
     href="{% url 'repo:folder' home_folder_id %}"
-    class="tooltip"
+    class="tooltip px-2"
     title="Home Folder"
-    hx-boost="{{ use_hx_boost_int }}"
   >
     <span
       class="material-icons-outlined nav-icon" 
@@ -32,13 +30,12 @@
 
   <a
     href="{% url 'repo:projects:index' %}"
-    class="tooltip"
+    class="tooltip px-2"
     title="Projects"
-    hx-boost="{{ use_hx_boost_ext }}"
   >
     <span
       class="material-symbols-outlined nav-icon" 
-      style="font-size: 20px !important;"
+      style="font-size: 22px !important;"
     >
       library_books
     </span>
@@ -47,13 +44,12 @@
   {% if user_is_admin %}
     <a
       href="{% url 'repo:folder' root_folder_id %}"
-      class="tooltip"
+      class="tooltip px-2"
       title="Repository Root"
-      hx-boost="{{ use_hx_boost_int }}"
     >
       <span
         class="material-icons-outlined nav-link text-red-500 hover:text-red-700"
-        style="font-size: 22px !important;"
+        style="font-size: 24px !important;"
       >
         storage
       </span>
@@ -62,15 +58,27 @@
 
   <a
     href="{% url 'ddocs:index' %}"
-    class="tooltip"
+    class="tooltip px-2"
     title="Documentation"
-    hx-boost="{{ use_hx_boost_ext }}"
   >
     <span
       class="material-icons-outlined nav-icon" 
-      style="font-size: 20px !important;"
+      style="font-size: 22px !important;"
     >
       book_4
+    </span>
+  </a>
+
+  <a
+    href="{% url 'repo:search:advanced_search' %}"
+    class="tooltip px-2"
+    title="Advanced Search"
+  >
+    <span
+      class="material-icons-outlined nav-link text-gray-700 hover:text-blue-700" 
+      style="font-size: 24px !important;"
+    >
+      search
     </span>
   </a>
 

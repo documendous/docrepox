@@ -1,0 +1,75 @@
+{% load static %}
+{% load format_tags %}
+
+<table class="min-w-full divide-y divide-gray-200 border shadow mt-4">
+  <caption class="text-left p-2 relative mx-4">
+    <div class="flex items-center">
+      <h2 class="text-xl font-bold mr-4 py-2 flex items-center gap-1">
+        <span class="material-symbols-outlined" style="font-size: 22px !important">
+          widgets
+        </span>
+        Custom Properties
+      </h2>
+      {% if can_update_element %}
+        <div class="flex gap-2">
+          <a
+            href="{% url 'repo:properties:add_properties' element.type element.id %}" 
+            class="text-gray-700 hover:text-blue-700"
+          >
+            <span
+              class="material-icons-outlined pt-1"
+              style="font-size: 22px !important"
+              title="Add custom properties for {{ element.type }}: '{{ element.name|truncatechars:30 }}'"
+            >
+              dashboard_customize
+            </span>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </caption>
+  <thead>
+    <tr>
+      <th class="fl-th">Property Name</th>
+      <th class="fl-th">Description</th>
+      <th class="fl-th">Value</th>
+      <th class="fl-th">Type</th>
+      {% include "repo/partials/_actions_th.html" %}
+    </tr>
+  </thead>
+
+  <tbody class="bg-white divide-y divide-gray-200">
+    {% for property in element.get_all_properties %}
+      <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          {{ property.key }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          {{ property.description|default:'--' }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          {{ property.value }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          {{ property.type }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm flex items-center gap-2">
+          {% include "properties/partials/_property_actions.html" %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td
+          colspan="5"
+          class="
+            px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600
+          "
+        >
+          No properties found
+        </td>
+      </tr>
+    {% endfor %}
+    
+  </tbody>
+  
+</table>

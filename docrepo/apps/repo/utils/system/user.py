@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -35,6 +37,7 @@ def create_admin_home_folder(apps, schema):
 
 
 def create_user_home_folder(user):
+    log = logging.getLogger(__name__)
     home_folder = get_system_home_folder()
 
     user_home_folder = Folder.objects.create(
@@ -48,6 +51,7 @@ def create_user_home_folder(user):
     user.profile.home_folder = user_home_folder
     user.profile.save()
     create_recycle_folder(user)  # must be last
+    log.debug(f"Created home folder for user: {user.username}")
 
 
 def update_user_home_folder(user):  # pragma: no coverage

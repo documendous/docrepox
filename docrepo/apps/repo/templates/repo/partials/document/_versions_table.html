@@ -1,0 +1,63 @@
+{% load static %}
+{% load format_tags %}
+
+<table class="min-w-full divide-y divide-gray-200 border shadow mt-4">
+  <caption class="text-left p-2 relative mx-4">
+    <div class="flex items-center">
+      <h2 class="text-xl font-bold mr-4 py-2 flex items-center gap-1">
+        <span class="material-symbols-outlined" style="font-size: 22px !important">
+          note_stack
+        </span>
+        Versions
+      </h2>
+    </div>
+  </caption>
+  <thead>
+    <tr>
+      <th class="fl-th">Version Tag</th>
+      <th class="fl-th">Created</th>
+      <th class="fl-th">Size</th>
+      {% include "repo/partials/_actions_th.html" %}
+    </tr>
+  </thead>
+
+  <tbody class="bg-white divide-y divide-gray-200">
+    {% for version in element.get_versions %}
+      <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm flex">
+          {{ version.tag }}
+        </td>
+
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          {{ version.created }}
+        </td>
+
+        <td class="px-6 py-4 whitespace-nowrap text-sm">
+          {{ version.size|human_readable_size|default:'--' }}
+        </td>
+
+        <td
+          class="
+            px-6 py-4 whitespace-nowrap text-sm flex items-center gap-2 justify-center
+          "
+        >
+          {% include "repo/partials/document/_version_actions.html" %}
+        </td>
+
+      </tr>
+    {% empty %}
+      <tr>
+        <td
+          colspan="5"
+          class="
+            px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600
+          "
+        >
+          No versions found
+        </td>
+      </tr>
+    {% endfor %}
+    
+  </tbody>
+  
+</table>

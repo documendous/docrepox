@@ -4,8 +4,16 @@
       <table class="min-w-full divide-y divide-gray-200 border shadow">
         <caption class="text-left p-2 relative mx-4">
           <div class="flex items-center">
-            <h2 class="text-xl font-bold mr-4 py-2">
+            <h2 class="text-xl font-bold mr-4 py-2 flex items-center gap-1">
+              <span
+                class="material-symbols-outlined"
+                style="font-size: 20px !important"
+              >
+                account_tree
+              </span>
+
               Subfolders & Documents
+
             </h2>
           </div>
         </caption>
@@ -19,7 +27,8 @@
             {% endif %}
 
             <th class="fl-th">Owner</th>
-            <th class="fl-th">Actions</th>
+
+            {% include "repo/partials/_actions_th.html" %}
 
           </tr>
         </thead>

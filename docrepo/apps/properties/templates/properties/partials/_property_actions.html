@@ -1,0 +1,13 @@
+{% load project_tags %}
+{% load repo_tags %}
+
+{% can_delete_property request.user property as can_delete_property %}
+{% can_update_property request.user property as can_update_property %}
+
+{% if can_update_property %}
+  {% include "properties/partials/actions/_update_property.html" %}
+{% endif %}
+
+{% if can_delete_property %}
+  {% include "properties/partials/actions/_delete_property.html" %}
+{% endif %}

@@ -1,61 +1,23 @@
 # To use these settings, copy this file to global_settings.py.
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-# Common settings that can be changed for DocrepoX
-
-from config.settings import BASE_DIR
+# Below are common and sane settings that can be changed for DocrepoX
 
 ALLOWED_HOSTS = [
     "localhost",
 ]
 
-INSTALLED_APPS = [
-    "jazzmin",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "tz_detect",
-    "widget_tweaks",
-    "apps.ddocs",
-    "apps.core",
-    "apps.dashlets",
-    "apps.bookmarks",
-    "apps.transformations",
-    "apps.repo",
-    "apps.ui",
-    "apps.authentication",
-    "apps.projects",
-    "apps.clipboard",
-    "apps.search",
-    "apps.etags",
-    "apps.comments",
-    "apps.comms",
-    "debug_toolbar",
-]
-
 # DEBUG = True # With debug turned off Django will not serve static files. Set to False, the production web server (Nginx) will serve them.
 
-
-# Repo settings
-
-ADMIN_ALLOW_ALL = False  # If set to True, admin user can do everything in system
-
+# Repo settings (see repo/settings.py for more settings)
 
 ADMIN_EMAIL = "admin@localhost"  # DocrepoX admin email (def: "admin@localhost")
 
+# See 'Auto-Deleting Previews' and 'Managing Orphaned Content Files' in docs for more info.
 AUTO_DELETE_CONTENT_FILES = (
     False  # Delete content files when documents or previews are deleted
 )
 
-CREATE_DOC_AS_RTF = True  # When using the create document form (not modal) show the Quill rich text editor Quill docs: https://quilljs.com/docs/quickstart
-
-CREATE_DOC_DEFAULT_MT = "text/plain"  # Default mimetype of hand created documents. The other viable option could be "text/rtf".
-
 DATA_UPLOAD_MAX_NUMBER_FILES = 256  # Max upload of files using multi document upload. Set to None to disable this check.
-
-DEFAULT_DOCUMENT_VERSION = "1.0"  # Default version tag when a new document is created
 
 
 EDITOR_FONT_SIZE = (
@@ -74,25 +36,6 @@ ENABLE_PUBLIC_COMMENTS = (
 
 FOLDER_VIEW_PAGINATE_BY = 10  # Folder view's number of items per page
 
-# Auth settings
-
-LOGIN_REDIRECT_URL = "/repo/"  # After login, the url the user is redirected to
-
-LOGIN_URL = "/auth/login/"  # Default login url
-
-LOGOUT_REDIRECT_URL = "/auth/login/"  # Default logout redirect url
-
-DELETED_ORPHAN_FOLDER = BASE_DIR / "deleted"
-
-UPDATE_MODEL_SUCCESS_MSG = "Your user info was saved."
-UPDATE_MODEL_ERROR_MSG = "Unable to save your user info."
-
-# HX-Boost is an HTMX feature. This will redirect and refresh pages without a full page reload
-
-USE_HX_BOOST_EXT = "false"  # Experimental! Use hx-boost for links outside current view - use a string true/false
-
-USE_HX_BOOST_INT = "false"  # Experimental but mostly safe: Use hx-boost for links in current view - use a string true/false
-
 USE_LOCAL_TZ = True  # USE_LOCAL_TZ if set to True will render date times in the browser to the user's local timezone.
 
 TZ_DETECT_COUNTRIES = (
@@ -106,8 +49,6 @@ TZ_DETECT_COUNTRIES = (
     "DE",
     "FR",
 )  # If USE_LOCAL_TZ is set to True, tz_detect will try these locale countries in the order set
-
-# TZ_SESSION_KEY = "my-session-key"  # See https://pypi.org/project/django-tz-detect/ for more details
 
 
 # Clipboard settings
@@ -148,26 +89,116 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
     },
-    "root": {"handlers": ["console"], "level": "INFO"},
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",  # Suppress all root-level logs unless warning or higher
+    },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "INFO",
-            "propagate": True,
+            "level": "INFO",  # Suppress general Django logs
+            "propagate": False,
         },
-        "transformations": {
+        # "apps.authentication": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.avatars": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.bookmarks": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.clipboard": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.comments": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.comms": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.core": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.dashlets": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.ddocs": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.encrypted_content": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.etags": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.projects": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.properties": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.repo": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.search": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.transformations": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.ui": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.webproxy": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # Ensure all other apps are not logging by default
+        "apps": {
             "handlers": ["console"],
             "level": "INFO",
-            "propagate": True,
-        },
-        "mozilla_django_oidc": {
-            "handlers": ["console"],
-            "level": "INFO",
+            "propagate": False,
         },
     },
 }
@@ -190,8 +221,6 @@ MAX_TAG_COUNT = (
 SOFFICE_EXE = (
     "/usr/bin/soffice"  # Path to open/libre/star office executable for transformations
 )
-
-SOFFICE_TEMP_DIR = BASE_DIR / "mediafiles/content/tmp"  # Temp dir for soffice
 
 ALLOWED_PREVIEW_TYPES = (
     ".conf",

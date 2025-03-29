@@ -17,12 +17,12 @@ def delete_content_file(instance):  # pragma: no coverage
 
         if instance.content_file:
             if os.path.isfile(instance.content_file.path):
+                os.remove(instance.content_file.path)
                 log.debug(
-                    "  Deleting Content File: {} from file system".format(
+                    "  Deleted Content File: {} from file system".format(
                         instance.content_file.path
                     )
                 )
-                os.remove(instance.content_file.path)
 
             else:
                 log.warning(

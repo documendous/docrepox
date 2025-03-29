@@ -1,0 +1,40 @@
+{% load clipboard_tags %}
+{% load format_tags %}
+{% load static %}
+
+<tbody class="bg-white divide-y divide-gray-200" id="folder-children-table-data" >
+  {% for comm in comms %}
+    <tr>
+      <td class="px-6 py-4 whitespace-nowrap text-sm">
+        {{ comm.msg_from }}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm">
+        {{ comm.subject }}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm">
+        {{ comm.get_category_display }}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm">
+        {{ comm.created }}
+      </td>
+      <td
+          class="
+            px-6 py-4 whitespace-nowrap text-gray-600 text-sm
+            flex justify-center items-center gap-3
+          "
+        >
+          {% include "comms/partials/_comm_actions.html" %}
+        </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+        No messages
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+
+{% if not pagination_enabled %}
+  <script src="{% static 'js/repo/utils/hide-pagination.js' %}"></script>
+{% endif %}

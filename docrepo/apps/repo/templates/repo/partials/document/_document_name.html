@@ -2,7 +2,6 @@
 
 <a class="text-gray-700 hover:text-blue-700 flex items-center font-semibold"
   href="{% url 'repo:element_details' child.type child.pk %}"
-  hx-boost="{{ use_hx_boost_ext }}"
 >
   <span class="material-icons-outlined mr-2">
     description
@@ -10,7 +9,7 @@
 
   {% include "repo/partials/_folder_children_name.html" %}
 
-  {% element_in_clipboard request child as in_clipboard %}
+  {% element_in_clipboard request.user child as in_clipboard %}
 
   {% if in_clipboard %}
     <span

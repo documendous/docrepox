@@ -1,14 +1,15 @@
 from django.conf import settings
-from django.http import HttpRequest
+from django.contrib.auth.models import User
 
 from apps.comments.models import Comment
+from apps.core.utils.handlers import response_handler
 from apps.repo.utils.static.lookup import get_model
 
 from ..conditions import is_manager
-from ..utils import admin_override, response_handler
+from ..utils import admin_override
 
 
-def can_add_comment(request, instance, from_tag=False):
+def can_add_comment(user, instance, from_tag=False):
     """
     Determines if a user can add a comment to an instance:
     - A user can comment if they are a member of the associated project.
@@ -19,7 +20,7 @@ def can_add_comment(request, instance, from_tag=False):
     - Documents, folders, or projects if their respective comment settings are disabled.
     """
     accessible = False
-    user = request.user
+    user = user
     project = getattr(instance, "parent_project", None)
 
     # Permission determinations
@@ -31,11 +32,11 @@ def can_add_comment(request, instance, from_tag=False):
             return True
 
     else:
-        if request.user == instance.owner:
+        if user == instance.owner:
             accessible = True
 
     # Explicit inclusions
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     # Explicit exclusions
     if instance.type == "document" and not settings.ENABLE_DOCUMENT_COMMENTS:
@@ -51,7 +52,7 @@ def can_add_comment(request, instance, from_tag=False):
 
 
 def can_delete_comment(
-    request: HttpRequest,
+    user: User,
     comment_id: int,
     element_type: str,
     element_id: int,
@@ -65,7 +66,7 @@ def can_delete_comment(
     - Admins can delete any comment if allowed by global admin settings.
     """
     accessible = False
-    user = request.user
+    user = user
     Element = get_model(element_type=element_type)
     element = Element.objects.get(pk=element_id)
     project = getattr(element, "parent_project", None)
@@ -78,9 +79,9 @@ def can_delete_comment(
         accessible = True
 
     if project:
-        if is_manager(request, project):
+        if is_manager(user, project):
             accessible = True
 
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     return response_handler(accessible, from_tag)

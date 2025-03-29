@@ -1,16 +1,19 @@
 import logging
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
 from apps.comments.models import Commentable
 from apps.core.models import Element, HasFolderParent, IsRecyclable
+from apps.properties.mixins import HasPropertiesMixin
+from apps.properties.models import Property
 
 from .mimetype import Mimetype
 from .version import Version
 
 
-class Document(Element, HasFolderParent, IsRecyclable, Commentable):
+class Document(Element, HasFolderParent, IsRecyclable, Commentable, HasPropertiesMixin):
     """
     Element representing files with meta data
     """
@@ -21,6 +24,7 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
         null=True,
         blank=True,
     )
+    properties = GenericRelation(Property)
 
     class Meta:
         verbose_name = "Document"
@@ -32,6 +36,7 @@ class Document(Element, HasFolderParent, IsRecyclable, Commentable):
             models.Index(fields=["mimetype"]),
             models.Index(fields=["created"]),
             models.Index(fields=["is_deleted"]),
+            models.Index(fields=["name"]),
         ]
 
         ordering = ("-created",)

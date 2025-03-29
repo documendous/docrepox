@@ -1,10 +1,13 @@
 import logging
+from operator import attrgetter
+from typing import List
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.db.models import Q, QuerySet
 from django.http import HttpRequest
 from django.template.defaultfilters import slugify
 
+from apps.core.utils.queryset import field_name, is_reversed
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
 from apps.repo.utils.system.object import get_system_projects_folder
@@ -78,11 +81,11 @@ def delete_project_groups(instance):
                 pass
 
 
-def get_accessible_projects(request: HttpRequest) -> QuerySet:  # pragma: no coverage
+def get_accessible_projects(user: HttpRequest) -> QuerySet:  # pragma: no coverage
     """
     Returns a list of projects a user is either a member of is a public project
     """
-    if request.user.profile.is_admin_user():
+    if user.profile.is_admin_user():
         projects = Project.objects.filter(is_active=True)
     else:
         projects = Project.objects.filter(
@@ -91,7 +94,7 @@ def get_accessible_projects(request: HttpRequest) -> QuerySet:  # pragma: no cov
                 id__in=[
                     project.id
                     for project in Project.objects.all()
-                    if project.is_member(request.user)
+                    if project.is_member(user)
                 ]
             ),
             is_active=True,
@@ -100,25 +103,55 @@ def get_accessible_projects(request: HttpRequest) -> QuerySet:  # pragma: no cov
     return projects
 
 
-def get_viewable_project_list(request: HttpRequest):
+def get_public_or_managed_projects() -> List[Project]:
+    return list(
+        Project.objects.filter(
+            Q(visibility="public") | Q(visibility="managed"), is_active=True
+        )
+    )
+
+
+def get_private_projects(user: User) -> List[Project]:
+    return [
+        project
+        for project in Project.objects.filter(visibility="private", is_active=True)
+        if project.is_member(user)
+    ]
+
+
+def get_nonadmin_viewable_project_list(user) -> List[Project]:
+    return get_public_or_managed_projects() + get_private_projects(user)
+
+
+def get_sorted_projects(
+    projects: List[Project], order_by_filter: str
+) -> List[Project]:  # pragma: no coverage
+    try:
+        projects.sort(
+            key=attrgetter(field_name(order_by_filter)),
+            reverse=is_reversed(order_by_filter),
+        )
+    except AttributeError:
+        pass
+
+    return projects
+
+
+def get_viewable_project_list(
+    user: User, order_by_filter: str | None = None
+) -> List[Project]:
     """
     Returns a list of projects a user can view in a list but not necessarily access.
     """
-    if request.user.profile.is_admin_user():
-        return Project.objects.filter(is_active=True)
+    if user.profile.is_admin_user():
+        projects = list(Project.objects.filter(is_active=True))
+    else:
+        projects = get_nonadmin_viewable_project_list(user)
 
-    public_or_managed_projects = Project.objects.filter(
-        Q(visibility="public") | Q(visibility="managed"), is_active=True
-    )
+    if order_by_filter:  # pragma: no coverage
+        projects = get_sorted_projects(projects, order_by_filter)
 
-    final_projects = list(public_or_managed_projects)
-
-    # Add private projects where the user is a member
-    for project in Project.objects.filter(visibility="private", is_active=True):
-        if project.is_member(request.user):
-            final_projects.append(project)  # pragma: no coverage
-
-    return final_projects
+    return projects
 
 
 def is_a_project_folder(folder: Folder) -> bool:
@@ -133,7 +166,7 @@ def is_a_project_folder(folder: Folder) -> bool:
 
 
 def get_accessible_project_documents(
-    request: HttpRequest, max_size=5
+    user: HttpRequest, max_size=5
 ) -> QuerySet:  # pragma: no coverage
     """
     Returns a limited list of documents from all of a user's projects
@@ -146,7 +179,7 @@ def get_accessible_project_documents(
 
     user_projects_documents = []
     for project in project_list:
-        if project.is_member(request.user):
+        if project.is_member(user):
             for document in document_list:
                 if project == document.parent_project:
                     user_projects_documents.append(document)

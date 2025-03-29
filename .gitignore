@@ -14,3 +14,5 @@ db.sqlite3
 deleted/
 global_settings.py
 extensions/
+requirements.txt
+

@@ -8,6 +8,12 @@ class Rendition(TimestampedModel, UUIDPrimaryKeyModel, ContentFileModel):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=["version"]),
+            models.Index(fields=["content_file"]),
+            models.Index(fields=["created"]),
+            models.Index(fields=["modified"]),
+        ]
 
 
 class Preview(Rendition):  # pragma: no coverage

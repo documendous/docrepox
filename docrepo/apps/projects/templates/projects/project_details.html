@@ -5,24 +5,25 @@
 
 {% block main %}
 
-{% can_bookmark request project.folder as can_bookmark %}
+{% can_bookmark request.user project.folder as can_bookmark %}
 
 <main>
   <div class="mt-8">
     <table class="min-w-full divide-y divide-gray-200 border shadow">
       <caption class="text-left p-2 relative mx-4">
         <div class="flex py-2">
-          <span class="mr-2 font-bold">
-            {{ path_with_links|safe }}
-          </span>
+          {% include "repo/partials/_path_with_links.html" %}
         </div>
 
         <div class="flex items-center">
-          <h2 class="text-xl font-bold mr-4 py-2">
+          <h2 class="text-xl font-bold mr-4 py-2 flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size: 22px !important">
+              info
+            </span>
             Project Details
           </h2>
 
-          {% can_update_project request project as can_update_project %}
+          {% can_update_project request.user project as can_update_project %}
 
           {% if can_update_project %}
             <a
@@ -48,7 +49,7 @@
     </table>
   </div>
 
-  {% can_view_project_members request project as can_view_project_members %}
+  {% can_view_project_members request.user project as can_view_project_members %}
 
   {% if can_view_project_members %}
     {% include "projects/partials/_project_members.html" %}
@@ -58,7 +59,7 @@
     {% include 'comments/comment_field.html' with element=project.folder %}
   {% endif %}
 
-  {% can_deactivate_project request project.folder as can_deactivate_project %}
+  {% can_deactivate_project request.user project.folder as can_deactivate_project %}
   
   {% if can_deactivate_project %}
     {% include 'projects/partials/actions/_project_deactivation.html' %}

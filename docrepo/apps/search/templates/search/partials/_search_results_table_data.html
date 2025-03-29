@@ -1,0 +1,41 @@
+{% load project_tags %}
+
+<tbody class="bg-white divide-y divide-gray-200">
+  {% for item in results %}
+  <tr class="border-t">
+    <td class="px-6 py-4 whitespace-nowrap text-sm">
+      <a class="text-gray-600 hover:text-blue-700 flex items-center"
+      {% if item.is_folder %}
+        href="{% url 'repo:folder' item.pk %}"
+      {% elif item.folder %}
+        {% has_project_membership request.user item.folder as has_project_membership %}
+        {% if has_project_membership %}
+          href="{% url 'repo:folder' item.folder.pk %}"
+        {% else %}
+          href="{% url 'repo:folder' item.folder.parent.pk %}"
+        {% endif %}
+      {% else %}
+        href="{% url 'repo:element_details' item.type item.pk %}"
+      {% endif %}
+      >
+        {% if item.is_folder %}
+          <span class="material-icons-outlined mr-2">folder</span>
+        {% elif item.is_document %}
+          <span class="material-icons-outlined mr-2">description</span>
+        {% else %}
+          <span class="material-icons-outlined mr-2">folder</span>
+        {% endif %}
+        {{ item.name }}
+    </a>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ item.type }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ item.owner }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ item.created }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ item.modified }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="6" class="text-center p-4 text-gray-600">No results found</td>
+  </tr>
+  {% endfor %}
+</tbody>

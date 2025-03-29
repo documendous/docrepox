@@ -1,0 +1,18 @@
+<thead class="bg-gray-50">
+  <tr>
+    <th class="fl-th">
+      {% include "repo/partials/_sortable_th.html" with column_name="msg_from" condition=condition %}
+    </th>
+    <th class="fl-th">
+      {% include "repo/partials/_sortable_th.html" with column_name="subject" condition=condition %}
+    </th>
+    <th class="fl-th">
+      {% include "repo/partials/_sortable_th.html" with column_name="category" condition=condition %}
+    </th>
+    <th class="fl-th">
+      {% include "repo/partials/_sortable_th.html" with column_name="created" condition=condition %}
+    </th>
+    {% include "repo/partials/_actions_th.html" %}
+  </tr>
+</thead>
+{% include "comms/partials/_comms_table_data.html" with pagination_enabled=True comms=comms %}

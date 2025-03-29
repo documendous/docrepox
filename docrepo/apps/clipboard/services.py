@@ -32,7 +32,7 @@ def copy_clipboard_elements_to_parent(request, folder_id):
     clipboard = get_object_or_404(Clipboard, user=request.user)
 
     try:
-        copy_documents(request, clipboard, parent)
+        copy_documents(request.user, clipboard, parent)
         copy_folders(request, clipboard, parent)
         messages.info(request, "Item(s) copied to new parent folder")
 

@@ -31,6 +31,6 @@ def get_model(element_type: str) -> Model:
     return Model
 
 
-def is_a_user_home_folder(folder) -> bool:
+def is_a_user_home_folder(folder) -> bool:  # pragma: no coverage
     Profile = apps.get_model("repo", "Profile")
     return True if Profile.objects.filter(home_folder=folder).exists() else False

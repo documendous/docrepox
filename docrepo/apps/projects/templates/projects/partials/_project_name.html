@@ -1,7 +1,7 @@
 {% load clipboard_tags %}
 {% load project_tags %}
 
-{% can_read_project request child.parent_project.folder as can_read_project %}
+{% can_read_project request.user child.parent_project.folder as can_read_project %}
 
 {% if can_read_project %}
 <a
@@ -16,7 +16,7 @@
     
     {% include "repo/partials/_folder_children_name.html" %}
     
-    {% element_in_clipboard request child as in_clipboard %}
+    {% element_in_clipboard request.user child as in_clipboard %}
 
   </span>
 {% if can_read_project %}

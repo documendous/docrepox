@@ -50,7 +50,7 @@ class RemoveUserFromProjectGroupView(View):
 
     def post(self, request, project_id, user_id, group_id):
         project = Project.objects.get(pk=project_id)
-        rules.can_remove_user_from_project_group(request, project.folder)
+        rules.can_remove_user_from_project_group(request.user, project.folder)
         user = User.objects.get(pk=user_id)
         group = Group.objects.get(pk=group_id)
         user.groups.remove(group)

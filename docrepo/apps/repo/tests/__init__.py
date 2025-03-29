@@ -8,11 +8,14 @@ from .views.document import (
     CreateDocumentViewTest,
     DocumentViewTest,
     RetrieveDocumentViewTest,
+    UpdateDocumentContentViewTest,
 )
 from .views.element import (
     ElementDetailsViewTest,
     RecycleElementFlowTest,
+    RecycleElementsViewTest,
     RecycleFolderActionTest,
+    RestoreElementsViewTest,
     UpdateElementDetailsViewTest,
 )
 from .views.folder import FolderViewTest

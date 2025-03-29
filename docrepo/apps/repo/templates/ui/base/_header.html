@@ -1,6 +1,6 @@
 {% load repo_tags %}
 
-{% is_admin_user request as user_is_admin  %}
+{% is_admin_user request.user as user_is_admin  %}
 
 <header class="header grid grid-cols-3 items-center">
   <div class="header-left-wrapper flex items-center">

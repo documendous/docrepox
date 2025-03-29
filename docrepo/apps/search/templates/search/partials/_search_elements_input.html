@@ -2,19 +2,26 @@
 
 <link rel="stylesheet" href="{% static 'css/htmx-components.css' %}">
 
-<input
-  type="text"
-  placeholder="Filter elements by name ..."
-  name="search_term"
-  class="border border-gray-300 rounded mt-1 p-1 text-sm w-full"
-  hx-post="{% url 'repo:search:search_elements' folder.pk %}"
-  hx-target="#folder-children-table-data"
-  hx-swap="outerHTML"
-  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-  hx-trigger="keyup changed delay:500ms"
-  hx-boost="{{ use_hx_boost_ext }}"
-  hx-indicator="#spinner"
-/>
+<span class="flex items-center gap-1 text-gray-700">
+  <span
+    class="material-symbols-outlined pt-1"
+    style="font-size: 24px !important"
+  >
+    filter_list
+  </span>
+  <input
+    type="text"
+    placeholder="Filter elements by name ..."
+    name="search_term"
+    class="border border-gray-300 rounded mt-1 p-1 text-sm w-full"
+    hx-post="{% url 'repo:search:search_elements' folder.pk %}"
+    hx-target="#folder-children-table-data"
+    hx-swap="outerHTML"
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+    hx-trigger="keyup changed delay:500ms"
+    hx-indicator="#spinner"
+  />
+</span>
 
 {% include "core/_spinner.html" %}
 

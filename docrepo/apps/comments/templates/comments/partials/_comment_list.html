@@ -1,28 +1,38 @@
 {% load repo_tags %}
 
 <div id="comment-list" class="space-y-4 mt-8">
-  <p class="text-xl px-2">Comments</p>
+  <p class="text-xl px-2 flex items-center">
+    <span class="material-symbols-outlined pt-0.5" style="font-size: 20px !important">
+      forum
+    </span>
+
+    <span>Comments</span>
+
+  </p>
   {% for comment in element.comments.all %}
-    {% can_delete_comment request comment.pk element.type element.pk as can_delete_comment %}
+    {% can_delete_comment request.user comment.pk element.type element.pk as can_delete_comment %}
 
     <div class="border border-blue-200 rounded-lg shadow-md w-1/2">
       <div
         class="
           px-3 py-2 flex items-start space-x-3 border-b
           border-blue-200 bg-blue-100 rounded-t-lg
-        ">
-        {% comment %} <img src="{{ comment.author.profile.image_url }}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-300"> {% endcomment %}
-
+        "
+      >
         <div class="flex-1">
           <div class="flex items-center justify-between">
-            <span class="font-semibold text-gray-800">{{ comment.author }}</span>
-
-            <span class="text-xs text-gray-700"
+            <span class="flex items-center space-x-2">
+              {% include "avatars/_avatar_image.html" with profile=comment.author.profile image_size="40" %}
+              <span class="font-semibold text-gray-800">{{ comment.author }}</span>
+            </span>
+            
+            <span class="text-xs text-gray-700 ml-auto"
               x-data="localeString({dateTime: '{{ comment.created|date:"c"}}'})"
               x-text="localDateTime">
             </span>
 
           </div>
+          
         </div>
 
         {% if can_delete_comment %}
@@ -37,7 +47,7 @@
               onclick="return confirm('This action will permanently delete this comment. Ok?');"
               class="text-gray-400 hover:text-red-600"
             >
-              <span class="material-symbols-outlined pt-1" style="font-size: 18px !important;">
+              <span class="material-symbols-outlined pt-2" style="font-size: 18px !important;">
                 delete
               </span>
             </button>

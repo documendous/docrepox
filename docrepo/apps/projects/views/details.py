@@ -23,7 +23,7 @@ class ProjectDetailsView(View):
     def get(self, request, project_id):
         project = Project.objects.get(pk=project_id)
 
-        rules.can_view_project_details(request, element=project.folder)
+        rules.can_view_project_details(request.user, element=project.folder)
 
         path_with_links = get_path_with_links(project.folder, request.user)
 
@@ -45,7 +45,9 @@ class ProjectDetailsView(View):
 
         if project.in_managers_group(request.user):
             communications = Communication.objects.filter(
-                content_type__model="project", object_id=project.id
+                content_type__model="project",
+                object_id=project.id,
+                acknowledged=False,
             )
         else:
             communications = Communication.objects.none()

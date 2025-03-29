@@ -1,10 +1,13 @@
 import logging
 import os
 from shutil import copyfile
+from urllib.parse import quote
 
 from django.conf import settings
+from django.http import FileResponse
 
 from apps.core.utils.storage import content_file_name
+from apps.encrypted_content.utils import get_encrypted_file_handler
 
 
 def copy_content_file(version, new_version):
@@ -67,3 +70,18 @@ def copy_content_file(version, new_version):
             )
 
     new_version.save()
+
+
+def handle_file_response(file_path, file_name, content_type, action):
+    if settings.ENCRYPT_CONTENT:  # pragma: no coverage
+        file_handler = get_encrypted_file_handler(file_path)
+    else:
+        file_handler = open(file_path, "rb")
+
+    response = FileResponse(file_handler, content_type=content_type)
+    quoted_file_name = quote(file_name)
+    response["Content-Disposition"] = f'{action}filename="{quoted_file_name}"'
+    response["X-Frame-Options"] = "SAMEORIGIN"
+    response["Content-Security-Policy"] = "frame-ancestors 'self';"
+
+    return response

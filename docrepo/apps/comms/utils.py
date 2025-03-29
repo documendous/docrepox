@@ -5,7 +5,7 @@ from apps.core.models import Element
 from .models import Communication
 
 
-def send_comm(
+def create_comm(
     from_user: str,
     to_group: QuerySet,
     subject: str,

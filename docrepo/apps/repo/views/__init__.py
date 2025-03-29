@@ -6,6 +6,7 @@ from .document import AddDocumentView, AddMultiDocumentsView, CreateDocumentView
 from .element import (
     DeleteElementView,
     ElementDetailsView,
+    RecycleElementsView,
     RecycleElementView,
     RestoreElementView,
     UpdateElementDetailsView,

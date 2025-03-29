@@ -58,11 +58,7 @@ class UpdateElementForm(forms.ModelForm):
         return ", ".join(clean_tags)
 
 
-class AddDocumentForm(forms.ModelForm):
-    """
-    Form to add a document
-    """
-
+class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
 
@@ -72,12 +68,44 @@ class AddDocumentForm(forms.ModelForm):
         )
 
 
+class AddDocumentForm(DocumentForm):
+    """
+    Form to add a document
+    """
+
+    pass
+
+
+class UpdateDocumentForm(DocumentForm):
+    """
+    Form to add a document
+    """
+
+    pass
+
+
 class AddVersionForm(forms.ModelForm):
     """
     Form to add version (in this case actual text content to create a file) for a document
     """
 
     content = forms.CharField(widget=forms.Textarea, required=False)
+
+    class Meta:
+        model = Version
+
+        exclude = (
+            "parent",
+            "tag",
+        )
+
+
+class UpdateDocumentContentForm(forms.ModelForm):
+    """
+    Form to add version (in this case actual text content to create a file) for a document
+    """
+
+    content = forms.CharField(widget=forms.Textarea, required=True)
 
     class Meta:
         model = Version

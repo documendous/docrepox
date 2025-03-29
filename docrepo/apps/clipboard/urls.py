@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     AddElementClipboardView,
+    AddElementsClipboardView,
     PasteCopyElementsView,
     PasteMoveElementsView,
     RemoveDocumentsView,
@@ -17,6 +18,11 @@ urlpatterns = [
         "<str:element_type>/<uuid:element_id>/add/",
         AddElementClipboardView.as_view(),
         name="add_element_to_clipboard",
+    ),
+    path(
+        "<uuid:parent_id>/add/",
+        AddElementsClipboardView.as_view(),
+        name="add_elements_to_clipboard",
     ),
     path(
         "folder/<uuid:folder_id>/paste/move/",

@@ -1,0 +1,99 @@
+<form method="GET" action="" class="w-full mx-auto rounded-md">
+  <div class="mb-4">
+    <label class="block text-gray-700 font-semibold mb-[5px] flex items-center gap-1">
+      <span class="material-symbols-outlined" style="font-size: 18px !important">
+        category_search
+      </span>
+      Metadata Search
+    </label>
+
+    <input 
+      type="text"
+      name="query"
+      placeholder="Search by document name, title, tags, description, etc. ..."
+      class="border border-gray-300 p-2 rounded w-full sm:w-2/3 text-sm text-gray-700"
+      value="{{ request.GET.query }}"
+    />
+
+  </div>
+
+  <div class="mb-4 font-sm">
+    <label class="block text-gray-700 font-semibold flex items-center gap-1">
+      <span class="material-symbols-outlined" style="font-size: 21px !important">
+        filter_list
+      </span>
+
+      Filter By
+
+    </label>
+    <div class="flex items-center flex-wrap gap-3 text-sm px-1">
+      <label class="flex items-center space-x-2 text-gray-700">
+        <input type="checkbox" name="multi_type" value="document" checked>
+        <span class="flex items-center">
+          <span
+            class="material-symbols-outlined mt-[8px]"
+            style="font-size: 14px !important"
+          >
+            description
+          </span>
+          Documents
+        </span>
+      </label>
+      <label class="flex items-center space-x-2 text-gray-700 text-sm">
+        <input
+          type="checkbox"
+          name="multi_type"
+          value="folder"
+          {% if "folder" in multi_type_list %}checked{% endif %}
+        >
+        <span class="flex items-center">
+          <span
+            class="material-symbols-outlined mt-[8px]"
+            style="font-size: 18px !important"
+          >
+            folder
+          </span>
+          <span>
+            Folders <span class="italic text-sm">(duplicate folders not shown)</span>
+          </span>
+        </span>
+      </label>
+      <label class="flex items-center space-x-2 text-gray-700 text-sm">
+        <input
+          type="checkbox"
+          name="multi_type"
+          value="project"
+          {% if "project" in multi_type_list %}checked{% endif %}
+        >
+        <span class="flex items-center">
+          <span
+            class="material-symbols-outlined mt-[8px]"
+            style="font-size: 14px !important"
+          >
+            library_books
+          </span>
+          Projects
+        </span>
+      </label>
+      {% if full_text_search_enabled %}
+        {% include "search/partials/_and_search_checkbox.html" %}
+      {% endif %}
+    </div>
+  </div>
+
+  {% if full_text_search_enabled %}
+    {% include "search/partials/_advanced_search_input.html" %}
+  {% endif %}
+
+  <div class="flex gap-2">
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+      Search
+    </button>
+    <a
+      href="{% url 'repo:search:advanced_search' %}"
+      class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+    >
+      Clear
+    </a>
+  </div>
+</form>

@@ -1,79 +1,89 @@
 {% extends "ui/base/_base.html" %}
-{% load widget_tweaks %}
+{% load static widget_tweaks %}
 
 {% block main %}
 <main>
   <section class="py-8">
     <div class="flex justify-center my-16">
-      <form action="" method="post" class="w-full max-w-lg bg-white p-8 shadow rounded-lg">
-        {% csrf_token %}
+      <div class="w-full max-w-lg bg-white p-8 shadow rounded-lg">
 
         <legend>
-          <h2 class="text-xl font-semibold text-center mb-4">
+          <h2 class="text-xl font-semibold mb-4 flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined">
+              manage_accounts
+            </span>
+
             Update Current User Profile
+
           </h2>
+
+          {% include "avatars/_avatar.html" %}
+
         </legend>
+        
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label for="email" class="block text-xs font-semibold text-gray-700 uppercase">
+              Email
+            </label>
 
-        <div class="mb-4">
-          <label for="email" class="block text-xs font-semibold text-gray-700 uppercase">
-            Email
-          </label>
+            {{ update_user_form.email.errors }}
 
-          {{ update_user_form.email.errors }}
+            {% render_field update_user_form.email class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
 
-          {% render_field update_user_form.email class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+          </div>
 
-        </div>
+          <div class="mb-4">
+            <label for="bio" class="block text-xs font-semibold text-gray-700 uppercase">
+              Bio
+            </label>
 
-        <div class="mb-4">
-          <label for="bio" class="block text-xs font-semibold text-gray-700 uppercase">
-            Bio
-          </label>
+            {{ update_profile_form.bio.errors }}
 
-          {{ update_profile_form.bio.errors }}
+            {% render_field update_profile_form.bio class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
 
-          {% render_field update_profile_form.bio class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+          </div>
 
-        </div>
+          <div class="mb-4">
+            <label for="location" class="block text-xs font-semibold text-gray-700 uppercase">
+              Location
+            </label>
 
-        <div class="mb-4">
-          <label for="location" class="block text-xs font-semibold text-gray-700 uppercase">
-            Location
-          </label>
+            {{ update_profile_form.location.errors }}
 
-          {{ update_profile_form.location.errors }}
+            {% render_field update_profile_form.location class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
 
-          {% render_field update_profile_form.location class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+          </div>
 
-        </div>
+          <div class="mb-4">
+            <label for="birth_date" class="block text-xs font-semibold text-gray-700 uppercase">
+              Birth Date
+            </label>
 
-        <div class="mb-4">
-          <label for="birth_date" class="block text-xs font-semibold text-gray-700 uppercase">
-            Birth Date
-          </label>
+            {{ update_profile_form.birth_date.errors }}
 
-          {{ update_profile_form.birth_date.errors }}
+            {% render_field update_profile_form.birth_date class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
 
-          {% render_field update_profile_form.birth_date class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+          </div>
 
-        </div>
+          <div class="flex justify-start mt-4 space-x-2">
+            <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded" type="submit">
+              Save
+            </button>
 
-        <div class="flex justify-start mt-4 space-x-2">
-          <button class="bg-blue-500 text-white font-semibold py-2 px-4 rounded" type="submit">
-            Save
-          </button>
+            <button
+              class="bg-gray-500 text-white font-semibold py-2 px-4 rounded"
+              type="button"
+              onclick="window.history.back()"
+            >
+              Cancel
+            </button>
 
-          <button
-            class="bg-gray-500 text-white font-semibold py-2 px-4 rounded"
-            type="button"
-            onclick="window.history.back()"
-          >
-            Cancel
-          </button>
+          </div>
 
-        </div>
-
-      </form>
+        </form>
+      </div>
     </div>
   </section>
 </main>

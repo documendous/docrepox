@@ -2,16 +2,20 @@
 {% load static %}
 
 {% block main %}
+
 <main>
   <div class="mt-8">
     <table class="min-w-full divide-y divide-gray-200 border shadow">
       <caption class="text-left px-2 py-2 relative border">
-        <div class="flex justify-between items-start">
-          <span class="mr-2 font-bold p-0.5">
-            <span>
-              {{ path_with_links|safe }} &nbsp;
-            </span>
+        {% if folder.is_in_recycle_path %}
+          <span class="material-symbols-outlined text-red-500">
+            recycling
           </span>
+        {% endif %}
+        
+        <div class="flex justify-between items-start">
+          {% include "repo/partials/_path_with_links.html" %}
+
           <span class="w-2/5">
             {% include "search/partials/_search_elements_input.html" %}
 
@@ -40,7 +44,11 @@
             {% include "repo/partials/_sortable_th.html" with column_name="title" %}
           </th>
 
-          <th class="fl-th">Owner</th>
+          <th class="fl-th">
+            <div class="flex align-items gap-1 pb-[11px]">
+              Owner
+            </div>
+          </th>
 
           <th class="fl-th">
             {% include "repo/partials/_sortable_th.html" with column_name="created" %}
@@ -50,7 +58,7 @@
             {% include "repo/partials/_sortable_th.html" with column_name="modified" %}
           </th>
 
-          <th class="fl-th">Actions</th>
+          {% include "repo/partials/_actions_th.html" %}
 
         </tr>
       </thead>

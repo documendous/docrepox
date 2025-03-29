@@ -161,6 +161,8 @@ class MyKCAuthBackend(KeycloakOIDCAuthenticationBackend):
         return user
 ```
 
+---
+
 ### Custom Dashlets
 
 You can use dashlets to provide simple modular components that can be added to the dashboard or other areas of the application. It includes a default dashlet (MOTD), and you can also create custom dashlets in the extensions directory.
@@ -275,6 +277,7 @@ class IndexView(IndexView):
 
 After restarting your server, navigate to the home page to see the recent documents listed in the new dashlet.
 
+---
 
 ### Custom Action Modal
 
@@ -365,6 +368,8 @@ Create a file at extensions/templates/repo/partials/ called _hello_modal.html. A
 
 And that's it. After a restart, you should see a tooltip icon on the folder list page next to the Create Folder icon. Clicking on it should render a message.
 
+---
+
 <a id="customize-table-sorting"></a>
 ### Customizing Sortable Table Columns for Folder View
 
@@ -417,13 +422,12 @@ The _sortable_th.html template below could be used for any named column field na
 {% load static %}
 
 <div class="flex align-items gap-1">
-  <a href="." hx-boost="true" class="hover:text-blue-700">
+  <a href="." class="hover:text-blue-700">
     {{ column_name }}
   </a>
   <a href="#"
     x-data="orderByToggle('{{ column_name }}')"
     :href="`?order_by=${nextOrderBy}`"
-    hx-boost="true"
     class="hover:text-blue-700"
   >
     <span class="material-symbols-outlined" style="font-size: 15px !important;">
@@ -441,5 +445,131 @@ Note that this template uses Alpine js to handle sort toggling.
 
 Other items of note:
 
-- hx-boost: can be set to true or false. This is an HTMX directive. See: https://htmx.org/attributes/hx-boost/
 - swap_vert: simply a Google icon. If you prefer to customize this to use a different icon, see: https://fonts.google.com/icons
+
+---
+
+### Property Model Usage
+
+The Property model provides a flexible way to attach typed key-value pairs to Document,
+Folder, and Project models. This documentation explains how to use the Property system.
+
+**Setting Up Your Model**
+
+First, make your model property-enabled by inheriting from the HasProperties mixin:
+
+```python
+from .property import HasProperties
+
+class Folder(models.Model, HasProperties):
+    name = models.CharField(max_length=255)
+    # ... other fields ...
+```
+
+**Available Property Types**
+
+The following property types are supported:
+- 'str': String values
+- 'int': Integer values
+- 'float': Floating-point numbers
+- 'bool': Boolean values
+- 'datetime': DateTime objects
+- 'json': JSON-serializable data (lists, dicts, etc.)
+
+**Basic Usage**
+
+Setting properties:
+
+```python
+# Get your instance first
+folder = Folder.objects.get(id='your-uuid-here')
+
+# String property (default type)
+folder.set_property('description', 'Main documentation folder')
+
+# Integer property
+folder.set_property('max_files', 100, type_name='int')
+
+# Boolean property
+folder.set_property('is_restricted', True, type_name='bool')
+
+# Float property
+folder.set_property('size_limit_gb', 10.5, type_name='float')
+
+# DateTime property
+from datetime import datetime
+folder.set_property('review_date', datetime.now(), type_name='datetime')
+
+# JSON property (lists, dicts, etc.)
+folder.set_property('allowed_types', ['pdf', 'doc', 'txt'], type_name='json')
+```
+
+Getting properties:
+
+```python
+# Get with default value if not found
+description = folder.get_property('description', default='No description')
+max_files = folder.get_property('max_files', default=50)
+
+# Values are returned with correct Python type
+allowed_types = folder.get_property('allowed_types')  # returns a list
+is_restricted = folder.get_property('is_restricted')  # returns a boolean
+```
+
+**Additional Usage**
+
+Get all properties for an object:
+
+```python
+all_properties = folder.get_all_properties()
+for prop in all_properties:
+    print(f"{prop.key}: {prop.get_typed_value()} ({prop.type})")
+```
+
+Delete a property:
+
+```python
+folder.delete_property('max_files')
+```
+
+Querying properties:
+
+```python
+# Find all folders with a specific property
+folders_with_prop = Folder.objects.filter(
+    properties__key='is_restricted',
+    properties__value='true'
+)
+
+# Find all properties of a specific type
+int_properties = Property.objects.filter(type=Property.PropertyType.INTEGER)
+```
+
+**Type Validation**
+
+The Property model includes automatic type validation:
+
+```python
+# This will raise a ValidationError
+try:
+    folder.set_property('max_files', 'not a number', type_name='int')
+except ValidationError:
+    print("Invalid value for integer property")
+
+# This will raise a ValueError
+try:
+    folder.set_property('status', 'active', type_name='invalid_type')
+except ValueError:
+    print("Invalid property type")
+```
+
+**Important Notes**
+
+- Properties are unique per (object, key) pair - setting an existing key updates the value
+- Properties are stored as text in the database but converted to/from Python types automatically
+- The Property model supports UUIDs for object_id field, compatible with UUID primary keys
+- Boolean values can be set using Python booleans (True/False)
+- JSON properties can store any JSON-serializable data structure
+- DateTime properties are stored in ISO format
+- The Property model is indexed for efficient querying
+- Properties are automatically deleted when their parent object is deleted

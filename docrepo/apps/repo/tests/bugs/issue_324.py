@@ -35,7 +35,9 @@ class ProjectOwnerCannotAddTest(TestCase):
         )
 
         # Expect actions to show
-        self.assertTrue(b"Upload a new document in this space" in response.content)
+        self.assertTrue(
+            b"Upload one or more documents in this space" in response.content
+        )
 
         response = self.client.post(
             reverse(

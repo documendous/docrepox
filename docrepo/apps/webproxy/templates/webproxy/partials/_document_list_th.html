@@ -1,0 +1,18 @@
+<thead class="bg-gray-50">
+  <tr>
+    <th class="fl-th">
+      {% include "repo/partials/_sortable_th.html" with column_name="name" condition=condition %}
+    </th>
+
+    <th class="fl-th">
+      {% include "repo/partials/_sortable_th.html" with column_name="created" condition=condition %}
+    </th>
+
+    <th class="fl-th">
+      Path
+    </th>
+
+    {% include "repo/partials/_actions_th.html" %}
+
+  </tr>
+</thead>

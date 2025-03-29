@@ -2,14 +2,14 @@
 {% load repo_tags %}
 
 {% is_a_project_folder child as is_a_project_folder %}
-{% is_membership_pending request child.folder as is_membership_pending %}
-{% has_project_membership request child.folder as has_project_membership %}
-{% can_move_element request child as can_move_element %}
-{% can_view_element_details request child as can_view_element_details %}
-{% can_recycle_element request child as can_recycle_element %}
-{% can_restore_element request child as can_restore_element %}
-{% can_delete_element request child as can_delete_element %}
-{% can_bookmark request child as can_bookmark %}
+{% is_membership_pending request.user child.folder as is_membership_pending %}
+{% has_project_membership request.user child.folder as has_project_membership %}
+{% can_move_element request.user child as can_move_element %}
+{% can_view_element_details request.user child as can_view_element_details %}
+{% can_recycle_element request.user child as can_recycle_element %}
+{% can_restore_element request.user child as can_restore_element %}
+{% can_delete_element request.user child as can_delete_element %}
+{% can_bookmark request.user child as can_bookmark %}
 
 {% if can_move_element %}
   {% include "clipboard/partials/actions/_move_element.html" %}

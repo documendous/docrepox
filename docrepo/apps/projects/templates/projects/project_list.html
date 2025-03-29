@@ -8,13 +8,11 @@
     <table class="min-w-full divide-y divide-gray-200 border shadow">
       <caption class="text-left p-2 relative border">
         <div class="flex justify-between items-center">
-          <span class="mr-2 font-bold">
-            <span>
-              {{ path_with_links|safe }} &nbsp;
-            </span>
-          </span>
+          {% include "repo/partials/_path_with_links.html" %}
 
-          {% include "search/partials/_search_projects_input.html" %}
+          <span class="w-1/2">
+            {% include "search/partials/_search_projects_input.html" %}
+          </span>
 
         </div>
           
@@ -33,16 +31,32 @@
 
       <thead class="bg-gray-50">
         <tr>
-          <th class="fl-th">Name</th>
-          <th class="fl-th">Title</th>
-          <th class="fl-th">Created</th>
-          <th class="fl-th">Modified</th>
-          <th class="fl-th">Visibility</th>
-          <th class="fl-th">Actions</th>
+          <th class="fl-th">
+            {% include "repo/partials/_sortable_th.html" with column_name="name" %}
+          </th>
+
+          <th class="fl-th">
+            {% include "repo/partials/_sortable_th.html" with column_name="title" %}
+          </th>
+
+          <th class="fl-th">
+            {% include "repo/partials/_sortable_th.html" with column_name="created" %}
+          </th>
+
+          <th class="fl-th">
+            {% include "repo/partials/_sortable_th.html" with column_name="modified" %}
+          </th>
+
+          <th class="fl-th">
+            {% include "repo/partials/_sortable_th.html" with column_name="visibility" %}
+          </th>
+
+          {% include "repo/partials/_actions_th.html" %}
+
         </tr>
       </thead>
 
-      {% include "projects/partials/_project_children_table_data.html" %}
+      {% include "projects/partials/_project_children_table_data.html" with pagination_enabled=True %}
 
     </table>
   </div>
@@ -52,5 +66,7 @@
   <script src="{% static 'js/repo/utils/modals.js' %}"></script>
 
 </main>
+
+{% include "repo/partials/_pagination.html" with children=projects %}
 
 {% endblock main %}

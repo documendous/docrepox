@@ -59,9 +59,9 @@ class UpdateElementDetailsView(View):
         element, parent = self.get_element_and_parent(element_id, element_type)
 
         if element.type == "project":
-            project_rules.can_update_project(request, element)
+            project_rules.can_update_project(request.user, element)
         else:
-            repo_rules.can_update_element(request, element)
+            repo_rules.can_update_element(request.user, element)
 
         if element_type == "folder" and is_a_project_folder(element):
             return HttpResponseRedirect(
@@ -102,11 +102,11 @@ class UpdateElementDetailsView(View):
         element, parent = self.get_element_and_parent(element_id, element_type)
 
         if element.type == "project":
-            project_rules.can_update_project(request, element)
+            project_rules.can_update_project(request.user, element)
             form = UpdateProjectForm(request.POST, instance=element)
 
         else:
-            repo_rules.can_update_element(request, element)
+            repo_rules.can_update_element(request.user, element)
             form = UpdateElementForm(request.POST, instance=element)
 
         if form.is_valid():
