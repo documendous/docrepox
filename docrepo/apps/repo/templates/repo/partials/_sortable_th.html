@@ -3,7 +3,6 @@
 <div class="flex align-items gap-1">
   <a
     href="."
-    hx-boost="{{ use_hx_boost_int }}"
     class="hover:text-blue-700"
     title="Remove sort"
   >
@@ -13,8 +12,7 @@
   <a
     href="#"
     x-data="orderByToggle('{{ column_name }}')"
-    :href="`?order_by=${nextOrderBy}`"
-    hx-boost="{{ use_hx_boost_int }}" {% comment%} Turn this off if having issues on the sort. {% endcomment %}
+    :href="`?order_by=${nextOrderBy}{% if condition %}&condition={{ condition }}{% endif %}`"
     class="hover:text-blue-700"
     title="Sort by {{ column_name }}"
   >

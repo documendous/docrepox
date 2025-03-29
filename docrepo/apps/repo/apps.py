@@ -17,6 +17,7 @@ class RepoConfig(AppConfig):
         from .signals import (
             auto_delete_file_on_delete,
             create_user_profile,
+            index_document_on_version_creation,
             save_user_profile,
             touch_document_on_new_version,
         )

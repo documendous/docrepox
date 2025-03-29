@@ -23,7 +23,7 @@ class ElementDetailsView(View):
         elif element_type == "folder":
             parent = element
 
-        rules.can_view_element_details(request, element)
+        rules.can_view_element_details(request.user, element)
         path_with_links = get_path_with_links(parent, request.user)
 
         return render(

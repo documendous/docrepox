@@ -2,8 +2,11 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from apps.projects.models import Project
-from apps.repo.tests.utils import TEST_USER, get_test_user
+from apps.repo.tests.utils import TEST_USER, get_test_document, get_test_user
 from apps.repo.utils.system.object import get_admin_user
+
+from ..search.models import DocumentIndex
+from ..search.utils import index_documents
 
 
 class SearchProjectsViewTest(TestCase):
@@ -136,3 +139,52 @@ class SearchElementsViewTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+
+
+class IndexDocumentsTest(TestCase):
+    def setUp(self):
+        self.test_user = get_test_user()
+        self.test_document = get_test_document(
+            parent=self.test_user.profile.home_folder
+        )
+
+    def test_index_documents(self):
+        self.assertFalse(DocumentIndex.objects.all())
+        index_documents()
+        self.assertTrue(DocumentIndex.objects.all())
+
+
+class AdvancedSearchViewTest(TestCase):
+    def setUp(self):
+        self.test_user = get_test_user()
+        self.test_document = get_test_document(
+            parent=self.test_user.profile.home_folder
+        )
+
+    def test_get(self):
+        self.client.login(
+            username=TEST_USER["username"], password=TEST_USER["password"]
+        )
+        response = self.client.get(reverse("repo:search:advanced_search"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_metadata_search(self):
+        self.client.login(
+            username=TEST_USER["username"], password=TEST_USER["password"]
+        )
+        response = self.client.get(
+            reverse("repo:search:advanced_search")
+            + "?query=TestDocument&multi_type=document&multi_type=folder",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b"TestDocument.txt" in response.content)
+
+    # def test_get_fulltext_search(self):
+    #     self.client.login(
+    #         username=TEST_USER["username"], password=TEST_USER["password"]
+    #     )
+    #     response = self.client.get(
+    #         reverse("repo:search:advanced_search") + "?full_text=Hello",
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertTrue(b"TestDocument" in response.content)

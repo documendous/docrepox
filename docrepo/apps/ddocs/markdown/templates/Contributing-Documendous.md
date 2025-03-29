@@ -33,9 +33,13 @@ DEBUG_TOOLBAR_CONFIG = {
 
 These changes should take effect without requiring a restart.
 
+---
+
 ### Form Rendering
 
 Use Django forms to define fields that will be used in your form. On the templating side, use django-widget-tweaks to render them unless manual rendering is absolutely necessary.
+
+---
 
 ---
 
@@ -82,6 +86,8 @@ Currently, coverage settings will look at all code except:
 * .venv/
 
 If a function or method is not deemed needed for testing or if the work to do it is unnecessarily daunting, we can ignore it by placing the '# pragma: no coverage' comment at the end of the line where missing coverage is indicated.
+
+---
 
 ### Pre-commit
 

@@ -259,7 +259,8 @@ docker compose -f docker-compose.prod.yml up -d
 **Note:** You may need to recreate the static volume in some cases especially if some css files are not being picked up.
 
 ```bash
-docker container rm docrepox-web-1 
+docker container rm docrepox-web-1
+docker container rm docrepox-nginx-1
 docker volume rm docrepox_prod_static_volume
 ```
 

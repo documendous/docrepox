@@ -20,12 +20,14 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
     """
     Used to "move" an element
     """
+    log = logging.getLogger(__name__)
     for p_document in clipboard.documents.all():
-        rules.can_move_element(request, p_document.document)
+        rules.can_move_element(request.user, p_document.document)
         p_document.document.parent = parent
 
         try:
             p_document.document.save()
+            log.debug(f"{p_document} moved to new parent {parent}")
         except IntegrityError:  # pragma: no coverage
             versions = Version.objects.filter(parent=p_document.document)
 
@@ -49,11 +51,12 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
         p_document.delete()
 
     for p_folder in clipboard.folders.all():
-        rules.can_move_element(request, p_folder.folder)
+        rules.can_move_element(request.user, p_folder.folder)
         p_folder.folder.parent = parent
 
         try:
             p_folder.folder.save()
+            log.debug(f"{p_folder} moved to new parent {parent}")
 
         except ValidationError:
             messages.error(
@@ -75,12 +78,12 @@ def change_parent(request: HttpRequest, clipboard: Clipboard, parent: Folder) ->
     messages.info(request, "Item(s) moved to new parent folder")
 
 
-def copy_documents(request: HttpRequest, clipboard: Clipboard, parent: Folder) -> None:
+def copy_documents(user, clipboard: Clipboard, parent: Folder) -> None:
     """
     Deep copies a document and sets each one's parent to 'parent'.
     """
     for pasted_document in clipboard.documents.all():
-        rules.can_move_element(request, pasted_document.document)
+        rules.can_move_element(user, pasted_document.document)
         document = pasted_document.document
         _copy_document(document, parent)
         pasted_document.delete()
@@ -91,53 +94,66 @@ def copy_folders(request: HttpRequest, clipboard: Clipboard, parent: Folder) -> 
     Copies a document and sets each one's parent to 'parent'. Does not copy children
     """
     for pasted_folder in clipboard.folders.all():
-        rules.can_move_element(request, pasted_folder.folder)
+        rules.can_move_element(request.user, pasted_folder.folder)
         folder = pasted_folder.folder
         _copy_folder(request, folder, parent)
         pasted_folder.delete()
 
 
 def add_to_folders(
-    request: HttpRequest, clipboard: Clipboard, pasted_element: Document | Folder
-) -> None:
+    request: HttpRequest,
+    clipboard: Clipboard,
+    pasted_element: Document | Folder,
+    show_info_msg=True,
+) -> bool:
     """
     Add a folder to a user's clipboard
     """
-    rules.can_add_element_to_clipboard(request, pasted_element.folder)
+    rules.can_add_element_to_clipboard(request.user, pasted_element.folder)
+
     if not clipboard.folders.filter(pk=pasted_element.pk).exists():
         clipboard.folders.add(pasted_element)
+        if show_info_msg:
+            messages.info(
+                request,
+                f'Folder "{truncatechars(pasted_element.folder.name, 30)}" was added to your clipboard.',
+            )
 
-        messages.info(
-            request,
-            f'Folder "{truncatechars(pasted_element.folder.name, 30)}" was added to your clipboard.',
-        )
-
+        return True
     else:
         messages.warning(
             request,
             "This item already exists in your clipboard.",
         )
+
+    return False
 
 
 def add_to_documents(
-    request: HttpRequest, clipboard: Clipboard, pasted_element: Document | Folder
-) -> None:
+    request: HttpRequest,
+    clipboard: Clipboard,
+    pasted_element: Document | Folder,
+    show_info_msg=True,
+) -> bool:
     """
     Add a document to a user's clipboard
     """
-    rules.can_add_element_to_clipboard(request, pasted_element.document)
+    rules.can_add_element_to_clipboard(request.user, pasted_element.document)
 
     if not clipboard.documents.filter(pk=pasted_element.pk).exists():
         clipboard.documents.add(pasted_element)
-        messages.info(
-            request,
-            f'Document "{truncatechars(pasted_element.document.name, 30)}" was added to your clipboard.',
-        )
+        if show_info_msg:
+            messages.info(
+                request,
+                f'Document "{truncatechars(pasted_element.document.name, 30)}" was added to your clipboard.',
+            )
+        return True
     else:
         messages.warning(
             request,
             "This item already exists in your clipboard.",
         )
+    return False
 
 
 def add_to_clipboard(request, clipboard, element):
@@ -173,6 +189,7 @@ def _copy_document(document: Document, parent: Folder) -> None:
     """
     Make a deep copy of a document (new version)
     """
+    log = logging.getLogger(__name__)
     versions = Version.objects.filter(parent=document)
     new_document = document
     new_document.pk = None
@@ -180,6 +197,7 @@ def _copy_document(document: Document, parent: Folder) -> None:
 
     try:
         new_document.save()
+        log.debug(f"Document {document} copied to parent {parent}")
     except IntegrityError:  # pragma: no coverage
         new_document = create_with_new_name(
             "document",
@@ -216,6 +234,7 @@ def _copy_folder(request, folder: Folder, parent: Folder) -> None:
 
     try:
         new_folder.save()
+        log.debug(f"Folder {folder} copied to parent {parent}")
     except IntegrityError:  # pragma: no coverage
         new_folder = create_with_new_name(
             "folder",

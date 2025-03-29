@@ -1,11 +1,20 @@
+import logging
+
+from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
-from apps.clipboard.utils.paste import add_to_clipboard
+from apps.clipboard.utils.paste import (
+    add_to_clipboard,
+    add_to_documents,
+    add_to_folders,
+)
 from apps.core.views import View
+from apps.repo.models.element.document import Document
+from apps.repo.models.element.folder import Folder
 from apps.repo.utils.static.lookup import get_model
 
-from .models import Clipboard
+from .models import Clipboard, PastedDocument, PastedFolder
 from .services import (
     copy_clipboard_elements_to_parent,
     delete_clipboard_documents,
@@ -46,7 +55,35 @@ class PasteCopyElementsView(View):
         )
 
 
-class AddElementClipboardView(View):
+class BaseAddElementClipboardView(View):
+    def _add_to_clipboard(
+        self, clipboard, element_type, element_id, show_info_msg=True
+    ) -> bool:
+        log = logging.getLogger(__name__)
+        if element_type == "folder":
+            element = Folder.objects.get(pk=element_id)
+            pasted_element, _ = PastedFolder.objects.get_or_create(
+                folder=element,
+            )
+            return add_to_folders(
+                self.request, clipboard, pasted_element, show_info_msg=show_info_msg
+            )
+
+        elif element_type == "document":
+            element = Document.objects.get(pk=element_id)
+            pasted_element, _ = PastedDocument.objects.get_or_create(
+                document=element,
+            )
+            return add_to_documents(
+                self.request, clipboard, pasted_element, show_info_msg=show_info_msg
+            )
+
+        else:  # pragma: no coverage
+            log.error(f"Invalid element type: {element_type}")
+            raise Http404
+
+
+class AddElementClipboardView(BaseAddElementClipboardView):
     def _get_url_with_args(self, element, page_number=1, search_term=None):
         url = reverse(
             "repo:folder",
@@ -95,6 +132,35 @@ class AddElementClipboardView(View):
             return HttpResponseRedirect(
                 self._get_url_with_args(element, page_number, search_term)
             )
+
+
+class AddElementsClipboardView(BaseAddElementClipboardView):
+    def post(self, request, parent_id):
+        """
+        View that puts folder or document into user's clipboard
+        """
+        parent = Folder.objects.get(pk=parent_id)
+        children = parent.get_children()
+        clipboard, _ = Clipboard.objects.get_or_create(user=request.user)
+        page_number = int(request.GET.get("page", 1))
+        item_num = 0
+
+        for child in children:
+            item_num += self._add_to_clipboard(
+                clipboard, child.type, child.id, show_info_msg=False
+            )
+
+        messages.info(request, f"{item_num} item(s) placed in your clipboard.")
+
+        url = reverse(
+            "repo:folder",
+            args=[parent.pk],
+        )
+
+        if page_number > 1:  # pragma: no coverage
+            url += f"?page={page_number}"
+
+        return HttpResponseRedirect(url)
 
 
 class RemoveItemView(View):

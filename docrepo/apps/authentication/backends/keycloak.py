@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -18,7 +19,9 @@ class KeycloakOIDCAuthenticationBackend(
         """
         Returns username from "preferred_username" for Keycloak user
         """
+        log = logging.getLogger(__name__)
         username = claims.get("preferred_username")
+        log.debug(f"Username found: {username}")
         return username
 
     def create_user(self, claims) -> User:
@@ -26,12 +29,14 @@ class KeycloakOIDCAuthenticationBackend(
         created with the keycloak preferred_username.
         If nothing found matching the email, then try the username.
         """
+        log = logging.getLogger(__name__)
         user = super(KeycloakOIDCAuthenticationBackend, self).create_user(claims)
         user.first_name = claims.get("given_name", "")
         user.last_name = claims.get("family_name", "")
         user.email = claims.get("email")
         user.username = self._get_username(claims)
         user.save()
+        log.debug(f"User created: {user}")
         return user
 
     def filter_users_by_claims(self, claims):
@@ -68,6 +73,7 @@ def provider_logout(request) -> str:  # pragma: no coverage
     OIDC_OP_LOGOUT_ENDPOINT = f"{KC_HOST}/realms/{REALM}/protocol/openid-connect/logout"
     OIDC_OP_LOGOUT_URL_METHOD = "apps.repo.auth_backends.provider_logout"
     """
+    log = logging.getLogger(__name__)
     oidc_id_token = request.session.get("oidc_id_token", None)
 
     if oidc_id_token:
@@ -85,5 +91,7 @@ def provider_logout(request) -> str:  # pragma: no coverage
         )
     else:
         logout_url = settings.LOGOUT_REDIRECT_URL
+
+    log.debug(f"logout_url: {logout_url}")
 
     return logout_url

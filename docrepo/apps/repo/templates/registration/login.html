@@ -6,31 +6,30 @@
 <main>
   <div class="flex justify-center my-16">
     <form
-      action="{% url 'login' %}"
+      {% include "registration/_login_action.html" %}
       method="POST"
       class="w-full max-w-sm bg-white p-8 shadow rounded-lg"
     >
       {% csrf_token %}
       <legend>
         <h2 class="text-xl font-semibold mb-4 flex items-center justify-center">
-          Login {% include 'ddocs/customization_tips/_tip.html' with anchor_name="customize-login-page" %}          
+          Login 
+
+          <span class="material-symbols-outlined">
+            login
+          </span>
+
+          {% include 'ddocs/customization_tips/_tip.html' with anchor_name="customize-login-page" %}
+          
         </h2>
 
-        {% if not request.user.is_authenticated %}
-          <p class="text-blue-400 font-semibold mb-3 text-center">
-            Logged out
-          </p>
-        {% else %}
-          <p class="text-blue-400 font-semibold mb-3 text-center">
-            Currently logged in as {{ request.user.username }}
-          </p>
-        {% endif %}
+        {% include "registration/_logged_message.html" %}
 
       </legend>
 
       <div class="mb-4">
-        <label for="username" class="block text-sm font-medium text-gray-700">
-          Username: 
+        <label for="username" class="block text-xs font-semibold text-gray-700 uppercase">
+          Username
         </label>
 
         {% render_field form.username class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
@@ -38,7 +37,7 @@
       </div>
 
       <div class="mb-4">
-        <label for="password" class="block text-sm font-medium text-gray-700">
+        <label for="password" class="block text-xs font-semibold text-gray-700 uppercase">
           Password
         </label>
 
@@ -70,11 +69,7 @@
       </div>
 
       {% if keycloak_is_available %}
-        <div class="flex justify-center my-4">
-          <a class="underline" href="{% url 'oidc_authentication_init' %}">
-            Login via Keycloak
-          </a>
-        </div>
+        {% include "keycloak/login_link.html" %}
       {% endif %}
 
     </form>

@@ -1,11 +1,13 @@
 {% load repo_tags %}
+{% load comms_tags %}
 
-{% is_admin_user request as user_is_admin  %}
+{% is_admin_user request.user as user_is_admin  %}
+{% has_unread_comms request.user as has_unread_comms %}
 
 <nav class="right-nav">
   <span
     class="
-      text-xs font-semibold
+      text-xs font-semibold self-center pb-1
       {% if user_is_admin %}
         text-red-500
       {% else %}
@@ -24,25 +26,56 @@
     </a>
   {% endif %}
 
+  {% if webproxy_share_enabled %}
+    <a
+      href="{% url 'repo:webproxy:proxied_document_list' %}"
+      class="tooltip"
+      title="Proxied Documents"
+    >
+      <span
+        class="material-icons-outlined nav-icon"
+      >cell_tower</span>
+    </a>
+  {% endif %}
+  
   <a
     href="{% url 'repo:bookmarks:bookmark_list' %}"
     class="tooltip"
     title="Bookmarks"
-    hx-boost="{{ use_hx_boost_ext }}"
   >
     <span
       class="material-icons-outlined nav-icon"
-    >bookmark</span>
+    >collections_bookmark</span>
+  </a>
+
+  <a
+    href="{% url 'repo:comms:comm_list' %}"
+    class="tooltip"
+    title="
+      {% if has_unread_comms %}
+        New messages
+      {% else %}
+        Messages
+      {% endif %}
+    "
+  >
+    <span
+      class="
+        material-icons-outlined
+        {% if has_unread_comms %} nav-icon-alert {% else %} nav-icon{% endif %}
+      "
+    >
+      mail
+    </span>
   </a>
 
   <a
     href="{% url 'repo:update_profile' %}"
     class="tooltip"
     title="Welcome {{ user.username }}!"
-    hx-boost="{{ use_hx_boost_ext }}"
   >
-    <span class="material-icons-outlined nav-icon">
-      account_circle
+    <span>
+      {% include "avatars/_avatar_image.html" with profile=request.user.profile image_size="22" use_image_title=False exclude_id=True %}
     </span>
   </a>
 
@@ -50,7 +83,6 @@
     href="{% url "repo:folder" request.user.profile.recycle_folder.pk %}"
     class="tooltip"
     title="Recyle Bin"
-    hx-boost="{{ use_hx_boost_ext }}"
   >
     <span
       class="material-icons-outlined nav-icon"
@@ -61,9 +93,9 @@
     action="{% if keycloak_is_available %}{% url 'oidc_logout' %}{% else %}{% url 'logout' %}{% endif %}"
     method="post"
     class="inline"
-    hx-boost="{{ use_hx_boost_ext }}"
   >
     {% csrf_token %}
+
     <button type="submit" class="tooltip" title="Sign Out">
       <span class="material-icons-outlined nav-icon">
         logout

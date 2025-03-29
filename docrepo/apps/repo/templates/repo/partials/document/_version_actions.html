@@ -1,0 +1,35 @@
+{% load transformation_tags %}
+
+{% is_previewable element as is_previewable %}
+
+<div x-data="{ showPreview: false, fileUrl: '' }">
+  <span class="flex items-center px-4 justify-center gap-2">
+    {% if version.size %}
+      <a href="{% url 'repo:retrieve_document' element.id %}?action=attachment&v={{ version.tag }}"
+        class="text-gray-700 hover:text-blue-700 mr-2"
+      >
+        <span
+          class="material-icons-outlined"
+          title='Download "{{ element.name|truncatechars:30 }}" file'
+        >
+          cloud_download
+        </span>
+      </a>
+
+      {% if is_previewable %}
+        {% include "transformations/preview_link.html" %}
+      {% else %}
+        <span class="italic text-sm">*Preview not available</span>
+      {% endif %}
+
+    {% else %}
+      <span class="italic text-sm">
+        *No preview or download available
+      </span>
+    {% endif %}
+
+  </span>
+
+  {% include "transformations/document_preview.html" %}
+
+</div>

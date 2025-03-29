@@ -1,5 +1,5 @@
-from .apps import INSTALLED_APPS
-from .middleware import MIDDLEWARE
+from django.conf import settings
+
 from .utils import env
 
 # The following should be set in your .env file:
@@ -33,12 +33,12 @@ AUTHENTICATION_BACKENDS = [
     "apps.authentication.backends.KeycloakOIDCAuthenticationBackend",
 ]
 
-INSTALLED_APPS.append("mozilla_django_oidc")
+settings.INSTALLED_APPS.append("mozilla_django_oidc")
 
 """
 To ensure that users' sessions remain valid even if their OIDC account is disabled, use mozilla_django_oidc.middleware.SessionRefresh middleware to verify the id token's validity during each session.
 """
-MIDDLEWARE.append("mozilla_django_oidc.middleware.SessionRefresh")
+settings.MIDDLEWARE.append("mozilla_django_oidc.middleware.SessionRefresh")
 
 # The length of time it takes for an id token to expire (def. is 15 min)
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 30

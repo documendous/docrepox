@@ -89,6 +89,7 @@
 <h4>Unsupported Features Requiring Consulting</h4>
 <p>Any features not covered in the "Using DocrepoX" section, including those related to development documentation, are not supported under standard support subscriptions and will require consulting services.</p>
 <hr>
+<hr>
 <h3>Startup</h3>
 <p>For quick start instructions see the README here:</p>
 <p><a href="https://github.com/documendous/docrepox">https://github.com/documendous/docrepox</a></p>
@@ -110,6 +111,10 @@
 <p>By default, the admin user, like any regular non-privileged user, cannot view the contents of projects they are not a member of or access other users' home directories. However, the admin user does have access to the admin console and can make changes to elements and projects from there, which should only be done for maintenance or emergencies. </p>
 <p>To grant the admin user superuser privileges in the UI, set ADMIN_ALLOW_ALL=True in docrepo/global_settings.py. </p>
 <p>Be aware: Setting ADMIN_ALLOW_ALL to True will allow the admin user to bookmark even non-member projects but resetting ADMIN_ALLOW_ALL to False will permanently remove these type of bookmarks. </p>
+<hr>
+<h3>Configuration and Settings</h3>
+<p>DocrepoX contains multiple settings files across different apps, along with a central system settings file that consolidates these configurations. To modify settings, use global_settings.py located in the docrepo subfolder. Any changes made in config/settings/__init__.py or individual app settings.py files will be overwritten during an upgrade.</p>
+<p>The global_settings.py file is not included in the DocrepoX repository. Instead, refer to global_settings-example.py for common configurable settings and their default values and create your own global_settings.py with them. You can also add other valid settings to global_settings.py as needed. Follow the guidance in these docs when making modifications.</p>
 <hr>
 <h3>Locale and Timezones</h3>
 <h4>Local Browser Timezone</h4>
@@ -173,11 +178,35 @@ volumes:
     path(&quot;&quot;, include(&quot;apps.repo.urls&quot;)),
 ]
 </code></pre>
-<p><strong>Note:</strong> The following should work out of the box if you are running the docker containers as configured in the default docker-compose files.</p>
-<p>Configure Keycloak settings in docrepo/global_settings.py:</p>
-<pre><code>from .utils import env
-
-KC_HOST = env(&quot;KC_HOST&quot;)
+<p>After making this changes, restart your containers. Now, the Keycloak and Keycloak database containers should come up on restart.</p>
+<p>See the Additional Recommendations next to continue with the default install.</p>
+<h4>Additional Recommendations</h4>
+<p>After restarting, ensure that both the Keycloak and Keycloak DB containers are included.  </p>
+<p>For easier setup, import the provided documendous-realm.json file when creating your Keycloak realm. This file <strong>must</strong> be imported at the time of realm creation.  </p>
+<p>Importing documendous-realm.json  </p>
+<ul>
+<li>Open your browser and go to http://localhost:8080.  </li>
+<li>Log in with admin / admin.  </li>
+<li>Click the Realm dropdown in the upper-left corner and select Keycloak / Master.  </li>
+<li>Click Create Realm.  </li>
+<li>Upload the documendous-realm.json file from the keycloak subdirectory.  </li>
+<li>The Realm Name should display as documendous, and Enabled should be set to True.  </li>
+<li>Click Create.  </li>
+</ul>
+<p>Logging in via Keycloak  </p>
+<ul>
+<li>Go to http://<docrepx-hostname>/auth/login/.  </li>
+<li>Click Login via Keycloak.  </li>
+<li>You will be redirected to the Keycloak login page.  </li>
+<li>Enter kc1user as the username and testpass as the password.  </li>
+<li>You should be redirected to the DocrepoX app, logged in as a Keycloak user.</li>
+</ul>
+<p>If you're new to Keycloak, review the <a href="https://www.keycloak.org/documentation">Keycloak documentation</a> for support on Keycloak topics.</p>
+<hr>
+<h4>Custom Keycloak Setup</h4>
+<p>The default settings in oidc.py should work out of the box if you are running the docker containers as configured in the default docker-compose files.</p>
+<p>For a custom local setup, configure Keycloak settings in docrepo/global_settings.py as required to match your environment:</p>
+<pre><code>KC_HOST = env(&quot;KC_HOST&quot;)
 REALM = env(&quot;KC_REALM&quot;)
 OIDC_RP_CLIENT_ID = env(&quot;KC_CLIENT&quot;)
 OIDC_RP_CLIENT_SECRET = env(&quot;KC_CLIENT_SECRET&quot;)
@@ -205,10 +234,6 @@ KC_REALM=documendous  # Your Keycloak realm
 KC_CLIENT=documendous  # Your Keycloak client
 KC_CLIENT_SECRET=my-secret  # Found in the client credentials tab in Keycloak
 </code></pre>
-<p>Next, restart. On the login page, you should see a link to the Keycloak login provider. Ensure a user is created in the DocrepoX client within the Documendous realm in the Keycloak application.</p>
-<h4>Additional Recommendations</h4>
-<p>If you're new to Keycloak, review the Keycloak documentation. See https://www.keycloak.org/documentation. </p>
-<p>For easier setup, import the provided documendous-realm.json file when creating your Keycloak realm. Note that this file must be imported at the time of realm creation, not from the admin interface. Update the client URLs in Keycloak if your hostname or port is different.</p>
 <hr>
 <h3>Minio</h3>
 <p><strong>Important Considerations for Storage Selection</strong></p>
@@ -254,7 +279,7 @@ MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 # MINIO_STORAGE_AUTO_CREATE_STATIC_BUCKET = True
 </code></pre>
 <ul>
-<li>In config/settings/<strong>init</strong>.py, uncomment the following:</li>
+<li>In config/settings/__init__.py, uncomment the following:</li>
 </ul>
 <pre><code># from .minio import (
 #     INSTALLED_APPS,
@@ -326,57 +351,6 @@ MINIO_STORAGE_SECRET_KEY=&lt;your secret key&gt;
 </code></pre>
 <p>Restart your docker containers. If you delete your volumes however, you'll have to repeat the process.</p>
 <hr>
-<h3>Elastic Search</h3>
-<p>Note that elastic search is not implemented yet. If you are interesed in developing with Elastic Search you can use the following instructions to include it into your projects. Be aware that there is no elastic search usage at this point in DocrepoX.</p>
-<p>Here are directions however for adding Elastic Search to this project. </p>
-<ul>
-<li>In docker-compose.yml uncomment this block:</li>
-</ul>
-<pre><code>  # elasticsearch:
-  #   image: elasticsearch:8.15.1
-  #   volumes:
-  #     - es_data:/usr/share/elasticsearch/data
-  #   ports:
-  #     - 9200:9200
-  #     - 9300:9300
-  #   environment:
-  #     - discovery.type=single-node
-  #     - xpack.security.enabled=false
-</code></pre>
-<p>and ...</p>
-<pre><code>volumes:
-  ...
-  # es_data:
-</code></pre>
-<p>Do the same in docker-compose.prod.yml as well if you wish to use that environment.</p>
-<ul>
-<li>In docrepo/config/settings/<strong>init</strong>.py:</li>
-</ul>
-<pre><code># from .elastic import ELASTICSEARCH_DSL
-</code></pre>
-<ul>
-<li>In docrepo/config/settings/apps.py:</li>
-</ul>
-<pre><code># &quot;django_elasticsearch_dsl&quot;, ## Uncomment to use elastic search
-</code></pre>
-<ul>
-<li>If you're using test.sh script for testing, be sure to include these parts:</li>
-</ul>
-<pre><code># Uncomment to test with Elastic
-# docker compose up elasticsearch &amp;
-# sleep 10
-
-...
-# Uncomment to test with Elastic
-# docker compose down elasticsearch
-</code></pre>
-<ul>
-<li>To use search indexing in your docker containers, enable the following in entrypoint.sh and entrypoint.prod.sh:</li>
-</ul>
-<pre><code># Uncomment to use Elastic search indexing
-# python manage.py search_index --rebuild -f
-</code></pre>
-<hr>
 <h3>Troubleshooting</h3>
 <h4>Download Size is Limited</h4>
 <p>The default download and upload size limit in Nginx is 1 megabyte (MB), controlled by the "client_max_body_size" directive which sets the maximum size of a client request body, including file uploads and POST data.</p>
@@ -414,9 +388,11 @@ python manage.py diffsettings
 </code></pre>
 <p>Warning: The diffsettings command may expose passwords and secret keys. It should not be used in production. If a support engineer requests these settings, run the commands manually inside a container or running server.</p>
 <hr>
+<hr>
 <h3>Get Support</h3>
-<p>To receive assistance, click the <strong>Support</strong> link in the footer to open an issue.  </p>
-<h4>Types of Requests</h4>
+<p>For assistance, click the <strong>Support</strong> link in the footer to open an issue.  </p>
+<p><strong>Note:</strong> You can customize the support link to direct users to your organization's support page. To do this, update the <code>SUPPORT_URL</code> setting in <code>global_settings.py</code>.</p>
+<h4>Types of Issues</h4>
 <ol>
 <li>
 <p>Enhancement Request: Describe how something can be improved. Be specific about what changes you would like to see.</p>
@@ -430,19 +406,30 @@ python manage.py diffsettings
 </ol>
 <hr>
 <h3>UI</h3>
+<h4>UI Responsiveness</h4>
+<p>DocrepoX UI is designed to be responsive and functional across most standard screen sizes, with the goal of providing a clear and efficient user experience. However, it is not optimized for small mobile devices, and there are no plans to extend responsiveness to extreme degrees for smaller screens in the foreseeable future. If accessed on a small device, using landscape mode is recommended for better readability and usability.</p>
 <h4>Dashboard</h4>
 <p>The DocrepoX dashboard provides an easy-to-use interface for managing and organizing your digital assets and documents. Below is an outline of these sections and their functionalities.</p>
 <h5>Navigation</h5>
 <p>The header includes several icons for quick navigation:</p>
+<p><strong>Left Side</strong></p>
 <ul>
 <li><strong>Documendous Logo</strong>: Click to return to the main dashboard.</li>
 <li><strong>Home Icon</strong>: Navigate back to the home screen.</li>
 <li><strong>Documents Icon</strong>: Access the document management section to view and manage your documents.</li>
 <li><strong>Projects Icon</strong>: View and manage your projects.</li>
-<li><strong>Bookmark Icon</strong>: A list view of a user's bookmarks.</li>
+<li><strong>Documentation</strong>: Read documentation on using, administering and customizing DocrepoX.</li>
+<li><strong>Search</strong>: Perform an advanced search on documents, folders, projects and full text searches.</li>
+</ul>
+<p><strong>Right Side</strong></p>
+<ul>
 <li><strong>Admin Console</strong>: An admin console for use by the system admin user.</li>
+<li><strong>Shared Documents via Proxy List</strong>: A list view of shared documents to external resources.</li>
+<li><strong>Bookmark Icon</strong>: A list view of a user's bookmarks.</li>
+<li><strong>Communications Icon</strong>: View any message and alerts.</li>
 <li><strong>User Profile Icon</strong>: Access your user settings and profile information.</li>
-<li><strong>Notifications Icon</strong>: View any notifications and alerts.</li>
+<li><strong>Recycle Icon</strong>: User's recycle folder.</li>
+<li><strong>Logout</strong>: Logout user.</li>
 </ul>
 <h5>Welcome Section</h5>
 <p>This section provides a brief introduction to DocrepoX and its features. It highlights the following points:</p>
@@ -512,6 +499,8 @@ python manage.py diffsettings
 <li>Decline your request</li>
 <li>Remove the pending request message</li>
 </ul>
+<p>A manager should see a red outline of the messaging icon on the upper right navigation section (will show as a mail icon).</p>
+<p>This will show as an unread message. This alerts the project manager to go to the project details page and handle your request.</p>
 <h4>Project Access Levels</h4>
 <p>Once approved, you can be added as:</p>
 <ul>
@@ -573,8 +562,11 @@ python manage.py diffsettings
 <p>Clipboard: The clipboard temporarily stores documents and folders for moving to another folder. Items can be removed before pasting. A blue clipboard icon appears next to items in the folder list and disappears after pasting. By default, the clipboard is cleared on logout, but setting DELETE_CLIPBOARD_ON_LOGOUT=False saves items between sessions.</p>
 </li>
 </ul>
-<p><strong>Note:</strong> To use a modal instead for "Create Documents", set CREATE_DOC_USE_MODAL=True in docrepo/global_settings.py (rich text not supported). If CREATE_DOC_USE_MODAL=False, enable rich text with CREATE_DOC_AS_RTF=True, which uses the Quill editor.</p>
+<p><strong>Note:</strong> To use a modal instead for "Create Documents", set CREATE_DOC_USE_MODAL=True in docrepo/global_settings.py (Quill editor use not supported with this option). If CREATE_DOC_USE_MODAL=False, enable formatted text with CREATE_DOC_AS_RTF=True, which uses the Quill editor.</p>
+<p><strong>Note:</strong> Be aware that using Quill Editor is experimental.</p>
 <p><strong>Note:</strong> For "Create Documents", Quill generates and saves HTML content as "text/html" regardless of file extension.</p>
+<p><strong>Note:</strong> Be aware that blue colored documents links in the folder view indicate that the document is shared via a proxy link that anyone can access.</p>
+<p><strong>Note:</strong> Zero byte files cannot be uploaded via the add document, add multi documents or update version modals.</p>
 <h4>Element List View</h4>
 <p>In the folder view are a list of subfolders and documents (child elements) in the parent folder view.</p>
 <p>Each child element should show:</p>
@@ -603,7 +595,7 @@ python manage.py diffsettings
 <h4>Actions</h4>
 <ul>
 <li>
-<p>You can move documents and folders by clicking on the move icon. This will place elements in the user's clipboard (see Clipboard in Folder Actions section).</p>
+<p>You can move documents and folders by clicking on the move icon. This will place elements in the user's clipboard (see Clipboard in Folder Actions section). Note that you can also with one click place all elements in a given folder by clicking on the move/copy icon in the extended folder actions.</p>
 </li>
 <li>
 <p>You can bookmark a document, folder or project by clicking on the bookmark icon to the right of the element. This converts the bookmark icon to a star. To remove the bookmark, click the star.</p>
@@ -619,6 +611,9 @@ python manage.py diffsettings
 </li>
 <li>
 <p>On the detail page, you can view details about a folder or document. From here you can download a document (or preview if your browser supports the mimetype or if a previewable PDF file is generated for it) and bookmark either a document or folder.</p>
+</li>
+<li>
+<p>On the detail page, you can create a web proxy link to share a document outside of DocrepoX. Any document owner can do this unless the document belongs to a project, in which case only a project manager can share it. To enable sharing, click the <strong>Add Web Proxy</strong> icon. This will change the icon to a broadcast symbol and display an additional icon for the web proxy link. Clicking the web proxy link icon copies the URL to the clipboard. To stop sharing the document, click the broadcast icon.</p>
 </li>
 <li>
 <p>A bookmarked document, folder or project will show a star icon next to its name. On the detail page or in the element actions, the user can click the star to remove the bookmark.</p>
@@ -656,6 +651,20 @@ python manage.py diffsettings
 <p>Most system folders cannot be changed.</p>
 </li>
 </ul>
+<h4>Proxied Documents List</h4>
+<p>This view displays a list of documents you have shared with external users. Each document includes a link that allows anyone to access it. Use caution when sharing, as documents shared this way are no longer protected by DocrepoX's ACL functionality.</p>
+<hr>
+<h3>User Profile</h3>
+<p>On the user profile page, you can update the following details:  </p>
+<ul>
+<li><strong>Avatar</strong>  </li>
+<li><strong>Email</strong>  </li>
+<li><strong>Bio</strong> (e.g., job description, department, or other organization-related details)  </li>
+<li><strong>Location</strong>  </li>
+<li><strong>Birthdate</strong>  </li>
+</ul>
+<p>If you don't select an avatar, a default image will be used. The bio, location, and birthdate fields are optional.</p>
+<p><strong>Note:</strong> Avatar changes take effect immediately and do not require clicking the "Save" button on the profile update form. However, the profile icon in the upper right nav won't be changed until the "Save" button is clicked.</p>
 <hr>
 <h3>Comments</h3>
 <p>At the bottom of folder and document detail pages, users can add comments. To enable or disable this feature, update docrepo/global_settings.py as follows:</p>
@@ -773,7 +782,270 @@ python manage.py diffsettings
 <li>Always ensure your files are in supported formats to take full advantage of previews and transformations.</li>
 </ul>
 <hr>
+<h3>Advanced Search</h3>
+<p>The Advanced Search page lets you search within both metadata and full-text content of documents.</p>
+<p>Note: Full-text search is enabled by default. Ensure that ENABLE_FULL_TEXT_SEARCH is set to True for this feature to function.</p>
+<h4>Searchable Metadata Fields</h4>
+<p>You can search for the following metadata in documents, folders, and projects:</p>
+<ul>
+<li><strong>Name</strong> (includes the document's name and file extension/mimetype)  </li>
+<li><strong>Title</strong>  </li>
+<li><strong>Description</strong>  </li>
+<li><strong>Tags</strong>  </li>
+</ul>
+<h4>Filters</h4>
+<ul>
+<li><strong>Documents</strong> are selected by default. To include <strong>folders</strong> and <strong>projects</strong>, check their corresponding filters.  </li>
+<li><strong>Exact Filter</strong>: If enabled, results must match both metadata and full-text search criteria. If disabled, results will include matches from either metadata or full-text searches separately.</li>
+</ul>
+<h4>Full-Text Search Process</h4>
+<p>When documents are uploaded, they are first converted to <strong>PDF</strong> for preview purposes. The content is then extracted and stored in the database's indexing tables for full-text search.</p>
+<hr>
+<h3>Indexing Command Usage</h3>
+<p>The indexing management command is used to process and index uploaded documents for full-text search. By default, the command includes index reconciliation (used to ensure any documents missing index references are caught up to date) unless explicitly disabled.</p>
+<h4>Command Syntax</h4>
+<pre><code>python manage.py run_indexing [options]
+</code></pre>
+<h4>Examples</h4>
+<ul>
+<li><strong>Run indexing with default settings (reconciliation enabled):</strong></li>
+</ul>
+<p><code>python manage.py run_indexing</code></p>
+<ul>
+<li><strong>Run indexing and disable reconciliation:</strong></li>
+</ul>
+<p><code>python manage.py run_indexing --no-reconcile-indexes</code></p>
+<h4>Behavior</h4>
+<ul>
+<li>If ENABLE_FULL_TEXT_SEARCH is set to True in settings, the command will start the indexing process.</li>
+<li>By default, reconciliation is enabled to ensure consistency between stored and indexed documents.</li>
+<li>If --no-reconcile-indexes is specified, the reconciliation process is skipped.</li>
+</ul>
+<h4>Notes</h4>
+<ul>
+<li>If ENABLE_FULL_TEXT_SEARCH is set to False, the command will exit with a warning.</li>
+<li>Large document batches may take longer to index.</li>
+<li>The command should be run periodically to keep the search index up to date.</li>
+</ul>
+<hr>
+<h3>Bulk Upload</h3>
+<p>You can upload multiple subfolders and documents from a specific folder using the <code>upload</code> command in the <code>manage.py</code> module.</p>
+<ol>
+<li>Copy your folder to the <code>docrepo</code> directory where DocrepoX is installed on your server or within a running Docker container.</li>
+</ol>
+<p>Example: If your folder is named <code>my_folder</code> on your local file system, use the following command to transfer it:</p>
+<pre><code>scp -r my_folder username@hostname:/apps/docrepox/.
+</code></pre>
+<ol>
+<li>
+<p>Identify the target repository path in DocrepoX. For instance, <code>/ROOT/Home/myuser</code>.</p>
+</li>
+<li>
+<p>On the server, navigate to the <code>docrepox</code> directory and execute the upload command:</p>
+</li>
+</ol>
+<pre><code>source .venv/bin/activate
+python manage.py upload my_folder /ROOT/Home/myuser --owner myuser
+</code></pre>
+<p>This will replicate the relative structure of <code>my_folder</code> in the repository's home directory.</p>
+<p><strong>Note:</strong> If the <code>--owner</code> flag is not provided, it defaults to <code>admin</code>.</p>
+<p>By default, the maximum allowable size per file is set 4GB but can be changed in global_settings.py:</p>
+<pre><code>MAX_BULK_UPLOAD_FILE_SIZE = 4000 * 1024 * 1024 
+</code></pre>
+<hr>
+<h3>Custom Properties for Folders and Documents</h3>
+<p>Custom properties allow you to assign key-value pairs to individual folders and documents, similar to tags but with added flexibility.</p>
+<p><strong>Adding Custom Properties</strong></p>
+<p>Access the Add Properties Page:</p>
+<ol>
+<li>Navigate to the folder or document in the folder view.</li>
+<li>Click the details icon for the desired element.</li>
+<li>In the details section (e.g., "Accounting Custom Properties" for a folder named 'Accounting'), click the icon next to it to open the add properties page.</li>
+</ol>
+<p>Provide Property Information:</p>
+<p>Fill out the following fields:</p>
+<ul>
+<li>Name: The name of the property.</li>
+<li>Description (optional): Additional information about the property.</li>
+<li>Value: The property's value.</li>
+<li>Type: Choose from String, Integer, Float, Boolean, DateTime, or JSON.</li>
+</ul>
+<p>Add multiple property forms if needed to save multiple properties at once.</p>
+<p>Save Properties:</p>
+<p>Click Save to return to the element's details page, where the newly added properties will be listed.</p>
+<p>You can edit or delete properties from this page.</p>
+<p><strong>Editing and Deleting Properties</strong></p>
+<ul>
+<li>Edit: Update one property at a time via the edit page.</li>
+<li>Delete: Permanently remove a property. Note that this action cannot be undone.</li>
+<li>Permissions and Retention</li>
+</ul>
+<p>Editing/Deleting Privileges:</p>
+<p>You can edit or delete properties if you own the element.</p>
+<p>In a Project, only the project manager has these privileges.</p>
+<p>Retention on Recycling:</p>
+<p>If an element with properties is recycled, the properties remain intact unless the element is permanently deleted.</p>
 <h2>Administering DocrepoX</h2>
+<h3>Logging and Troubleshooting</h3>
+<p>Logging in DocrepoX is configured using Django's built-in logging framework. This ensures effective monitoring, debugging, and issue tracking. The following configuration outlines how logging is structured and how to modify it for different logging levels.</p>
+<p>The logging settings are defined in the <code>LOGGING</code> dictionary within <code>global_settings.py</code>. The configuration follows these principles:</p>
+<ul>
+<li>Uses Python's built-in logging module.</li>
+<li>Does <strong>not</strong> disable existing loggers.</li>
+<li>Outputs logs to the console with a <strong>verbose format</strong>.</li>
+<li>Controls logging levels for Django and application-specific loggers.</li>
+</ul>
+<h4>Logging Settings</h4>
+<p>Add the following LOGGING configuration in settings.py:</p>
+<pre><code class="language-python">LOGGING = {
+  &quot;version&quot;: 1,
+  &quot;disable_existing_loggers&quot;: False,
+  &quot;formatters&quot;: {
+      &quot;verbose&quot;: {
+          &quot;format&quot;: &quot;%(levelname)s %(asctime)s %(module)s.%(funcName)s: %(message)s&quot;
+      }
+  },
+  &quot;handlers&quot;: {
+      &quot;console&quot;: {
+          &quot;level&quot;: &quot;DEBUG&quot;,
+          &quot;class&quot;: &quot;logging.StreamHandler&quot;,
+          &quot;formatter&quot;: &quot;verbose&quot;,
+      },
+  },
+  &quot;root&quot;: {
+      &quot;handlers&quot;: [&quot;console&quot;],
+      &quot;level&quot;: &quot;INFO&quot;,  # Suppress all root-level logs unless warning or higher
+  },
+  &quot;loggers&quot;: {
+      &quot;django&quot;: {
+          &quot;handlers&quot;: [&quot;console&quot;],
+          &quot;level&quot;: &quot;INFO&quot;,  # Suppress general Django logs
+          &quot;propagate&quot;: False,
+      },
+      # &quot;apps.authentication&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.avatars&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.bookmarks&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.clipboard&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.comments&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.comms&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.core&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.dashlets&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.ddocs&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.encrypted_content&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.etags&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.projects&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.properties&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.repo&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.search&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.transformations&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.ui&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # &quot;apps.webproxy&quot;: {
+      #     &quot;handlers&quot;: [&quot;console&quot;],
+      #     &quot;level&quot;: &quot;DEBUG&quot;,
+      #     &quot;propagate&quot;: False,
+      # },
+      # Ensure all other apps are not logging by default
+      &quot;apps&quot;: {
+          &quot;handlers&quot;: [&quot;console&quot;],
+          &quot;level&quot;: &quot;INFO&quot;,
+          &quot;propagate&quot;: False,
+      },
+  },
+}
+</code></pre>
+<h4>Formatters</h4>
+<p>Defines how logs are structured. The <strong>verbose formatter</strong> outputs logs in the following format:</p>
+<pre><code>ERROR 2025-03-19 14:30:00 views.process_request: An error occurred
+</code></pre>
+<h4>Handlers</h4>
+<ul>
+<li><strong>Console Handler</strong>: Outputs logs to the terminal.</li>
+<li>Set to <code>DEBUG</code>, meaning all log levels (<code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code>) are captured.</li>
+</ul>
+<h4>Root Logger</h4>
+<ul>
+<li>Controls the base logging level.</li>
+<li>Set to <code>INFO</code> to suppress lower-level logs unless overridden.</li>
+</ul>
+<h4>Django Logger</h4>
+<ul>
+<li>Ensures Django logs do not become overly verbose.</li>
+<li>Logs messages at <code>INFO</code> level and does not propagate messages to other handlers.</li>
+</ul>
+<h4>Application Loggers</h4>
+<ul>
+<li>All <code>apps</code> log at <code>INFO</code> level by default.</li>
+<li>Individual application loggers can be uncommented for <code>DEBUG</code> level logging.</li>
+</ul>
+<p>For deeper understanding on this topic, see <a href="https://docs.djangoproject.com/en/4.2/topics/logging/">Django Logging</a>.</p>
 <h3>Maintenance Tasks</h3>
 <h4>Removing Orphan Content</h4>
 <h5>Managing Orphaned Content Files</h5>
@@ -839,3 +1111,101 @@ cp requirements.txt docrepo/requirements.txt
 <pre><code class="language-bash">docker compose -f docker-compose.prod.yml up -d
 </code></pre>
 <hr>
+<h3>Experimental</h3>
+<h4>Elastic Search</h4>
+<p>Note that elastic search is not implemented (yet). If you are interesed in developing with Elastic Search you can use the following instructions to include it into your projects. Be aware that there is no elastic search usage at this point in DocrepoX.</p>
+<p>Here are directions however for adding Elastic Search to this project. </p>
+<ul>
+<li>In docker-compose.yml uncomment this block:</li>
+</ul>
+<pre><code>  # elasticsearch:
+  #   image: elasticsearch:8.15.1
+  #   volumes:
+  #     - es_data:/usr/share/elasticsearch/data
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+</code></pre>
+<p>and ...</p>
+<pre><code>volumes:
+  ...
+  # es_data:
+</code></pre>
+<p>Do the same in docker-compose.prod.yml as well if you wish to use that environment.</p>
+<ul>
+<li>In docrepo/config/settings/__init__.py:</li>
+</ul>
+<pre><code># from .elastic import ELASTICSEARCH_DSL
+</code></pre>
+<ul>
+<li>In global_settings.py.py:</li>
+</ul>
+<pre><code># &quot;django_elasticsearch_dsl&quot;, ## Uncomment to use elastic search
+</code></pre>
+<ul>
+<li>If you're using test.sh script for testing, be sure to include these parts:</li>
+</ul>
+<pre><code># Uncomment to test with Elastic
+# docker compose up elasticsearch &amp;
+# sleep 10
+
+...
+# Uncomment to test with Elastic
+# docker compose down elasticsearch
+</code></pre>
+<ul>
+<li>To use search indexing in your docker containers, enable the following in entrypoint.sh and entrypoint.prod.sh:</li>
+</ul>
+<pre><code># Uncomment to use Elastic search indexing
+# python manage.py search_index --rebuild -f
+</code></pre>
+<hr>
+<h4>Encrypted Content</h4>
+<p>The <strong>Encrypted Content</strong> storage option in DocrepoX allows administrators to encrypt document content files at the file system level. <strong>This feature is currently experimental and should not be used in production.</strong>  </p>
+<h5>Important Considerations</h5>
+<ul>
+<li>Encryption must be enabled at the start of repository creation.  </li>
+<li>Once an encryption key is generated, it must be securely stored for the lifetime of the repository.  </li>
+<li>A new encryption key can be generated, but it will only apply to new content. <strong>Previously stored content will not be accessible with a different key.</strong>  </li>
+</ul>
+<p><strong>Note:</strong> Encrypted Content <strong>should not be used with Minio.</strong> Instead, Minio offers its own encryption and decryption capabilities.  </p>
+<h5>Setup</h5>
+<p>To generate an encryption key, run:  </p>
+<pre><code class="language-sh">python manage.py simple_genkey
+
+# Example output:
+Generated Encryption Key: XR2xKimT1FhFoqgj7r80eHJ6yse0Ig4yHfUeXEGWKWw=
+</code></pre>
+<ol>
+<li>Copy the generated key and add it to your .env file.</li>
+<li>Add the "apps.encrypted_content" app to INSTALLED_APPS in global_settings.py.</li>
+<li>In global_settings.py, enable encryption by setting:  </li>
+</ol>
+<pre><code class="language-python">ENCRYPT_CONTENT = True
+</code></pre>
+<p>This configures DocrepoX to use "apps.encrypted_content.storage.EncryptedFileSystemStorage" as the default storage class.  </p>
+<p>The transformation and indexing modules will automatically encrypt and decrypt content as needed.</p>
+<hr>
+<h4>Multi-tenancy</h4>
+<p>There are no plans to incorporate MT into DocrepoX. After careful consideration, we believe that integrating MT would introduce unnecessary complexity and make the project brittle. Additionally, we have no interest in maintaining or supporting MT as part of our core offering.</p>
+<p>However, we acknowledge that some users or developers may wish to implement MT on their own. To facilitate this, we will provide a list of some multi-tenancy Django packages and possible strategies that may be considered for implementation:</p>
+<h5>Multi-Tenancy Django Packages:</h5>
+<ul>
+<li><a href="https://github.com/django-tenants/django-tenants">django-tenants</a></li>
+<li><a href="https://github.com/bernardopires/django-tenant-schemas">django-tenant-schemas</a></li>
+<li><a href="https://github.com/citusdata/django-multitenant">django-multitenant</a></li>
+</ul>
+<h5>Possible Strategies:</h5>
+<ul>
+<li><strong>Schema-based Multi-Tenancy</strong>: Each tenant has its own database schema.</li>
+<li><strong>Database-based Multi-Tenancy</strong>: Each tenant has a separate database.</li>
+<li><strong>Row-level Multi-Tenancy</strong>: A single database with tenant-specific data separation.</li>
+</ul>
+<p>Please note that MT is <strong>not covered under support</strong> for users who have a support subscription with Documendous. Any issues related to MT implementation will be the responsibility of the user or developer implementing it.</p>
+<h4>Quill Editor</h4>
+<p>Quill Editor is a free, open-source WYSIWYG editor integrated into DocrepoX for creating formatted text documents. However, editing plain text documents that were not originally created with Quill may cause issues.  </p>
+<p>For production use, we recommend avoiding Quill Editor for critical existing plain text documents.  </p>
+<p>By default, the <code>CREATE_DOC_AS_RTF</code> setting is set to <code>False</code>. Changing it to <code>True</code> will enable Quill Editor for creating and editing new text documents.</p>

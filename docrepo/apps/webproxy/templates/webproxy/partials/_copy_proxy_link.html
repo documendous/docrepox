@@ -1,0 +1,31 @@
+<div x-data="{ copied: false }" class="relative">
+  <a
+      href="#"
+      @click.prevent="
+          navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}/repo/webproxy/document/{{ element.pk }}/');
+          copied = true;
+          setTimeout(() => copied = false, 4000);
+      "
+      class="text-gray-700 hover:text-blue-700 mr-2"
+  >
+      <span
+        class="material-icons-outlined"
+        title='Copy web proxy link for "{{ element.name|truncatechars:30 }}"'
+      >
+        link
+      </span>
+  </a>
+
+  <div
+      x-show="copied"
+      x-transition.opacity.scale.duration.300ms
+      class="fixed bg-black text-white px-4 py-4 rounded-lg shadow-xl text-sm"
+      style="display: none;"
+  >
+    Proxied document link copied to clipboard.
+    <p class="mt-2 text-yellow-400 uppercase">
+      Warning! Any user can access this document through this link.
+    </p>
+  </div>
+
+</div>

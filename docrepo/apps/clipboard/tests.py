@@ -243,7 +243,32 @@ class AddElementClipboardViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class RecycleElementViewTestWithClipboardTest(TestCase):
+class AddElementsClipboardViewTest(TestCase):
+    def setUp(self):
+        self.test_user = get_test_user()
+        self.user_home_folder = self.test_user.profile.home_folder
+        self.test_document = get_test_document(parent=self.user_home_folder)
+        self.test_folder = get_test_folder(parent=self.user_home_folder)
+
+    def test_post(self):
+        self.client.login(
+            username=TEST_USER["username"], password=TEST_USER["password"]
+        )
+        response = self.client.post(
+            reverse(
+                "repo:clipboard:add_elements_to_clipboard",
+                args=[self.user_home_folder.pk],
+            )
+        )
+        self.assertEqual(response.status_code, 302)
+        clipboard = Clipboard.objects.get(user=self.test_user)
+        for pasted_document in clipboard.documents.all():
+            self.assertEqual(self.test_document, pasted_document.document)
+        for pasted_folder in clipboard.folders.all():
+            self.assertEqual(self.test_folder, pasted_folder.folder)
+
+
+class RecycleElementViewWithClipboardTest(TestCase):
     def setUp(self):
         self.test_user = get_test_user()
         self.home_user_folder = self.test_user.profile.home_folder
@@ -259,7 +284,6 @@ class RecycleElementViewTestWithClipboardTest(TestCase):
         self.client.login(
             username=TEST_USER["username"], password=TEST_USER["password"]
         )
-
         response = self.client.post(
             reverse(
                 "repo:recycle_element",

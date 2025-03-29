@@ -1,0 +1,21 @@
+{% load static %}
+
+{% comment %}
+exclude_id: Keeps the right nav icon from being swapped on htmx call to update avatar_image.
+image_size: Pixel sizes for icon.
+use_image_title: Set to False to override title if you're using title on a parent container.
+{% endcomment %}
+
+<img
+  {% if not exclude_id %}
+  id="avatar-image"
+  {% endif %}
+  src="{{ profile.get_avatar_url|default:'/static/img/empty-avatar.png' }}"
+  onerror="this.onerror=null; this.src='{% static "img/empty-avatar.png" %}';" 
+  class="rounded-md"
+  alt="{{ profile.user.username }} avatar image"
+  {% if use_image_title %}
+  title="{{ profile.user.username }}"
+  {% endif %}
+  style="max-height: {{ image_size }}px; min-height: {{ image_size }}px;"
+>

@@ -1,14 +1,12 @@
-import pathlib
-
 from django.apps import apps
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from apps.repo import rules
 from apps.repo.forms.element import AddFolderForm
-from apps.repo.models.element.mimetype import Mimetype
+from apps.repo.models.element.document import Document
 from apps.repo.models.element.version import Version
-from apps.repo.settings import DEFAULT_MIMETYPE
+from apps.repo.utils.document import create_version, set_mimetype
 from apps.repo.utils.model import get_path_with_links
 from apps.repo.utils.system.object import get_system_root_folder
 
@@ -18,25 +16,11 @@ class DocumentCreator:
     Class for creating documents
     """
 
-    def _set_mimetype(self, document, mimetype=None):
+    def _set_mimetype(self, document, mimetype=None):  # pragma: no coverage
         """
         Sets mimetype for a document
         """
-        if mimetype:  # pragma: no coverage
-            mimetype = Mimetype.objects.get(name=mimetype)
-            document.mimetype = mimetype
-        else:
-            extension = pathlib.Path(document.name).suffix.lower()
-            mimetype_set = Mimetype.objects.filter(
-                extension_list__icontains=extension,
-            )
-            document.mimetype = (
-                mimetype_set.first()
-                if mimetype_set
-                else Mimetype.objects.get(name=DEFAULT_MIMETYPE)
-            )
-
-        document.save()
+        set_mimetype(document, mimetype=mimetype)
 
     def _get_common_context(self, parent, request):
         """
@@ -61,10 +45,11 @@ class DocumentCreator:
         """
         Creates the versioned file for a document
         """
-        version = version_form.save(commit=False)
-        version.parent = document
-        version.save()
-        self._set_mimetype(document, mimetype=mimetype)
+        create_version(
+            document=document,
+            content_file=version_form.cleaned_data.get("content_file"),
+            mimetype=mimetype,
+        )
 
 
 class DocumentRetriever:
@@ -72,7 +57,7 @@ class DocumentRetriever:
     Class for retrieving documents
     """
 
-    def _get_file(self, request, parent_id, parent_type="Document"):
+    def _get_file(self, request, parent_id, parent_type="Document", version_tag=None):
         """
         Returns document and physical file path
         """
@@ -83,15 +68,8 @@ class DocumentRetriever:
             pk=parent_id,
         )
 
-        rules.can_view_element_details(request, document)
-
-        version = (
-            Version.objects.filter(
-                parent=document,
-            )
-            .order_by("-created")
-            .first()
-        )
+        rules.can_view_element_details(request.user, document)
+        version = get_version(version_tag, document)
 
         if version and hasattr(version, "content_file"):
             file_path = version.content_file.path
@@ -99,3 +77,16 @@ class DocumentRetriever:
             file_path = None  # pragma: no coverage
 
         return (document, file_path)
+
+
+def get_version(version_tag: str, document: Document) -> Version:
+    if version_tag:  # pragma: no coverage
+        return Version.objects.get(parent=document, tag=version_tag)
+    else:
+        return (
+            Version.objects.filter(
+                parent=document,
+            )
+            .order_by("-created")
+            .first()
+        )

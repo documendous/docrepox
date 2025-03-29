@@ -3,7 +3,6 @@
     href="{% url 'repo:projects:project_details' child.id %}"
     class="text-gray-500 hover:text-blue-700"
     title='{{ child.type|title }} "{{ child.name }}" details'
-    hx-boost="{{ use_hx_boost_ext }}"
   >
     <span class="material-symbols-outlined">
       settings
@@ -14,7 +13,6 @@
     href="{% url 'repo:element_details' child.type child.id %}"
     class="text-gray-700 hover:text-blue-700"
     title='{{ child.type|title }} "{{ child.name|truncatechars:30 }}" details'
-    hx-boost="{{ use_hx_boost_ext }}"
   >
     <span class="material-symbols-outlined">
       quick_reference

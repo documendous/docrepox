@@ -1,31 +1,31 @@
 {% load transformation_tags %}
+{% load repo_tags %}
 
 {% is_previewable element as is_previewable %}
 
+{% if webproxy_share_enabled %}
+  {% can_add_webproxy request.user element as can_add_webproxy %}
+{% endif %}
+
 <div x-data="{ showPreview: false, fileUrl: '' }">
-  <span class="flex items-center px-4">
+  <span class="flex items-center px-4 gap-1">
     {% if element.current_version.size %}
-      <a href="{% url 'repo:retrieve_document' element.id %}?action=attachment"
-        class="text-gray-700 hover:text-blue-700 mr-2"
-      >
-        <span
-          class="material-icons-outlined"
-          title='Download "{{ element.name|truncatechars:30 }}" file'
-        >
-          cloud_download
-        </span>
-      </a>
+      {% include "repo/partials/actions/document_action_items/_download_document.html" %}
 
       {% if is_previewable %}
         {% include "transformations/preview_link.html" %}
       {% else %}
-        <span class="italic text-sm">*Preview not available</span>
+        <span>
+          {% include "transformations/_disabled_preview.html" %}
+        </span>
+      {% endif %}
+
+      {% if can_add_webproxy %}
+        {% include "webproxy/add_webproxy.html" %}
       {% endif %}
 
     {% else %}
-      <span class="italic text-sm">
-        *No preview or download available
-      </span>
+      {% include "transformations/_no_view_available.html" %}
     {% endif %}
 
   </span>

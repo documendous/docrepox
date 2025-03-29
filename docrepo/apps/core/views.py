@@ -3,6 +3,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View as DjangoView
 
 
@@ -52,10 +53,14 @@ class View(DjangoView):
         return super().dispatch(request, *args, **kwargs)
 
 
-def redirect_to_referer_or_default(request, default_url):
-    if "HTTP_REFERER" in request.META:  # pragma: no coverage
-        return_url = request.META["HTTP_REFERER"]
+def redirect_to_referer_or_default(request, default_url=None):  # pragma: no coverage
+    referer = request.META.get("HTTP_REFERER")
+
+    if referer and url_has_allowed_host_and_scheme(
+        referer, allowed_hosts={request.get_host()}
+    ):
+        return_url = referer
     else:
-        return_url = default_url
+        return_url = default_url or "."
 
     return HttpResponseRedirect(return_url)

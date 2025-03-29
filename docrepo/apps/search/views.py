@@ -1,5 +1,6 @@
 from itertools import chain
 
+from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse
@@ -10,7 +11,9 @@ from apps.projects.models import Project
 from apps.projects.utils.project import get_viewable_project_list
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
-from apps.repo.utils.system.object import get_admin_user
+from apps.repo.utils.system.object import get_admin_user, get_system_root_folder
+
+from .utils.search import pg_search
 
 
 class SearchProjectsView(View):
@@ -22,6 +25,7 @@ class SearchProjectsView(View):
 
     def post(self, request):
         search_term = request.POST.get("search_term", None)
+        pagination_enabled = False
 
         if search_term:
             if request.user == get_admin_user():
@@ -50,12 +54,16 @@ class SearchProjectsView(View):
                 )
 
         else:
-            projects = get_viewable_project_list(request)
+            projects = get_viewable_project_list(request.user)
+            pagination_enabled = True
 
         return render(
             request,
             "projects/partials/_project_children_table_data.html",
-            {"projects": projects},
+            {
+                "projects": projects,
+                "pagination_enabled": pagination_enabled,
+            },
         )
 
 
@@ -144,5 +152,25 @@ class SearchElementsView(View):
                 "scope": "full",
                 "pagination_enabled": pagination_enabled,
                 "search_term": search_term,
+            },
+        )
+
+
+class AdvancedSearchView(View):
+    def get(self, request):
+        home_folder_id = request.user.profile.home_folder.pk
+        root_folder_id = get_system_root_folder().pk
+        results = pg_search(request)
+        multi_type_list = request.GET.getlist("multi_type")
+
+        return render(
+            request,
+            "search/advanced.html",
+            {
+                "home_folder_id": home_folder_id,
+                "root_folder_id": root_folder_id,
+                "results": results,
+                "multi_type_list": multi_type_list,
+                "full_text_search_enabled": settings.ENABLE_FULL_TEXT_SEARCH,
             },
         )

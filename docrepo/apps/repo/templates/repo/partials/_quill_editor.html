@@ -17,6 +17,7 @@
 ></div>
 
 <input type="hidden" name="content" id="content">
+<div id="quill_initial_content" data-content="{{ initial_content|escape }}"></div>
 
 <script src="{% static 'quill/quill-2.0.2.js' %}"></script>
 <script src="{% static 'js/repo/quill/quill-create-document.js' %}"></script>

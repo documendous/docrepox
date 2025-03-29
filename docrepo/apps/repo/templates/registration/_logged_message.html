@@ -1,0 +1,9 @@
+{% if not request.user.is_authenticated %}
+  <p class="logged-msg">
+    (Logged out)
+  </p>
+{% else %}
+  <p class="logged-msg">
+    Currently logged in as {{ request.user.username }}
+  </p>
+{% endif %}

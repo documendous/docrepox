@@ -1,6 +1,6 @@
 <a 
   href="#" 
-  @click.prevent="fileUrl='{% url 'repo:retrieve_document' element.id %}'; showPreview=true"
+  @click.prevent="fileUrl='{% url 'repo:retrieve_document' element.id %}{% if version %}?v={{ version.tag }}{% endif %}'; showPreview=true"
   class="text-gray-700 hover:text-blue-700 mr-2"
 >
   <span

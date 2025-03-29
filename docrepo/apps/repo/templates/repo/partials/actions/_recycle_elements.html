@@ -1,0 +1,36 @@
+{% if not folder.is_recycle_folder %}
+  {% comment %} No Recycle folder should be recycled or deleted {% endcomment %}
+  <form
+    action="{% url 'repo:recycle_elements' folder.pk %}"
+    method="POST"
+    onsubmit="
+      if (document.getElementById('recycleSubmit').disabled) return false;
+      return confirm(
+        'Are you sure you want to recycle every child element in this folder? This action will place all child elements in your recycle folder.'
+      );
+    "
+  >
+    {% csrf_token %}
+    <button
+      id="recycleSubmit"
+      class="
+        {% if folder.get_children|length == 0 %}
+          opacity-50 cursor-not-allowed
+        {% endif %}
+      "
+      type="submit"
+      title="
+        {% if folder.get_children|length == 0 %}
+          This folder has no child elements that can be recycled.
+        {% else %}
+          Recycle all elements in this folder (Will be placed in recycling folder)
+        {% endif %}
+      "
+      {% if folder.get_children|length == 0 %}disabled{% endif %}
+    >
+      <span class="material-icons-outlined text-gray-700 hover:text-blue-700">
+        folder_delete
+      </span>
+    </button>
+  </form>
+{% endif %}

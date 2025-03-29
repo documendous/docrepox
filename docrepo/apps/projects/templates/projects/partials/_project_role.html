@@ -1,7 +1,7 @@
 {% load project_tags %}
 
-{% get_role_display request folder.parent_project as role %}
-{% can_view_project_details request folder as can_view_project_details %}
+{% get_role_display request.user folder.parent_project as role %}
+{% can_view_project_details request.user folder as can_view_project_details %}
 
 <div
   class="

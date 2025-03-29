@@ -1,9 +1,10 @@
 {% load project_tags %}
 {% load bookmark_tags %}
+{% load static %}
 
 <tbody class="bg-white divide-y divide-gray-200" id="project-children-table-data">
   {% for project in projects %}
-    {% can_read_project request project.folder as can_read_project %}
+    {% can_read_project request.user project.folder as can_read_project %}
 
     <tr>
       <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -23,7 +24,7 @@
             {% if project|is_bookmarked:request.user %}
               <span
                 class="material-icons-outlined nav-link ml-2 pt-0.5"
-                style="font-size: 18px !important;"
+                style="font-size: 20px !important;"
               >
                 star
               </span>
@@ -103,7 +104,12 @@
         {{ project.visibility|title }}
       </td>
 
-      <td class="px-6 py-4 whitespace-nowrap text-gray-700 text-sm flex items-center gap-3">
+      <td
+        class="
+          px-6 py-4 whitespace-nowrap text-gray-700 text-sm
+          flex justify-center items-center gap-3
+        "
+      >
         {% include "repo/partials/_element_actions.html" with child=project %}
       </td>
 
@@ -117,3 +123,7 @@
   {% endfor %}
 
 </tbody>
+
+{% if not pagination_enabled %}
+  <script src="{% static 'js/repo/utils/hide-pagination.js' %}"></script>
+{% endif %}

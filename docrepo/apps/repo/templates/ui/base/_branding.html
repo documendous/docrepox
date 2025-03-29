@@ -1,10 +1,15 @@
+{% load static %}
+
 <span class="branding">
+  <img class="h-[18px]" src="{% static 'img/doc-logo.png' %}" alt="">
   <a
     href="{% url 'repo:index' %}"
     class="
       text-gray-700 hover:no-underline hover:text-gray-700 font-bold
     "
   >
-    DocrepoX <span class="text-xs">by Documendous</span>
+    <span>
+      DocrepoX <span class="text-xs">by Documendous</span>
+    </span>
   </a>
 </span>

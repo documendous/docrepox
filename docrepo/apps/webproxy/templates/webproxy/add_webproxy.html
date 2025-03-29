@@ -1,0 +1,32 @@
+{% load webproxy_tags %}
+
+{% document_is_proxied request.user element as document_is_proxied %}
+
+{% if document_is_proxied %}
+  <a 
+    href="{% url "repo:webproxy:remove_webproxy_document" element.pk %}" 
+    class="text-gray-700 hover:text-blue-700 mr-2"
+  >
+    <span
+      class="material-icons-outlined"
+      title='Remove web proxy for "{{ element.name|truncatechars:30 }}"'
+    >
+      cell_tower
+    </span>
+  </a>
+  
+  {% include "webproxy/partials/_copy_proxy_link.html" %}
+
+{% else %}
+  <a 
+    href="{% url "repo:webproxy:add_webproxy_document" element.pk %}" 
+    class="text-gray-700 hover:text-blue-700 mr-2"
+  >
+    <span
+      class="material-icons-outlined"
+      title='Add web proxy for "{{ element.name|truncatechars:30 }}"'
+    >
+      export_notes
+    </span>
+  </a>
+{% endif %}

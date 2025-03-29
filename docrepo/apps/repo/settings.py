@@ -24,9 +24,9 @@ CREATE_DOC_USE_MODAL = (
     False  # Use a modal instead of a page to handle creating documents from hand
 )
 
-CREATE_DOC_AS_RTF = True  # When using the create document form (not modal) show the Quill rich text editor Quill docs: https://quilljs.com/docs/quickstart
+CREATE_DOC_AS_RTF = False  # When using the create document form (not modal) show the Quill rich text editor Quill docs: https://quilljs.com/docs/quickstart Defaults to using plain text edit.
 
-CREATE_DOC_DEFAULT_MT = "text/plain"  # Default mimetype of hand created documents. The other viable option could be "text/rtf".
+CREATE_DOC_DEFAULT_MT = "text/plain"  # Default mimetype of hand created documents.
 
 DATA_UPLOAD_MAX_NUMBER_FILES = 256  # Max upload of files using multi document upload. Set to None to disable this check.
 
@@ -54,26 +54,19 @@ ENABLE_PUBLIC_COMMENTS = (
 
 FOLDER_VIEW_PAGINATE_BY = 10  # Folder view's number of items per page
 
-# Auth settings
-
 LOGIN_REDIRECT_URL = "/repo/"  # After login, the url the user is redirected to
 
 LOGIN_URL = "/auth/login/"  # Default login url
 
 LOGOUT_REDIRECT_URL = "/auth/login/"  # Default logout redirect url
 
+MAX_BULK_UPLOAD_FILE_SIZE = 4000 * 1024 * 1024  # Max allowable bulk upload file size
+
 DELETED_ORPHAN_FOLDER = BASE_DIR / "deleted"
 
 UPDATE_MODEL_SUCCESS_MSG = "Your user info was saved."
+
 UPDATE_MODEL_ERROR_MSG = "Unable to save your user info."
-
-USE_HX_BOOST_EXT = (
-    "false"  # Use hx-boost for links outside current view - use a string true/false
-)
-
-USE_HX_BOOST_INT = (
-    "false"  # Use hx-boost for links in current view - use a string true/false
-)
 
 USE_LOCAL_TZ = True  # USE_LOCAL_TZ if set to True will render date times in the browser to the user's local timezone.
 

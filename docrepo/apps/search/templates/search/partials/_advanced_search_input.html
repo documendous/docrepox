@@ -1,0 +1,33 @@
+<div class="mb-4">
+  <label class="text-gray-700 font-medium flex items-center">
+    <span
+      class="material-symbols-outlined mt-[4px]"
+      style="font-size: 17px !important"
+    >
+      article
+    </span>
+
+    <span>
+      <span class="font-semibold">
+        Full Text Search
+      </span> 
+
+      <span class="italic text-sm">
+        (searches only through documents)
+      </span>
+
+    </span>
+
+  </label>
+
+  <input 
+    type="text" 
+    name="full_text" 
+    placeholder="Search within document content..." 
+    class="
+      border border-gray-300 p-2 rounded w-full
+      sm:w-2/3 text-sm text-gray-700 font-light
+    "
+    value="{{ request.GET.full_text }}"
+  />
+</div>

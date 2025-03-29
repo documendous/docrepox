@@ -1,0 +1,12 @@
+{% if not child.is_recycle_folder %}
+  {% comment %} No Recycle folder should be recycled or deleted {% endcomment %}
+  <a href="{% url 'repo:properties:update_property' property.pk %}">
+    <button type="submit"
+      title='Permanently Delete property "{{ property.key }}" (Unrecoverable)'
+    >
+      <span class="material-icons-outlined">
+        edit
+      </span>
+    </button>
+  </a>
+{% endif %}

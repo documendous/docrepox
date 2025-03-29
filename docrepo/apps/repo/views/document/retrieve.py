@@ -1,13 +1,16 @@
 import logging
 import pathlib
-from urllib.parse import quote
 
 from django.conf import settings
-from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseServerError
+from django.http import HttpRequest, HttpResponse, HttpResponseServerError
 
+from apps.core.utils.core import get_extension
 from apps.core.views import View
+from apps.repo import rules
+from apps.repo.models.element.version import Version
 from apps.repo.settings import DEFAULT_MIMETYPE
-from apps.repo.utils.model import get_current_version_tag
+from apps.repo.utils.model import get_current_version, get_document_version
+from apps.repo.utils.storage import handle_file_response
 from apps.repo.utils.views import DocumentRetriever
 from apps.transformations.core import generate_pdf_file
 from apps.transformations.models import Preview
@@ -61,14 +64,8 @@ class DocumentRetrieverView(DocumentRetriever, View):
 
     def file_response(
         self, file_path: pathlib.Path, content_type: str, file_name: str, action: str
-    ) -> HttpResponse:
-        response = FileResponse(open(file_path, "rb"), content_type=content_type)
-        quoted_file_name = quote(file_name)
-        response["Content-Disposition"] = f'{action}filename="{quoted_file_name}"'
-        response["X-Frame-Options"] = "SAMEORIGIN"
-        response["Content-Security-Policy"] = "frame-ancestors 'self';"
-
-        return response
+    ) -> HttpResponse:  # pragma: no coverage
+        return handle_file_response(file_path, file_name, content_type, action)
 
     def get_action_type(self, request: HttpRequest) -> str | None:
         """
@@ -79,12 +76,12 @@ class DocumentRetrieverView(DocumentRetriever, View):
 
         return None
 
-    def _get_preview(self, version_tag):
+    def _get_preview(self, version: Version):
         log = logging.getLogger(__name__)
 
         try:  # pragma: no coverage
             """Getting a preview and file_path"""
-            preview = Preview.objects.get(version=version_tag)
+            preview = Preview.objects.get(version=version)
             file_path = preview.content_file.path
             log.debug("Preview generated")
 
@@ -93,8 +90,8 @@ class DocumentRetrieverView(DocumentRetriever, View):
             log.warning("Preview and file_path do not exist. Retrying generate preview")
 
             try:
-                generate_pdf_file(version_tag)
-                preview = Preview.objects.get(version=version_tag)
+                generate_pdf_file(version)
+                preview = Preview.objects.get(version=version)
                 file_path = preview.content_file.path
                 log.debug("Preview generated")
 
@@ -110,17 +107,29 @@ class DocumentRetrieverView(DocumentRetriever, View):
     def get(self, request, document_id):
         log = logging.getLogger("__name__")
 
-        document, file_path = self._get_file(request, document_id)
+        version_tag = request.GET.get("v", None)
+
+        document, file_path = self._get_file(
+            request, document_id, version_tag=version_tag
+        )
+
+        rules.can_retrieve_document(request.user, document)
+
         action = self.get_action_type(request)
-        document_ext = pathlib.Path(document.name).suffix.lower()
+        document_ext = get_extension(file_name=document.name)
 
         log.debug(f"Orig file path: {file_path}")
 
         if not action:
             """We are expecting a preview and not an attachment"""
-            current_version_tag = get_current_version_tag(document)
+            if version_tag:  # pragma: no coverage
+                selected_version = get_document_version(
+                    document, version_tag=version_tag
+                )
+            else:
+                selected_version = get_current_version(document)
 
-            if not current_version_tag:  # pragma: no coverage
+            if not selected_version:  # pragma: no coverage
                 """The document must have a current version tag"""
                 return HttpResponseServerError(
                     "Error accessing file. No version exists.",
@@ -128,10 +137,11 @@ class DocumentRetrieverView(DocumentRetriever, View):
 
             if document_ext in settings.TRANSFORMABLE_TYPES:
                 """The document must be of a transformable type"""
-                preview, file_path = self._get_preview(version_tag=current_version_tag)
+                preview, file_path = self._get_preview(version=selected_version)
 
                 if preview:
                     """We have a preview and will show it in the browser"""
+
                     content_type = "application/pdf"
 
                     return self.file_response(

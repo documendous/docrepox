@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -6,9 +8,10 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 
 from apps.comms.models import Communication
-from apps.comms.utils import send_comm
+from apps.comms.utils import create_comm
 from apps.core.views import View
-from apps.projects.models import Project
+
+from ..models import Project
 
 User = get_user_model()
 
@@ -23,7 +26,7 @@ class RequestProjectJoinView(View):
         user = request.user
         managers = project.get_managers()
 
-        send_comm(
+        create_comm(
             from_user=user,
             to_group=managers,
             subject=f"Request to join project: {project.name} from {user.username}",
@@ -49,6 +52,7 @@ class AddRequesterToProjectGroupView(View):
     """
 
     def post(self, request, project_id, user_id, group_type):
+        log = logging.getLogger(__name__)
         user = User.objects.get(pk=user_id)
         project = Project.objects.get(pk=project_id)
 
@@ -63,13 +67,18 @@ class AddRequesterToProjectGroupView(View):
 
         user.groups.add(group)
 
-        communication = Communication.objects.get(
-            content_type__model="project",
-            object_id=project.id,
-            msg_from=user,
-        )
+        try:  # pragma: no coverage
+            communication = Communication.objects.get(
+                content_type__model="project",
+                object_id=project.id,
+                msg_from=user,
+            )
 
-        communication.delete()
+            communication.set_acknowledged()
+            log.info("Associated communication marked as acknowledged.")
+
+        except Communication.DoesNotExist:
+            log.info("Associated communication does not exist. Nothing to delete.")
 
         return HttpResponseRedirect(
             reverse(

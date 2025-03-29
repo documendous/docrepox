@@ -2,8 +2,8 @@
 
 {% if element|is_bookmarked:request.user %}
   {% url 'repo:bookmarks:remove_bookmark' element.type element.pk as url %}
-  {% include 'bookmarks/partials/actions/_bookmarking.html' with action="remove" icon="star" url=url %}
+  {% include 'bookmarks/partials/actions/_bookmarking.html' with action="remove" icon="bookmark_added" url=url %}
 {% else %}
   {% url 'repo:bookmarks:add_bookmark' element.type element.pk as url %}
-  {% include 'bookmarks/partials/actions/_bookmarking.html' with action="add" icon="bookmark" url=url %}
+  {% include 'bookmarks/partials/actions/_bookmarking.html' with action="add" icon="bookmark_add" url=url %}
 {% endif %}

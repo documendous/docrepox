@@ -103,8 +103,10 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 </code></pre>
 <p>These changes should take effect without requiring a restart.</p>
+<hr>
 <h3>Form Rendering</h3>
 <p>Use Django forms to define fields that will be used in your form. On the templating side, use django-widget-tweaks to render them unless manual rendering is absolutely necessary.</p>
+<hr>
 <hr>
 <h3>Javascript</h3>
 <p>Use libraries like HTMX or Alpine.js to minimize standard Javascript usage where possible. Using vanilla Javascript is ok when needed but must be refactored to the appropriate javascript file.</p>
@@ -141,6 +143,7 @@ DEBUG_TOOLBAR_CONFIG = {
 <li>.venv/</li>
 </ul>
 <p>If a function or method is not deemed needed for testing or if the work to do it is unnecessarily daunting, we can ignore it by placing the '# pragma: no coverage' comment at the end of the line where missing coverage is indicated.</p>
+<hr>
 <h3>Pre-commit</h3>
 <p>Ensure you are using pre-commit when committing code. How to install pre-commit see: https://pre-commit.com/#installation</p>
 <p>In the root of the project is a hidden file: .pre-commit-config.yaml</p>

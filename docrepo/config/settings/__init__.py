@@ -14,45 +14,362 @@ import logging as py_logging
 
 from apps.clipboard.settings import *
 from apps.comms.settings import *
+from apps.dashlets.settings import *
 from apps.ddocs.settings import *
 from apps.etags.settings import *
-
-# DocrepoX settings
 from apps.repo.settings import *
+from apps.search.settings import *
 from apps.transformations.settings import *
 from apps.ui.settings import *
+from apps.webproxy.settings import *
 
 from .admin import JAZZMIN_SETTINGS
-from .apps import INSTALLED_APPS
+from .utils import BASE_DIR, env
 
-# Expected Django Settings - explicitly loaded
-from .base import (
-    ALLOWED_HOSTS,
-    ENABLE_EXTENSIONS,
-    ROOT_URLCONF,
-    TEMPLATES,
-    VERSION,
-    WSGI_APPLICATION,
+### DocrepoX settings
+
+
+### Application definitions and installation
+INSTALLED_APPS = [
+    "jazzmin",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "tz_detect",
+    "widget_tweaks",
+    "apps.ddocs",
+    "apps.core",
+    "apps.dashlets",
+    "apps.bookmarks",
+    "apps.transformations",
+    "apps.repo",
+    "apps.avatars",
+    "apps.ui",
+    "apps.authentication",
+    "apps.projects",
+    "apps.properties",
+    "apps.clipboard",
+    "apps.search",
+    "apps.etags",
+    "apps.comments",
+    "apps.comms",
+    "apps.encrypted_content",
+    "apps.webproxy",
+    "debug_toolbar",
+]
+
+
+### Base Settings
+
+VERSION = "25.1.0"
+
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost"])
+
+ROOT_URLCONF = "config.urls"
+
+ENABLE_EXTENSIONS = False  # Enable customization extensions
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "apps.repo.context_processors.global_settings",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = "config.wsgi.application"
+
+
+### Database settings
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": env("SQL_HOST"),
+        "PORT": env("SQL_PORT"),
+        "USER": env("SQL_USER"),
+        "PASSWORD": env("SQL_PASSWORD"),
+        "NAME": env("SQL_DATABASE"),
+    }
+}
+
+
+### Debug and test settings
+
+
+def show_toolbar(request):
+    if DEBUG:
+        return True  # Toolbar is turned off by default for all environments. Set this to True if needed. It can generate too much content in the page and isn't always useful.
+
+
+# False if not in os.environ because of casting above
+DEBUG = env("DEBUG")
+
+if DEBUG == "1":
+    DEBUG = True
+else:
+    DEBUG = False
+
+INTERNAL_IPS = (
+    "127.0.0.1",
+    "localhost",
 )
-from .dashlets import *
-from .db import DATABASES
-from .debug import ADD_TEST_OBJECTS, ADD_TEST_PROJECTS, DEBUG, DEBUG_TOOLBAR_CONFIG
-from .locale import LANGUAGE_CODE, TIME_ZONE, USE_I18N, USE_TZ
-from .logging import LOGGING
-from .middleware import MIDDLEWARE
-from .security import AUTH_PASSWORD_VALIDATORS, SECRET_KEY, USE_KEYCLOAK
-from .storage import (
-    DEFAULT_AUTO_FIELD,
-    MEDIA_ROOT,
-    MEDIA_URL,
-    STATIC_ROOT,
-    STATIC_URL,
-    STATICFILES_DIRS,
-)
-from .utils import BASE_DIR
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+}
+
+
+### Test Suite
+
+ADD_TEST_OBJECTS = DEBUG  # Adds testing objects like users and projects
+
+ADD_TEST_PROJECTS = DEBUG  # Adds test projects
+
+
+### Locale settings
+
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "UTC"
+
+USE_I18N = True
+
+USE_TZ = True
+
+
+### Logging settings
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s.%(funcName)s: %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",  # Suppress all root-level logs unless warning or higher
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",  # Suppress general Django logs
+            "propagate": False,
+        },
+        # "apps.authentication": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.avatars": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.bookmarks": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.clipboard": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.comments": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.comms": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.core": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.dashlets": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.ddocs": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.encrypted_content": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.etags": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.projects": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.properties": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.repo": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.search": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.transformations": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.ui": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # "apps.webproxy": {
+        #     "handlers": ["console"],
+        #     "level": "DEBUG",
+        #     "propagate": False,
+        # },
+        # Ensure all other apps are not logging by default (Should be used when using individual app debuggers)
+        # "apps": {
+        #     "handlers": ["console"],
+        #     "level": "INFO",
+        #     "propagate": False,
+        # },
+    },
+}
+
+
+### Middleware settings
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.core.middleware.LoginRequiredMiddleware",
+    "tz_detect.middleware.TimezoneMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+]
+
+
+### Security settings
+
+# Raises Django's ImproperlyConfigured
+# exception if SECRET_KEY not in os.environ
+SECRET_KEY = env("SECRET_KEY")
+
+# Password validation
+# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+USE_KEYCLOAK = False
+
+
+### Storage settings
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+STATIC_URL = "static/"
+
+STATIC_ROOT = "/tmp/staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "staticfiles",
+    # BASE_DIR / "extensions" / "staticfiles",  # Uncomment if you plan to use extensions
+]
+
+MEDIA_URL = "media/"
+
+MEDIA_ROOT = BASE_DIR / "mediafiles"
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# Encrypted content settings (experimental)
+
+ENCRYPT_CONTENT = False  # Experimental encrypted file system
+
+# If ENCRYPT_CONTENT is set to True, uncomment the next two lines:
+
+# DEFAULT_FILE_STORAGE = "apps.encrypted_content.storage.EncryptedFileSystemStorage"
+
+# ENCRYPTION_KEY = env("ENCRYPTION_KEY")
+
+"""
+How to obtain encryption key: ./manage.py simple_genkey
+"""
+
+
+# Webproxy
+
+WEBPROXY_SHARE_ENABLED = True
+
+
+### Elastic settings (experimental)
 
 # ## Uncomment to use elastic
 # from .elastic import *
+
+# Minio settings
 
 # ## Uncomment the following import to use Minio:  # noqa: E266
 # Read the DocrepoX docs MinIO section before using!
@@ -80,6 +397,7 @@ from .utils import BASE_DIR
 # A git pull style upgrade/update will not overwrite your global_settings.py
 
 log = py_logging.getLogger(__name__)
+
 try:
     from global_settings import *
 except ModuleNotFoundError:

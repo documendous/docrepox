@@ -1,0 +1,10 @@
+<a href="{% url 'repo:retrieve_document' element.id %}?action=attachment"
+  class="text-gray-700 hover:text-blue-700 mr-2"
+>
+  <span
+    class="material-icons-outlined"
+    title='Download "{{ element.name }}" file'
+  >
+    cloud_download
+  </span>
+</a>

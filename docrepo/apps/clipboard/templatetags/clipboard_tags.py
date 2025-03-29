@@ -6,12 +6,12 @@ register = template.Library()
 
 
 @register.simple_tag
-def element_in_clipboard(request, element):  # pragma: no coverage
+def element_in_clipboard(user, element):  # pragma: no coverage
     """
     Checks if element (document or folder) is in the user's clipboard
     """
     try:
-        clipboard = Clipboard.objects.get(user=request.user)
+        clipboard = Clipboard.objects.get(user=user)
     except Clipboard.DoesNotExist:
         return False
 

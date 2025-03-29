@@ -7,11 +7,11 @@ register = template.Library()
 
 
 @register.simple_tag
-def ui_setting(request, key, type="bool"):
-    if not request.user.is_authenticated:  # pragma: no coverage
+def ui_setting(user, key, type="bool"):
+    if not user.is_authenticated:  # pragma: no coverage
         return None
 
-    setting, created = Setting.objects.get_or_create(key=key, user=request.user)
+    setting, created = Setting.objects.get_or_create(key=key, user=user)
 
     if type == "bool":
         if created:

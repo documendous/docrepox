@@ -92,6 +92,26 @@ document.addEventListener('DOMContentLoaded', function() {
   quill.container.previousSibling
     .querySelector('span.ql-align')
     .setAttribute('title', 'Select alignment');
+  
+  function decodeHTMLEntities(text) {
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = text;
+    return textarea.value;
+  }
+
+  // Get initial content from the hidden div
+  const initialContentDiv = document.getElementById('quill_initial_content');
+  let initialContent = "";
+
+  if (initialContentDiv) {
+    initialContent = initialContentDiv.getAttribute("data-content");
+  }
+
+  const decodedContent = decodeHTMLEntities(initialContent);
+
+  if (decodedContent.trim() !== "") {
+    quill.root.innerHTML = decodedContent;
+  }
 
   const contentInput = document.querySelector('#content');
     

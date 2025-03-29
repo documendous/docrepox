@@ -14,7 +14,7 @@ class DeleteElementView(View):
     def post(self, request, element_type, element_id):
         Model = get_model(element_type)
         element = Model.objects.get(pk=element_id)
-        rules.can_delete_element(request, element)
+        rules.can_delete_element(request.user, element)
         element.delete()
 
         return HttpResponseRedirect(

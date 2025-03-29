@@ -1,3 +1,6 @@
+import logging
+
+from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
@@ -5,6 +8,7 @@ from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 
+from apps.core.utils.core import get_extension
 from apps.core.views import View
 from apps.repo import rules
 from apps.repo.forms.element import AddDocumentForm, AddVersionForm
@@ -12,6 +16,7 @@ from apps.repo.models.element.document import Document
 from apps.repo.models.element.folder import Folder
 from apps.repo.utils.helpers import create_with_new_name
 from apps.repo.utils.views import DocumentCreator
+from apps.search.models import DocumentIndex
 
 
 class BaseCreateDocumentView(DocumentCreator, View):
@@ -33,6 +38,7 @@ class BaseCreateDocumentView(DocumentCreator, View):
         title=None,
         description=None,
     ):
+        log = logging.getLogger(__name__)
         try:
             new_document = Document.objects.create(
                 name=name,
@@ -54,6 +60,17 @@ class BaseCreateDocumentView(DocumentCreator, View):
         if new_document:
             self._create_version(new_document, version_form)
 
+            if (
+                settings.ENABLE_FULL_TEXT_SEARCH
+                and get_extension(file_name=new_document.name)
+                in settings.TRANSFORMABLE_TYPES
+            ):
+                log.debug(f"Creating document index for document: {new_document.name}")
+                DocumentIndex.objects.create(
+                    document=new_document
+                )  # pragma: no coverage
+                log.debug("Successfully created")
+
             messages.info(
                 request,
                 f'Document "{truncatechars(name, 30)}" was successfully created.',
@@ -66,7 +83,7 @@ class BaseCreateDocumentView(DocumentCreator, View):
         Base GET
         """
         parent = get_object_or_404(Folder, pk=folder_id)
-        rules.can_create_document(request, parent)
+        rules.can_create_document(request.user, parent)
         self.context = self._get_common_context(parent, request)
         self._set_extra_context()
 
@@ -77,7 +94,7 @@ class BaseCreateDocumentView(DocumentCreator, View):
         Base POST
         """
         parent = get_object_or_404(Folder, pk=folder_id)
-        rules.can_create_document(request, parent)
+        rules.can_create_document(request.user, parent)
         self.document_form = AddDocumentForm(request.POST)
         self._set_version_form(request)
 

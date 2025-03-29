@@ -1,0 +1,55 @@
+{% extends "ui/base/_base.html" %}
+{% load static %}
+
+{% block main %}
+<main>
+  <div class="mt-8">
+    <table class="min-w-full divide-y divide-gray-200 border shadow">
+      <caption
+        class="text-left px-2 py-2 relative border rounded-sm bg-white mb-2 shadow"
+      >
+        <p class="text-2xl font-semibold p-2 flex items-center gap-1">
+          <span class="material-symbols-outlined">
+            find_in_page
+          </span>
+
+          Advanced Search
+
+        </p>
+        <div class="flex justify-between items-center flex-wrap gap-2 p-2">
+          {% include "search/partials/_advanced_search_form.html" %}
+        </div>
+      </caption>
+      <caption class="border rounded-sm shadow mt-4 bg-white">
+        <p class="text-xl font-semibold p-4 flex justify-center items-center gap-1">
+          <span class="material-symbols-outlined" style="font-size: 22px !important">
+            dataset
+          </span>
+          Search Results
+        </p>
+      </caption>
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="fl-th">
+            Name
+          </th>
+          <th class="fl-th">
+            Type
+          </th>
+          <th class="fl-th">Owner</th>
+          <th class="fl-th">
+            Created
+          </th>
+          <th class="fl-th">
+            Modified
+          </th>
+        </tr>
+      </thead>
+      {% include "search/partials/_search_results_table_data.html" %}
+    </table>
+  </div>
+</main>
+
+{% include "repo/partials/_pagination.html" %}
+
+{% endblock main %}

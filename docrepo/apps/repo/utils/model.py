@@ -1,12 +1,13 @@
 import datetime
 from typing import List
 
-from django.conf import settings
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 
 from apps.repo.models.element.document import Document
-from apps.repo.utils.access import has_public_access
+from apps.repo.models.element.version import Version
+
+from .access import has_public_access
 
 
 def user_can_navigate_path(folder, user):
@@ -50,17 +51,23 @@ def order_children_by_filter(children: list, order_by_filter: str) -> List:
     return result
 
 
-def get_current_version_tag(document: Document) -> str:
+def get_current_version(document: Document) -> Version | None:
     """
     Returns most current version tag of a document else returns an empty string
     """
-    current_version_tag = ""
+    current_version = None
     versions = document.get_versions()
 
     if versions:
-        current_version_tag = versions[0]
+        current_version = versions[0]
 
-    return current_version_tag
+    return current_version
+
+
+def get_document_version(
+    document: Document, version_tag: str
+) -> Version | None:  # pragma: no coverage
+    return next((v for v in document.get_versions() if v.tag == version_tag), None)
 
 
 def get_path_with_links(element, user) -> str:
@@ -83,7 +90,7 @@ def get_path_with_links(element, user) -> str:
             ],
         )
 
-        return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(base.name, 30)}</a>'
+        return f'<a href="{url}" class="{link_class}" title="{title}">{truncatechars(base.name, 30)}</a>'
 
     else:
         if user_can_navigate_path(base, user):
@@ -96,7 +103,7 @@ def get_path_with_links(element, user) -> str:
                 ],
             )
 
-            return f'{parent_path} / <a href="{url}" class="{link_class}"  title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(base.name, 30)}</a>'
+            return f'{parent_path} / <a href="{url}" class="{link_class}"  title="{title}">{truncatechars(base.name, 30)}</a>'
 
         else:
             if has_public_access(base):
@@ -107,7 +114,7 @@ def get_path_with_links(element, user) -> str:
                     ],
                 )
 
-                return f'<a href="{url}" class="{link_class}" title="{title}" hx-boost="{settings.USE_HX_BOOST_EXT}">{truncatechars(base.name, 30)}</a>'
+                return f'<a href="{url}" class="{link_class}" title="{title}">{truncatechars(base.name, 30)}</a>'
 
             else:
                 return ""

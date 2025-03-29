@@ -2,7 +2,6 @@ import logging
 
 from django.conf import settings
 from django.contrib import messages
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.utils import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -10,6 +9,7 @@ from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 
 from apps.clipboard.models import Clipboard
+from apps.core.utils.paginator import get_paginated_objects
 from apps.core.views import View
 from apps.repo import rules
 from apps.repo.forms.element import AddDocumentForm, AddFolderForm, AddVersionForm
@@ -64,14 +64,13 @@ class FolderView(View):
             "clipboard_documents": clipboard.documents.all(),
             "clipboard_folders": clipboard.folders.all(),
             "create_doc_use_modal": settings.CREATE_DOC_USE_MODAL,
-            "use_hx_boost_ext": settings.USE_HX_BOOST_EXT,
-            "use_hx_boost_int": settings.USE_HX_BOOST_INT,
             "max_upload_files": settings.DATA_UPLOAD_MAX_NUMBER_FILES,
+            "full_text_search_enabled": settings.ENABLE_FULL_TEXT_SEARCH,
         }
 
     def get(self, request, folder_id):
         parent = get_object_or_404(Folder, pk=folder_id)
-        rules.can_view_folder(request, parent)
+        rules.can_view_folder(request.user, parent)
 
         if parent == get_system_projects_folder():
             return HttpResponseRedirect(reverse("repo:projects:index"))
@@ -86,15 +85,11 @@ class FolderView(View):
             search_term=search_term,
         )
 
-        paginator = Paginator(children, self.paginate_by)
-        page = request.GET.get("page", 1)
-
-        try:
-            paginated_children = paginator.page(page)  # pragma: no coverage
-        except PageNotAnInteger:  # pragma: no coverage
-            paginated_children = paginator.page(1)
-        except EmptyPage:  # pragma: no coverage
-            paginated_children = paginator.page(paginator.num_pages)
+        paginated_children = get_paginated_objects(
+            children,
+            page=request.GET.get("page", 1),
+            paginate_by=self.paginate_by,
+        )
 
         self._set_common_context(parent, request, order_by_filter=order_by_filter)
         self.context["children"] = paginated_children
@@ -106,7 +101,7 @@ class FolderView(View):
 
     def post(self, request, folder_id):
         parent = get_object_or_404(Folder, pk=folder_id)
-        rules.can_create_folder_children(request, parent)
+        rules.can_create_folder_children(request.user, parent)
 
         name = request.POST.get("name", None)
         title = request.POST.get("title", None)

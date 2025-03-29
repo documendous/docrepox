@@ -19,50 +19,50 @@ def is_a_project_folder(folder) -> bool:
 
 
 @register.simple_tag
-def can_view_project_details(request, element) -> bool:
-    return rules.can_view_project_details(request, element, from_tag=True)
+def can_view_project_details(user, element) -> bool:
+    return rules.can_view_project_details(user, element, from_tag=True)
 
 
 @register.simple_tag
-def can_view_project_members(request, element) -> bool:
-    return rules.can_view_project_members(request, element, from_tag=True)
+def can_view_project_members(user, element) -> bool:
+    return rules.can_view_project_members(user, element, from_tag=True)
 
 
 @register.simple_tag
-def can_add_user_to_project_group(request, parent) -> bool:
-    return rules.can_add_user_to_project_group(request, parent, from_tag=True)
+def can_add_user_to_project_group(user, parent) -> bool:
+    return rules.can_add_user_to_project_group(user, parent, from_tag=True)
 
 
 @register.simple_tag
-def can_remove_user_from_project_group(request, parent) -> bool:
-    return rules.can_remove_user_from_project_group(request, parent, from_tag=True)
+def can_remove_user_from_project_group(user, parent) -> bool:
+    return rules.can_remove_user_from_project_group(user, parent, from_tag=True)
 
 
 @register.simple_tag
-def can_read_project(request, parent) -> bool:
-    return rules.can_read_project(request, parent, from_tag=True)
+def can_read_project(user, parent) -> bool:
+    return rules.can_read_project(user, parent, from_tag=True)
 
 
 @register.simple_tag
-def has_project_membership(request, parent) -> bool:
-    return rules.has_project_membership(request, parent, from_tag=True)
+def has_project_membership(user, parent) -> bool:
+    return rules.has_project_membership(user, parent, from_tag=True)
 
 
 @register.simple_tag
-def is_membership_pending(request, parent) -> bool:
-    return rules.is_membership_pending(request, parent)
+def is_membership_pending(user, parent) -> bool:
+    return rules.is_membership_pending(user, parent)
 
 
 @register.simple_tag
-def can_deactivate_project(request, parent) -> bool:
-    return rules.can_deactivate_project(request, parent, from_tag=True)
+def can_deactivate_project(user, parent) -> bool:
+    return rules.can_deactivate_project(user, parent, from_tag=True)
 
 
 @register.simple_tag
-def can_update_project(request, project) -> bool:
-    return rules.can_update_project(request, project, from_tag=True)
+def can_update_project(user, project) -> bool:
+    return rules.can_update_project(user, project, from_tag=True)
 
 
 @register.simple_tag
-def get_role_display(request, project) -> str:
-    return project.get_role_display(user=request.user)
+def get_role_display(user, project) -> str:
+    return project.get_role_display(user=user)

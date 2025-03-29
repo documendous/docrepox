@@ -32,6 +32,11 @@ class Communication(TimestampedModel):
 
     object_id = models.UUIDField(null=True, blank=True)
     related_element = GenericForeignKey()
+    acknowledged = models.BooleanField(default=False)
+
+    def set_acknowledged(self):
+        self.acknowledged = True
+        self.save()
 
     def __str__(self):
         return f"From: {self.msg_from} To: {self.msg_to} Subj: {self.subject}"

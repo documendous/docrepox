@@ -1,0 +1,5 @@
+{% if not comm.acknowledged %}
+  {% include "comms/partials/actions/_acknowledge_comm.html" %}
+{% else %}
+  {% include "comms/partials/actions/_delete_comm.html" %}
+{% endif %}

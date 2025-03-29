@@ -16,6 +16,7 @@ def global_settings(request):
         "app_version": settings.VERSION,
         "support_url": settings.SUPPORT_URL,
         "admin_allow_all": settings.ADMIN_ALLOW_ALL,
+        "webproxy_share_enabled": settings.WEBPROXY_SHARE_ENABLED,
     }
 
 

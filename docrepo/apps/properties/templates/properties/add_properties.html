@@ -1,0 +1,125 @@
+{% extends "ui/base/_base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block main %}
+<main>
+  <section class="py-8">
+    <div class="flex justify-center my-8">
+      <form id="properties-form" method="POST" action="" class="w-1/2">
+        {% csrf_token %}
+        <div class="flex py-2 mb-4">
+          {% include "repo/partials/_path_with_links.html" %}
+        </div>
+        <legend>
+          <h2 class="text-2xl font-semibold mb-6">
+            Add Custom {{ element.type|title }} Properties:<br> "{{ element.name }}"
+          </h2>
+        </legend>
+        <div x-data="{ properties: [{ key: '', value: '', type: 'str' }] }">
+          <!-- Dynamically generated fields -->
+          <template x-for="(property, index) in properties" :key="index">
+            <div class="mb-4 border p-4 rounded-md">
+              <label for="key" class="block text-sm font-medium text-gray-700">
+                Property Name
+              </label>
+              <input
+                type="text"
+                x-model="property.key"
+                name="key[]"
+                class="
+                  mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                  focus:outline-none focus:ring focus:border-blue-500 p-2
+                "
+                required
+              />
+
+              <label for="key" class="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <input
+                type="text"
+                x-model="property.description"
+                name="description[]"
+                class="
+                  mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                  focus:outline-none focus:ring focus:border-blue-500 p-2
+                "
+              />
+
+              <label for="value" class="block text-sm font-medium text-gray-700 mt-2">
+                Value
+              </label>
+              <input
+                type="text"
+                x-model="property.value"
+                name="value[]"
+                class="
+                  mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                  focus:outline-none focus:ring focus:border-blue-500 p-2
+                "
+              />
+
+              <label for="type" class="block text-sm font-medium text-gray-700 mt-2">
+                Type (string, integer, etc.)
+              </label>
+              <select
+                x-model="property.type"
+                name="type[]"
+                class="
+                  mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                  focus:outline-none focus:ring focus:border-blue-500 p-2
+                "
+                required
+              >
+                <option value="str">String</option>
+                <option value="int">Integer</option>
+                <option value="float">Float</option>
+                <option value="bool">Boolean</option>
+                <option value="datetime">DateTime</option>
+                <option value="json">JSON</option>
+              </select>
+              <button
+                type="button"
+                class="mt-2 text-red-500 text-sm"
+                x-on:click="properties.splice(index, 1)"
+                x-show="properties.length > 1"
+              >
+                Remove
+              </button>
+            </div>
+          </template>
+
+          <!-- Add Property Button -->
+          <div class="mt-4">
+            <button
+              type="button"
+              class="text-blue-500 text-sm px-4 py-2 rounded-md underline"
+              x-on:click="properties.push({ key: '', value: '', type: 'str' })"
+            >
+              Add Property
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6">
+          <button
+            type="submit" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+          >
+              Save
+          </button>
+          <a
+            href="{% if element.type == 'project' %}{% url 'repo:projects:project_details' element.id %}{% else %}{% url 'repo:element_details' element.type element.id %}{% endif %}"
+            class="bg-gray-500 text-white font-semibold px-4 py-3 rounded"
+          >
+            Details
+          </a>
+        </div>
+        
+      </form>
+    </div>
+  </section>
+</main>
+<script src="{% static 'js/repo/utils/validation.js' %}"></script>
+{% endblock main %}

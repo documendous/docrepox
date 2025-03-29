@@ -86,4 +86,4 @@ class VersionAdmin(ModelAdmin):
 
 
 class ProfileAdmin(ModelAdmin):
-    pass
+    list_display = ("id", "user")

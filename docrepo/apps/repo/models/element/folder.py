@@ -2,25 +2,28 @@ import logging
 from itertools import chain
 from typing import List
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.forms import ValidationError
 from django.template.defaultfilters import truncatechars
 
 from apps.comments.models import Commentable
 from apps.core.models import Element, HasFolderParent, IsRecyclable
+from apps.properties.mixins import HasPropertiesMixin
+from apps.properties.models import Property
 
 from ...models.element.version import Version
 from ...utils.model import order_children_by_filter
-from ...utils.static.lookup import is_a_user_home_folder
 from .document import Document
 
 
-class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
+class Folder(Element, HasFolderParent, IsRecyclable, Commentable, HasPropertiesMixin):
     """
     Element representing files with meta data
     """
 
     is_hidden = models.BooleanField(default=False)
+    properties = GenericRelation(Property)
 
     class Meta:
         verbose_name = "Folder"
@@ -31,6 +34,7 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
             models.Index(fields=["parent"]),
             models.Index(fields=["created"]),
             models.Index(fields=["is_deleted"]),
+            models.Index(fields=["name"]),
         ]
 
         ordering = ("-created",)
@@ -176,9 +180,6 @@ class Folder(Element, HasFolderParent, IsRecyclable, Commentable):
 
         if self.parent == self:
             raise ValidationError("A folder cannot assign itself as its own parent.")
-
-        if is_a_user_home_folder(folder=self):
-            raise ValidationError("User home folder's details cannot be changed.")
 
     def save(self, *args, **kwargs) -> None:  # pragma: no coverage
         """

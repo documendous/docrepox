@@ -1,14 +1,17 @@
 {% load bookmark_tags %}
 {% load project_tags %}
+{% load webproxy_tags %}
 
-{% can_read_project request child.parent_project.folder as can_read_project %}
+{% can_read_project request.user child.parent_project.folder as can_read_project %}
+{% document_is_proxied request.user child as document_is_proxied %}
 
 <span
   class="
     mt-1 flex items-center
     {% if child.parent_project.folder and not can_read_project %}text-gray-400{% endif %}
+    {% if document_is_proxied %}text-blue-700 hover:text-blue-900{% endif %}
   "
-  title="{{ child.name }}"
+  title="{{ child.name }}{% if document_is_proxied %} (Shared via Proxy){% endif %}"
 >
   {{ child.name|truncatechars:30 }}
 
@@ -17,7 +20,7 @@
       class="
         material-icons-outlined nav-link ml-2 pt-0.5
       "
-      style="font-size: 18px !important;"
+      style="font-size: 20px !important;"
     >
       star
     </span>

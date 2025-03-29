@@ -1,7 +1,9 @@
+from apps.core.utils.handlers import response_handler
 from apps.projects.rules.utils import get_project_for_element
 from apps.projects.utils.project import is_a_project_folder
 
 from ..conditions import (
+    content_file_is_updateable,
     is_a_home_folder,
     is_editor,
     is_manager,
@@ -9,11 +11,11 @@ from ..conditions import (
     is_undeletable_folder,
     is_unupdatable_folder,
 )
-from ..utils import admin_override, response_handler
+from ..utils import admin_override
 from .document import can_create_document
 
 
-def can_view_element_details(request, element, from_tag=False):
+def can_view_element_details(user, element, from_tag=False):
     """
     Determines if a user can view an element:
     - If the element is part of a project, the user can view it if they are in the project's readers group.
@@ -25,20 +27,45 @@ def can_view_element_details(request, element, from_tag=False):
 
     # Permission determinations
     if project:
-        if is_reader(request, project):
+        if is_reader(user, project):
             accessible = True
 
     else:
-        if request.user == element.owner and not project:
+        if user == element.owner and not project:
             accessible = True
 
     # Explicit inclusions
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     return response_handler(accessible, from_tag)
 
 
-def can_restore_element(request, element, from_tag=False):
+def can_retrieve_document(user, document, from_tag=False):
+    """
+    Determines if a user can view a document via download or preview:
+    - If the document is part of a project, the user can view it if they are in the project's readers group.
+    - If the document is not part of a project, only the owner can view it.
+    - Admins can always view if allowed by global settings.
+    """
+    accessible = False
+    project = get_project_for_element(document)
+
+    # Permission determinations
+    if project:
+        if is_reader(user, project):
+            accessible = True
+
+    else:
+        if user == document.owner and not project:
+            accessible = True
+
+    # Explicit inclusions
+    accessible = admin_override(user, accessible)
+
+    return response_handler(accessible, from_tag)
+
+
+def can_restore_element(user, element, from_tag=False):
     """
     Determines if a user can restore an element:
     - A user can restore if they can view the element and create documents in its original parent.
@@ -48,9 +75,9 @@ def can_restore_element(request, element, from_tag=False):
     orig_parent = getattr(element, "orig_parent", None)
 
     # Permission determinations:
-    if can_view_element_details(request, element, from_tag=from_tag):
+    if can_view_element_details(user, element, from_tag=from_tag):
         if orig_parent:
-            if can_create_document(request, orig_parent, from_tag=from_tag):
+            if can_create_document(user, orig_parent, from_tag=from_tag):
                 accessible = True
 
     # Explicit exclusions:
@@ -63,7 +90,7 @@ def can_restore_element(request, element, from_tag=False):
     return response_handler(accessible, from_tag)
 
 
-def can_update_element(request, element, from_tag=False):
+def can_update_element(user, element, from_tag=False):
     """
     Determines if a user can update an element:
     - A user can update if they are an editor in the project's editors group.
@@ -76,19 +103,19 @@ def can_update_element(request, element, from_tag=False):
 
     # Permission determinations:
     if project:
-        if is_editor(request, project):
+        if is_editor(user, project):
             accessible = True
 
     else:
         if (
-            request.user == element.owner
+            user == element.owner
             and not project
-            and element != request.user.profile.home_folder
+            and element != user.profile.home_folder
         ):
             accessible = True
 
     # Explicit inclusions
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     # Explicit exclusions
     if is_unupdatable_folder(element):
@@ -97,7 +124,46 @@ def can_update_element(request, element, from_tag=False):
     return response_handler(accessible, from_tag)
 
 
-def can_recycle_element(request, element, from_tag=False):
+def can_update_content(user, element, from_tag=False):
+    """
+    Determines if a user can update an element's content:
+    - A user can update content if they are an editor in the project's editors group.
+    - If the element is not part of a project, only the owner can update it.
+    - Admins can update everything if allowed by global settings.
+    """
+    accessible = False
+
+    # For plain text documents only!
+    if not element.type == "document" or not content_file_is_updateable(
+        document=element
+    ):
+        return response_handler(accessible, from_tag)
+
+    project = get_project_for_element(element)
+
+    # Permission determinations:
+    if project:
+        if is_editor(user, project):
+            accessible = True
+
+    else:
+        if (
+            user == element.owner
+            and not project
+            and element != user.profile.home_folder
+        ):
+            accessible = True
+
+    # Explicit inclusions
+    accessible = admin_override(user, accessible)
+
+    # Explicit exclusions
+    ...
+
+    return response_handler(accessible, from_tag)
+
+
+def can_recycle_element(user, element, from_tag=False):
     """
     Determines if a user can recycle (delete) an element:
     - A user can recycle if they are a manager in the project's managers group.
@@ -113,22 +179,22 @@ def can_recycle_element(request, element, from_tag=False):
 
     # Permission determinations:
     if project:
-        if is_manager(request, project):
+        if is_manager(user, project):
             accessible = True
 
     else:
         if (
             not element.is_in_recycle_path()
             and not element.is_recycle_folder()
-            and request.user == element.owner
+            and user == element.owner
         ):
             accessible = True
 
     # Explicit inclusions
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     # Explicit exclusions
-    if is_undeletable_folder(request, element):
+    if is_undeletable_folder(user, element):
         accessible = False
 
     if element.type == "folder":
@@ -141,7 +207,7 @@ def can_recycle_element(request, element, from_tag=False):
     return response_handler(accessible, from_tag)
 
 
-def can_delete_element(request, element, from_tag=False):
+def can_delete_element(user, element, from_tag=False):
     """
     Determines if a user can permanently delete an element:
     - A user can delete if they are a manager in the project's managers group.
@@ -158,18 +224,18 @@ def can_delete_element(request, element, from_tag=False):
 
     # Permission determinations
     if project:
-        if is_manager(request, project):
+        if is_manager(user, project):
             accessible = True
 
     else:
-        if request.user == element.owner and not project:
+        if user == element.owner and not project:
             accessible = True
 
     # Explicit inclusions
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     # Explicit exclusions
-    if is_undeletable_folder(request, element):
+    if is_undeletable_folder(user, element):
         accessible = False
 
     if not element.is_in_recycle_path():
@@ -185,7 +251,39 @@ def can_delete_element(request, element, from_tag=False):
     return response_handler(accessible, from_tag)
 
 
-def can_add_element_to_clipboard(request, element, from_tag=False):
+def can_delete_property(user, property, from_tag=False):
+    accessible = False
+    parent = property.content_object
+    project = get_project_for_element(parent)
+
+    if project:
+        if is_manager(user, project):
+            accessible = True
+
+    else:
+        if user == parent.owner:
+            accessible = True
+
+    return response_handler(accessible, from_tag)
+
+
+def can_update_property(user, property, from_tag=False):
+    accessible = False
+    parent = property.content_object
+    project = get_project_for_element(parent)
+
+    if project:
+        if is_manager(user, project) or is_editor(user, project):
+            accessible = True
+
+    else:
+        if user == parent.owner:
+            accessible = True
+
+    return response_handler(accessible, from_tag)
+
+
+def can_add_element_to_clipboard(user, element, from_tag=False):
     """
     A user can add an element to the clipboard if they can view its details,
     unless the element is in the recycle folder or recycle path.
@@ -193,7 +291,7 @@ def can_add_element_to_clipboard(request, element, from_tag=False):
     accessible = False
 
     # Permission determinations
-    if can_view_element_details(request, element, from_tag=from_tag):
+    if can_view_element_details(user, element, from_tag=from_tag):
         accessible = True
 
     # Explicit exclusions
@@ -206,7 +304,7 @@ def can_add_element_to_clipboard(request, element, from_tag=False):
     return response_handler(accessible, from_tag)
 
 
-def can_move_element(request, element, from_tag=False):
+def can_move_element(user, element, from_tag=False):
     """
     A user can move an element if:
     - They are a manager in the project's managers group or the owner of the element.
@@ -222,16 +320,16 @@ def can_move_element(request, element, from_tag=False):
 
     # Permission determinations
     if project:
-        if is_manager(request, project):
+        if is_manager(user, project):
             accessible = True
-        elif request.user == element.owner:
+        elif user == element.owner:
             accessible = True
     else:
-        if request.user == element.owner:
+        if user == element.owner:
             accessible = True
 
     # Explicit inclusions
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     # Explicit exclusions
     if element.type == "project":
@@ -244,13 +342,13 @@ def can_move_element(request, element, from_tag=False):
         if parent.is_in_recycle_path():
             accessible = False
 
-    if is_undeletable_folder(request, element):
+    if is_undeletable_folder(user, element):
         accessible = False
 
     return response_handler(accessible, from_tag)
 
 
-def can_copy_element(request, element, from_tag=False):
+def can_copy_element(user, element, from_tag=False):
     """
     A user can copy an element if:
     - They are an editor in the project's editors group.
@@ -262,20 +360,20 @@ def can_copy_element(request, element, from_tag=False):
 
     # Permission determinations
     if project:
-        if is_editor(request, project):
+        if is_editor(user, project):
             accessible = True
 
     else:
-        if request.user == element.owner:
+        if user == element.owner:
             accessible = True
 
     # Explicit inclusions
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     return response_handler(accessible, from_tag)
 
 
-def can_bookmark(request, element, from_tag=False):
+def can_bookmark(user, element, from_tag=False):
     accessible = False
 
     if element.type == "project":
@@ -284,18 +382,18 @@ def can_bookmark(request, element, from_tag=False):
         project = element.parent_project
 
     if project:
-        if not project.is_member(request.user):
+        if not project.is_member(user):
             accessible = False
         else:
             accessible = True
 
     else:
-        if element.owner != request.user:
+        if element.owner != user:
             accessible = False
         else:
             accessible = True
 
     # if you turn this on, see Issue #668
-    accessible = admin_override(request, accessible)
+    accessible = admin_override(user, accessible)
 
     return response_handler(accessible, from_tag)

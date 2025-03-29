@@ -1,47 +1,72 @@
 <section class="
-  w-full md:w-full p-6 mx-6 bg-white rounded-lg shadow-md outline
+  w-full md:w-full p-6 bg-white rounded-lg shadow-md outline
   outline-offset-1 outline-1 outline-gray-200"
 >
   <header class="flex items-center justify-between">
-    <h3 class="text-xl font-semibold mb-2">Getting Started</h3>
+    <h3 class="text-xl font-semibold mb-2 flex items-center">
+      <span class="material-symbols-outlined pb-1" style="font-size: 22px !important;">
+        directions_walk
+      </span>
+      
+      Getting Started
+      
+    </h3>
     {% include "ui/widgets/_close_ui_section.html" with setting="show_getting_started" %}
   </header>
 
-  <div class="flex justify-between gap-4">
-    <div class="mb-4 leading-relaxed text-gray-700 w-1/2">
+  <div class="flex flex-col sm:w-full lg:w-full lg:flex-row justify-between gap-4">
+    <div class="my-4 leading-relaxed text-gray-700 lg:w-1/2">
       <a
         href="{% url 'ddocs:index' %}#using-docrepox"
-        class="text-blue-600 underline font-semibold"
+        class="text-blue-600 font-semibold flex items-center gap-1"
         target="_blank"
       >
         How to use DocrepoX
+        <span
+          class="material-symbols-outlined pb-1"
+          style="font-size: 20px !important"
+        >
+          help
+        </span>
       </a>
 
-      <p class="mt-2">
+      <p class="my-2">
         All features listed in the "Using DocrepoX" and "Customizing DocrepoX" sections are fully supported and should function as described. If you experience any issues, please report them by creating an issue.
       </p>
 
-        <a
-          href="{% url 'ddocs:index' %}#developing-documendous"
-          class="text-blue-600 underline font-semibold"
-          target="_blank"
+      <a
+        href="{% url 'ddocs:index' %}#developing-documendous"
+        class="text-blue-600 font-semibold flex items-center gap-1"
+        target="_blank"
+      >
+        Contributing to Documendous Software
+        <span
+          class="material-symbols-outlined pb-1"
+          style="font-size: 20px !important"
         >
-          Contributing to Documendous Software
-        </a>
+          volunteer_activism
+        </span>
+      </a>
 
-        <p>
-          Topics of concern if you would like to contribute to the development of Documendous Software.
-        </p>
+      <p>
+        Topics of concern if you would like to contribute to the development of Documendous Software.
+      </p>
 
     </div>
     
-    <div class="mb-4 leading-relaxed text-gray-700 w-1/2">
+    <div class="my-2 leading-relaxed text-gray-700 lg:w-1/2">
       <a
         href="{% url 'ddocs:index' %}#customizing-docrepox"
-        class="text-blue-600 underline font-semibold"
+        class="text-blue-600 font-semibold flex items-center gap-1"
         target="_blank"
       >
         Customizing DocrepoX
+        <span
+          class="material-symbols-outlined pb-1"
+          style="font-size: 20px !important"
+        >
+          dashboard_customize
+        </span>
       </a>
 
       <p>

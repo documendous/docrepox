@@ -1,7 +1,7 @@
 {% load project_tags %}
 
-{% has_project_membership request project.folder as has_project_membership %}
-{% is_membership_pending request project.folder as is_membership_pending %}
+{% has_project_membership request.user project.folder as has_project_membership %}
+{% is_membership_pending request.user project.folder as is_membership_pending %}
 
 {% if has_project_membership %}
   <li>

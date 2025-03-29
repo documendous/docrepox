@@ -1,7 +1,7 @@
-import os
-
 from django import template
 from django.conf import settings
+
+from apps.core.utils.core import get_extension
 
 register = template.Library()
 
@@ -12,9 +12,7 @@ def is_previewable(element) -> bool:  # pragma: no coverage
     Return True if element is previewable
     """
     if element.is_document:
-        _, ext = os.path.splitext(element.name)
-
-        if ext in settings.ALLOWED_PREVIEW_TYPES:
+        if get_extension(file_name=element.name) in settings.ALLOWED_PREVIEW_TYPES:
             return True
 
     return False

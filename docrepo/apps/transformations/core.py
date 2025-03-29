@@ -15,10 +15,13 @@ import os
 import pathlib
 import subprocess
 import uuid
+from io import BytesIO
 
 from django.conf import settings
 from django.core.files import File
 
+from apps.core.utils.storage import content_file_name
+from apps.encrypted_content.utils import get_encrypted_file_handler
 from apps.repo.models.element.version import Version
 from apps.transformations.models import Preview
 
@@ -102,6 +105,47 @@ def generate_pdf_file(version: Version) -> None:
         )
     )
 
+    remove_content_file = False
+
+    content_file_path = (
+        f"{str(settings.MEDIA_ROOT) + os.path.sep + str(version.content_file)}"
+    )
+
+    tmp_file = (
+        str(settings.SOFFICE_TEMP_DIR)
+        + os.path.sep
+        + str(version.content_file).split("/")[-1].split(".")[0]
+        + ".pdf"
+    )
+
+    if settings.ENCRYPT_CONTENT:
+        encrypted_file_handler = get_encrypted_file_handler(content_file_path)
+
+        if isinstance(encrypted_file_handler, BytesIO):
+            decrypted_file_path = content_file_name(version.content_file, uuid.uuid4())
+            decrypted_file_path = (
+                str(settings.MEDIA_ROOT) + os.path.sep + decrypted_file_path
+            )
+
+            with open(decrypted_file_path, "wb") as output_file:
+                log.debug(f"Writing to file: {decrypted_file_path}")
+                output_file.write(encrypted_file_handler.getvalue())
+
+            log.debug(
+                f"Decrypted file exists: {pathlib.Path(decrypted_file_path).exists()}"
+            )
+
+            content_file_path = str(decrypted_file_path)
+            remove_content_file = True
+            reason_for_removal = "decrypted temp file no longer needed"
+
+            tmp_file = (
+                str(settings.SOFFICE_TEMP_DIR)
+                + os.path.sep
+                + str(decrypted_file_path).split("/")[-1].split(".")[0]
+                + ".pdf"
+            )
+
     process = subprocess.Popen(
         [
             settings.SOFFICE_EXE,
@@ -110,7 +154,7 @@ def generate_pdf_file(version: Version) -> None:
             "pdf",
             "--outdir",
             settings.SOFFICE_TEMP_DIR,
-            f"{str(settings.MEDIA_ROOT) + os.path.sep + str(version.content_file)}",
+            content_file_path,
         ],
     )
 
@@ -123,14 +167,12 @@ def generate_pdf_file(version: Version) -> None:
     log.debug("Using command for transform: {}".format(full_command))
     process.communicate()
 
-    tmp_file = (
-        str(settings.SOFFICE_TEMP_DIR)
-        + os.path.sep
-        + str(version.content_file).split("/")[-1].split(".")[0]
-        + ".pdf"
-    )
-
     log.debug("Temp file for upload is {}".format(tmp_file))
+
+    if remove_content_file:
+        log.debug(f"Removing temp content file: {reason_for_removal}")
+        os.remove(content_file_path)
+
     generate_preview_file(version, tmp_file)
 
 
@@ -161,7 +203,7 @@ def generate_preview_file(
 
         with open(tmp_file, "rb") as local_file:
             djangofile = File(local_file)
-            preview_content_file = str(uuid.uuid4()) + ".bin"
+            preview_content_file = str(uuid.uuid4())
             preview = Preview()
             preview.version = version
             log.debug(
@@ -176,6 +218,7 @@ def generate_preview_file(
         )
 
         if not src_is_content_file:
+            log.debug(f"Removing tmp_file: {tmp_file}")
             os.remove(tmp_file)
 
         return True

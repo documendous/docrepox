@@ -10,6 +10,8 @@ from apps.core.utils.storage import delete_content_file
 from apps.repo.models.element.document import Document
 from apps.repo.models.element.version import Version
 from apps.repo.utils.system.user import create_user_home_folder, update_user_home_folder
+from apps.search.models import DocumentIndex
+from apps.search.utils import index_document
 
 from .models import Profile
 
@@ -24,6 +26,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         if instance.username != settings.ADMIN_USERNAME:
             Profile.objects.create(user=instance)
+            log.debug(f"Created profile for user: {instance.username}")
             create_user_home_folder(user=instance)
     else:
         update_user_home_folder(user=instance)
@@ -67,3 +70,21 @@ try:
     from extensions.apps.repo.signals import *  # noqa: F403, F401
 except ModuleNotFoundError:  # pragma: no coverage
     log.warning("Expected module: 'signals' in extensions not found")
+
+
+@receiver(post_save, sender=Version)
+def index_document_on_version_creation(
+    sender, instance, created, **kwargs
+):  # pragma: no coverage
+    """
+    Run index_document whenever a new DocumentVersion is created if it has a DocumentIndex.
+    """
+    log = logging.getLogger(__name__)
+    if created:  # Only run when a new version is created
+        if settings.ENABLE_FULL_TEXT_SEARCH:
+            try:
+                index = DocumentIndex.objects.get(document=instance.parent)
+                log.debug(f"Begin index document: {instance.parent.name}")
+                index_document(index)  # Ensure it indexes the parent document
+            except DocumentIndex.DoesNotExist:
+                pass

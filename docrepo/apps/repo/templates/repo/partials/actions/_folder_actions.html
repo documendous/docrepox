@@ -2,21 +2,27 @@
 {% load project_tags %}
 {% load repo_tags %}
 
-{% can_create_folder_children request folder as can_create_folder_children %}
+{% can_create_folder_children request.user folder as can_create_folder_children %}
 
 {% if not folder.is_in_recycle_path %}
   <div class="flex items-end mx-1 py-2 space-x-2 gap-3">
     {% if can_create_folder_children %}
-      {% include 'repo/partials/actions/folder_action_items/_add_document.html' %}
+      {% comment %} {% include 'repo/partials/actions/folder_action_items/_add_document.html' %} {% endcomment %}
       {% include 'repo/partials/actions/folder_action_items/_add_multi_documents.html' %}
       {% include 'repo/partials/actions/folder_action_items/_create_document.html' %}
       {% include 'repo/partials/actions/folder_action_items/_create_folder.html' %}
       {% include 'repo/partials/actions/folder_action_items/_paste_element.html' %}
+      <span class="material-symbols-outlined pb-[2rem]">
+        more_vert
+      </span>
+      {% include "clipboard/partials/actions/_move_elements.html" %}
+      {% include 'repo/partials/actions/_recycle_elements.html' %}
     {% endif %}
   </div>
 {% else %}
   <div class="flex items-end mx-1 py-2 space-x-4">
     {% include "repo/partials/actions/_empty_trashcan.html" %}
+    {% include "repo/partials/actions/_restore_elements.html" %}
   </div>
 {% endif %}
 

@@ -1,0 +1,32 @@
+{% extends "ui/base/_base.html" %}
+{% load static %}
+
+{% block main %}
+<main>
+  <div class="mt-8">
+    <table class="min-w-full divide-y divide-gray-200 border shadow">
+      <caption class="text-left px-2 py-2 relative border">
+        <div class="flex justify-between items-center">
+          <span class="mr-2 font-bold p-0.5">
+            <p class="text-xl p-4 flex items-center gap-1">
+              <span class="material-symbols-outlined">
+                cell_tower
+              </span>
+              
+              <span>Shared Documents via Proxy</span>
+              
+            </p>
+          </span>
+        </div>
+      </caption>
+
+      {% include 'webproxy/partials/_document_list_th.html' %}
+      {% include "webproxy/partials/_document_list_table.html" %}
+      
+    </table>
+  </div>
+</main>
+
+{% include "repo/partials/_pagination.html" with children=proxied_documents %}
+
+{% endblock main %}

@@ -10,24 +10,27 @@
       >
         {% csrf_token %}
         <div class="flex py-2 mb-4">
-          <span class="mr-2 font-bold">
-            {{ path_with_links|safe }} &nbsp;
-          </span>
+          {% include "repo/partials/_path_with_links.html" %}
         </div>
 
-        <legend>
-          <h2 class="text-2xl font-semibold mb-6">
+        <legend class="mb-4">
+          <h2 class="text-2xl font-semibold flex align-items gap-1">
+            <div
+              class="material-icons-outlined pt-0.5"
+              style="font-size: 24px !important"
+            >
+              description
+            </div>
             Create New Document
-            {% if create_doc_as_rtf %}
-              <br>
-              <span class="text-sm">
-                (Rich Text -- 
-                <span class="italic">
-                  Content will be converted to html from editor below
-                </span>)
-              </span>
-            {% endif %}
           </h2>
+          {% if create_doc_as_rtf %}
+            <span class="text-sm">
+              (Rich Text -- 
+              <span class="italic">
+                Content will be converted to html from editor below
+              </span>)
+            </span>
+          {% endif %}
         </legend>
 
         <div class="mb-4">
@@ -71,7 +74,7 @@
               Content
             </label>
 
-            {% render_field add_version_form.content class="mt-1 block w-full h-80 rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" %}
+            {% render_field add_version_form.content class="mt-1 block w-full h-80 rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" required="true" %}
 
           </div>
         {% endif %}

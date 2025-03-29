@@ -1,6 +1,4 @@
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
-from django.http import Http404
 
 from apps.repo.utils.system.object import (
     get_system_home_folder,
@@ -19,20 +17,6 @@ def get_immutable_folders():
     )
 
     return immutable_folders
-
-
-def response_handler(accessible, from_tag):
-    if accessible:
-        return True
-
-    else:
-        if from_tag:
-            return False
-
-        if settings.DEBUG:
-            raise PermissionDenied
-        else:
-            raise Http404
 
 
 def admin_override(request, accessible):

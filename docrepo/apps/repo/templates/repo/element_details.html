@@ -6,32 +6,40 @@
 
 {% block main %}
 
-{% can_update_element request element as can_update_element %}
-{% can_view_project_details request element as can_view_project_details %}
-{% can_bookmark request element as can_bookmark %}
+{% can_update_element request.user element as can_update_element %}
+{% can_update_content request.user element as can_update_content %}
+{% can_view_project_details request.user element as can_view_project_details %}
+{% can_bookmark request.user element as can_bookmark %}
 
 <main>
   <div class="mt-8">
     <table class="min-w-full divide-y divide-gray-200 border shadow">
       <caption class="text-left p-2 relative mx-4">
-        <div class="flex py-2 gap-2">
-          <span class="mr-2 font-bold">
-            {{ path_with_links|safe }}
-          </span>
+        <div class="flex items-center py-2">
+          {% include "repo/partials/_path_with_links.html" %}
 
           {% if can_view_project_details %}
-            {% include "projects/partials/_view_project_details.html" with element=element %}
+            <span class="flex items-center pt-2">
+              {% include "projects/partials/_view_project_details.html" with element=element %}
+            </span>
           {% endif %}
 
           {% if not element.is_in_recycle_path and can_bookmark %}
-            {% include "bookmarks/partials/actions/_bookmark_element.html" %}
+            <span class="pt-2">
+              {% include "bookmarks/partials/actions/_bookmark_element.html" %}
+            </span>
           {% endif %}
 
         </div>
 
-        <div class="flex items-center">
-          <h2 class="text-xl font-bold mr-4 py-2">
+        <div class="flex items-center gap-1">
+          <h2 class="text-xl font-bold mr-4 py-2 flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size: 22px !important">
+              info
+            </span>
+
             {{ element.type|title }} Details
+
           </h2>
 
           {% if can_update_element %}
@@ -48,6 +56,20 @@
             </a>
           {% endif %}
 
+          {% if can_update_content %}
+            <a
+              href="{% url 'repo:update_document_content' element.id %}" 
+              class="text-gray-700 hover:text-blue-700"
+            >
+              <span
+                class="material-icons-outlined"
+                title="Update document '{{ element.name|truncatechars:30 }}' content"
+              >
+                history_edu
+              </span>
+            </a>
+          {% endif %}
+
         </div>
       </caption>
 
@@ -55,6 +77,12 @@
 
     </table>
   </div>
+
+  {% include "properties/partials/_element_properties_table.html" %}
+
+  {% if element.is_document %}
+    {% include "repo/partials/document/_versions_table.html" %}
+  {% endif %}
 
   {% include 'repo/partials/_summary_children_data.html' %}
   
