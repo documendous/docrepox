@@ -7,13 +7,14 @@ from django.http import HttpRequest, HttpResponse, HttpResponseServerError
 from apps.core.utils.core import get_extension
 from apps.core.views import View
 from apps.repo import rules
-from apps.repo.models.element.version import Version
-from apps.repo.settings import DEFAULT_MIMETYPE
-from apps.repo.utils.model import get_current_version, get_document_version
-from apps.repo.utils.storage import handle_file_response
-from apps.repo.utils.views import DocumentRetriever
 from apps.transformations.core import generate_pdf_file
 from apps.transformations.models import Preview
+
+from ...models.element.version import Version
+from ...utils.document import get_content_type
+from ...utils.model import get_current_version, get_document_version
+from ...utils.storage import handle_file_response
+from ...utils.views import DocumentRetriever
 
 
 class DocumentRetrieverView(DocumentRetriever, View):
@@ -168,11 +169,7 @@ class DocumentRetrieverView(DocumentRetriever, View):
                 log.debug("Setting retrieval as attachment")
                 action = "attachment; "
 
-            content_type = (
-                document.mimetype.name
-                if hasattr(document.mimetype, "name")
-                else DEFAULT_MIMETYPE
-            )
+            content_type = get_content_type(document)
 
             log.debug("Downloading as attachment")
 

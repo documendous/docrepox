@@ -12,6 +12,10 @@ def can_create_document(user, parent, from_tag=False):
     - Admins can create documents if allowed by global admin settings.
     - Documents cannot be created in recycle folders or in elements within the recycle path.
     """
+    # Explicit exclusions
+    if parent.is_recycle_folder() or parent.is_in_recycle_path():
+        return response_handler(False, from_tag)
+
     accessible = False
     project = getattr(parent, "parent_project", None)
 
@@ -26,10 +30,6 @@ def can_create_document(user, parent, from_tag=False):
 
     # Explicit inclusions
     accessible = admin_override(user, accessible)
-
-    # Explicit exclusions
-    if parent.is_recycle_folder() or parent.is_in_recycle_path():
-        accessible = False
 
     return response_handler(accessible, from_tag)
 

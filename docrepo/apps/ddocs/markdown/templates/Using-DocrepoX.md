@@ -784,6 +784,10 @@ If you are using the docker containers, then LibreOffice should be installed.
 
 Previews allow you to quickly view document content without downloading the full file. Supported file types include .doc, .docx, .jpg, .png, .pdf, and more.
 
+**Note:** HTML files by default are previewable as text meaning you can expect to see html code as it is. However, in global_settings.py, you can set RENDER_HTML_PREVIEW=True to see your html file rendered upon preview.
+
+**Note:** By default, DocrepoX does not sanitize text files containing problematic UTF characters during transformation. To enable sanitization, set SANITIZE_TEXT_FILES = True in global_settings.py (the default is False). When enabled, these characters will be cleaned up before PDF conversion, but be aware that the source text file will be modified in the process.
+
 ##### How Previews Are Generated
 
 When a document is uploaded, the system checks:
@@ -1388,7 +1392,7 @@ python manage.py simple_genkey
 Generated Encryption Key: XR2xKimT1FhFoqgj7r80eHJ6yse0Ig4yHfUeXEGWKWw=
 ```
 
-1. Copy the generated key and add it to your .env file.
+1. Copy the generated key and add it to your .env file as: ENCRYPTION_KEY=<Encrption key generated>
 2. Add the "apps.encrypted_content" app to INSTALLED_APPS in global_settings.py.
 3. In global_settings.py, enable encryption by setting:  
 

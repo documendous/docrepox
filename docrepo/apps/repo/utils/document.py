@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from django.utils.datastructures import MultiValueDict
@@ -81,3 +82,19 @@ def update_document_content(
     Version.objects.create(
         parent=document, content_file=content_file, tag=new_version_tag
     )
+
+
+def get_content_type(document: Document) -> str:  # pragma: no coverage
+    """Gets content type for http file response disposition"""
+    ext = get_extension(file_name=document.name)
+
+    if ext == ".html" and not settings.RENDER_HTML_PREVIEW:
+        content_type = "text/plain"
+    else:
+        content_type = (
+            document.mimetype.name
+            if hasattr(document.mimetype, "name")
+            else DEFAULT_MIMETYPE
+        )
+
+    return content_type
