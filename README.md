@@ -264,6 +264,6 @@ docker container rm docrepox-nginx-1
 docker volume rm docrepox_prod_static_volume
 ```
 
-**Note:** do not remove the media volume or the database volume if these are not backed up and you understand how to restore them.
+**Note:** do not remove the media volume or the database volume if these are not backed up and you do understand how to restore them.
 
 ---
