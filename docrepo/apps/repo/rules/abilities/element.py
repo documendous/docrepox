@@ -71,6 +71,13 @@ def can_restore_element(user, element, from_tag=False):
     - A user can restore if they can view the element and create documents in its original parent.
     - Elements in the recycle folder or outside the recycle path cannot be restored.
     """
+    # Explicit exclusions:
+    if element.is_recycle_folder():
+        return response_handler(False, from_tag)
+
+    if not element.is_in_recycle_path():
+        return response_handler(False, from_tag)
+
     accessible = False
     orig_parent = getattr(element, "orig_parent", None)
 
@@ -79,13 +86,6 @@ def can_restore_element(user, element, from_tag=False):
         if orig_parent:
             if can_create_document(user, orig_parent, from_tag=from_tag):
                 accessible = True
-
-    # Explicit exclusions:
-    if element.is_recycle_folder():
-        accessible = False
-
-    if not element.is_in_recycle_path():
-        accessible = False
 
     return response_handler(accessible, from_tag)
 
@@ -98,6 +98,10 @@ def can_update_element(user, element, from_tag=False):
     - Admins can update everything if allowed by global settings.
     - Certain folders are explicitly marked as not updatable and cannot be updated.
     """
+    # Explicit exclusions
+    if is_unupdatable_folder(element):
+        return response_handler(False, from_tag)
+
     accessible = False
     project = get_project_for_element(element)
 
@@ -116,10 +120,6 @@ def can_update_element(user, element, from_tag=False):
 
     # Explicit inclusions
     accessible = admin_override(user, accessible)
-
-    # Explicit exclusions
-    if is_unupdatable_folder(element):
-        accessible = False
 
     return response_handler(accessible, from_tag)
 
@@ -174,6 +174,17 @@ def can_recycle_element(user, element, from_tag=False):
     - Home folders.
     - Projects.
     """
+    # Explicit exclusions
+    if is_undeletable_folder(user, element):
+        return response_handler(False, from_tag)
+
+    if element.type == "folder":
+        if is_a_home_folder(element):
+            return response_handler(False, from_tag)
+
+    if element.type == "project":
+        return response_handler(False, from_tag)
+
     accessible = False
     project = get_project_for_element(element)
 
@@ -193,17 +204,6 @@ def can_recycle_element(user, element, from_tag=False):
     # Explicit inclusions
     accessible = admin_override(user, accessible)
 
-    # Explicit exclusions
-    if is_undeletable_folder(user, element):
-        accessible = False
-
-    if element.type == "folder":
-        if is_a_home_folder(element):
-            accessible = False
-
-    if element.type == "project":
-        accessible = False
-
     return response_handler(accessible, from_tag)
 
 
@@ -219,6 +219,20 @@ def can_delete_element(user, element, from_tag=False):
     - Home folders.
     - Projects.
     """
+    # Explicit exclusions
+    if is_undeletable_folder(user, element):
+        return response_handler(False, from_tag)
+
+    if not element.is_in_recycle_path():
+        return response_handler(False, from_tag)
+
+    if element.type == "folder":
+        if is_a_home_folder(element):
+            return response_handler(False, from_tag)
+
+    if element.type == "project":
+        return response_handler(False, from_tag)
+
     accessible = False
     project = get_project_for_element(element)
 
@@ -233,20 +247,6 @@ def can_delete_element(user, element, from_tag=False):
 
     # Explicit inclusions
     accessible = admin_override(user, accessible)
-
-    # Explicit exclusions
-    if is_undeletable_folder(user, element):
-        accessible = False
-
-    if not element.is_in_recycle_path():
-        accessible = False
-
-    if element.type == "folder":
-        if is_a_home_folder(element):
-            accessible = False
-
-    if element.type == "project":
-        accessible = False
 
     return response_handler(accessible, from_tag)
 
@@ -288,18 +288,18 @@ def can_add_element_to_clipboard(user, element, from_tag=False):
     A user can add an element to the clipboard if they can view its details,
     unless the element is in the recycle folder or recycle path.
     """
+    # Explicit exclusions
+    if element.is_recycle_folder():
+        return response_handler(False, from_tag)
+
+    if element.is_in_recycle_path():
+        return response_handler(False, from_tag)
+
     accessible = False
 
     # Permission determinations
     if can_view_element_details(user, element, from_tag=from_tag):
         accessible = True
-
-    # Explicit exclusions
-    if element.is_recycle_folder():
-        accessible = False
-
-    if element.is_in_recycle_path():
-        accessible = False
 
     return response_handler(accessible, from_tag)
 
@@ -314,8 +314,23 @@ def can_move_element(user, element, from_tag=False):
     - Projects and project folders cannot be moved.
     - Elements with a parent in the recycle path cannot be moved.
     """
-    accessible = False
+    # Explicit exclusions
+    if element.type == "project":
+        return response_handler(False, from_tag)
+
+    if is_a_project_folder(element):
+        return response_handler(False, from_tag)
+
     parent = getattr(element, "parent", None)
+
+    if parent:
+        if parent.is_in_recycle_path():
+            return response_handler(False, from_tag)
+
+    if is_undeletable_folder(user, element):
+        return response_handler(False, from_tag)
+
+    accessible = False
     project = get_project_for_element(element)
 
     # Permission determinations
@@ -330,20 +345,6 @@ def can_move_element(user, element, from_tag=False):
 
     # Explicit inclusions
     accessible = admin_override(user, accessible)
-
-    # Explicit exclusions
-    if element.type == "project":
-        accessible = False
-
-    if is_a_project_folder(element):
-        accessible = False
-
-    if parent:
-        if parent.is_in_recycle_path():
-            accessible = False
-
-    if is_undeletable_folder(user, element):
-        accessible = False
 
     return response_handler(accessible, from_tag)
 

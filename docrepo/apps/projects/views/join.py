@@ -1,17 +1,15 @@
-import logging
-
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 
 from apps.comms.models import Communication
-from apps.comms.utils import create_comm
+from apps.comms.utils import acknowledge_comm, create_comm
 from apps.core.views import View
 
 from ..models import Project
+from ..utils.project import get_group_by_type
 
 User = get_user_model()
 
@@ -48,37 +46,19 @@ class RequestProjectJoinView(View):
 
 class AddRequesterToProjectGroupView(View):
     """
-    View for acknowledging project request join. Deletes the join request.
+    View for acknowledging project request join. Sets join request comm as acknowledged.
     """
 
     def post(self, request, project_id, user_id, group_type):
-        log = logging.getLogger(__name__)
         user = User.objects.get(pk=user_id)
         project = Project.objects.get(pk=project_id)
+        group = get_group_by_type(project=project, group_type=group_type)
 
-        if group_type == "readers":
-            group = Group.objects.get(name=project.readers_group)
-        elif group_type == "editors":
-            group = Group.objects.get(name=project.editors_group)
-        elif group_type == "managers":
-            group = Group.objects.get(name=project.managers_group)
-        else:
+        if not group:
             raise Http404
 
         user.groups.add(group)
-
-        try:  # pragma: no coverage
-            communication = Communication.objects.get(
-                content_type__model="project",
-                object_id=project.id,
-                msg_from=user,
-            )
-
-            communication.set_acknowledged()
-            log.info("Associated communication marked as acknowledged.")
-
-        except Communication.DoesNotExist:
-            log.info("Associated communication does not exist. Nothing to delete.")
+        acknowledge_comm(user=user, object_id=project_id)
 
         return HttpResponseRedirect(
             reverse(

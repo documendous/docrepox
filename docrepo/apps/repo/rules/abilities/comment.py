@@ -19,6 +19,17 @@ def can_add_comment(user, instance, from_tag=False):
     - Comments are disallowed for:
     - Documents, folders, or projects if their respective comment settings are disabled.
     """
+
+    # Explicit exclusions
+    if instance.type == "document" and not settings.ENABLE_DOCUMENT_COMMENTS:
+        return response_handler(False, from_tag)
+
+    elif instance.type == "folder" and not settings.ENABLE_FOLDER_COMMENTS:
+        return response_handler(False, from_tag)
+
+    elif instance.type == "project" and not settings.ENABLE_PROJECT_COMMENTS:
+        return response_handler(False, from_tag)
+
     accessible = False
     user = user
     project = getattr(instance, "parent_project", None)
@@ -37,16 +48,6 @@ def can_add_comment(user, instance, from_tag=False):
 
     # Explicit inclusions
     accessible = admin_override(user, accessible)
-
-    # Explicit exclusions
-    if instance.type == "document" and not settings.ENABLE_DOCUMENT_COMMENTS:
-        accessible = False
-
-    elif instance.type == "folder" and not settings.ENABLE_FOLDER_COMMENTS:
-        accessible = False
-
-    elif instance.type == "project" and not settings.ENABLE_PROJECT_COMMENTS:
-        accessible = False
 
     return response_handler(accessible, from_tag)
 

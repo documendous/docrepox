@@ -242,6 +242,15 @@ ALLOWED_PREVIEW_TYPES = (
 
 MAX_PREVIEW_SIZE = 10000000  # Max size in bytes allowed for preview transformation
 
+"""
+Replaces problematic characters in a text file that interfere with LibreOffice PDF output.
+    - Converts smart quotes to straight quotes
+    - Replaces em/en dashes with regular dashes
+    - Limits underscore sequences
+Warning: Setting to True replaces the content of your text file to allow for successful conversion to PDF.
+"""
+SANITIZE_TEXT_FILES = False
+
 TRANSFORMABLE_TYPES = (
     ".doc",
     ".docx",

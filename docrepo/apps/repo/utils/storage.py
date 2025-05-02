@@ -80,7 +80,12 @@ def handle_file_response(file_path, file_name, content_type, action):
 
     response = FileResponse(file_handler, content_type=content_type)
     quoted_file_name = quote(file_name)
-    response["Content-Disposition"] = f'{action}filename="{quoted_file_name}"'
+
+    if action:
+        response["Content-Disposition"] = f'{action}filename="{quoted_file_name}"'
+    else:
+        response["Content-Disposition"] = f'inline; filename="{quoted_file_name}"'
+
     response["X-Frame-Options"] = "SAMEORIGIN"
     response["Content-Security-Policy"] = "frame-ancestors 'self';"
 

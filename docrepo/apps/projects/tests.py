@@ -460,6 +460,7 @@ class AddRequesterToProjectGroupViewTest(TestCase):
         )
 
         roles = ["readers", "editors", "managers"]
+
         group_check_methods = {
             "readers": self.project.in_readers_group,
             "editors": self.project.in_editors_group,
@@ -470,6 +471,7 @@ class AddRequesterToProjectGroupViewTest(TestCase):
             response = self.client.post(
                 reverse("repo:projects:request_join", args=[self.project.pk])
             )
+
             self.assertEqual(response.status_code, 302)
             self.assertTrue(Communication.objects.filter(msg_from=self.test_user))
 
@@ -479,6 +481,7 @@ class AddRequesterToProjectGroupViewTest(TestCase):
                     args=[self.project.pk, self.test_user.pk, role],
                 )
             )
+
             self.assertEqual(response.status_code, 302)
             self.assertTrue(group_check_methods[role](self.test_user))
 
@@ -490,9 +493,9 @@ class AddRequesterToProjectGroupViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-        # self.assertTrue(
-        #     Communication.objects.filter(msg_from=self.test_user).count() < 1
-        # )
+        comms = Communication.objects.filter(msg_from=self.test_user)
+        for comm in comms:
+            self.assertTrue(comm.acknowledged)
 
 
 class RejectRequestJoinViewTest(TestCase):

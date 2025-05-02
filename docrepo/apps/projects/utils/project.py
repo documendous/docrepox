@@ -185,3 +185,17 @@ def get_accessible_project_documents(
                     user_projects_documents.append(document)
 
     return user_projects_documents[:max_size]
+
+
+def get_group_by_type(project: Project, group_type: str) -> Group:
+    """Returns a project group by group_type"""
+    group = None
+
+    if group_type == "readers":
+        group = Group.objects.get(name=project.readers_group)
+    elif group_type == "editors":
+        group = Group.objects.get(name=project.editors_group)
+    elif group_type == "managers":
+        group = Group.objects.get(name=project.managers_group)
+
+    return group

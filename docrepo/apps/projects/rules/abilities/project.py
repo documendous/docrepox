@@ -60,9 +60,7 @@ def can_add_user_to_project_group(user, parent, from_tag=False):
     Determines if a user can add another user to a project group.
     """
     project = get_project_for_element(parent)
-
     accessible = project and (project.in_managers_group(user) or project.owner == user)
-
     accessible = admin_override(user, accessible)
 
     return response_handler(accessible, from_tag)
@@ -84,9 +82,7 @@ def can_read_project(user, parent, from_tag=False):
     Determines if a user can read a project.
     """
     project = get_project_for_element(parent)
-
     accessible = project and (project.is_member(user) or project.visibility == "public")
-
     accessible = admin_override(user, accessible)
 
     return response_handler(accessible, from_tag)
