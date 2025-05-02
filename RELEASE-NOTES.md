@@ -1,5 +1,19 @@
 # Release Notes
 
+## May 1, 2025 - v25.1.1
+
+### New Features
+- Previewable HTML documents (code or html rendering to PDF)
+
+### Enhancements
+- Improve static asset loading
+
+### Bug Fixes
+- Fix for project join request issues
+- Fixes for AI text to preview issues
+
+---
+
 ## March 29, 2025 – v25.1.0
 
 ### New Features
